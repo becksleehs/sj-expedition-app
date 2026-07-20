@@ -30,3 +30,5 @@
 
 ## 중요
 압축 폴더 자체를 저장소 안에 넣지 말고, 압축을 푼 폴더 안의 `index.html`, `student.html`, `assets`, `css`, `js` 등을 저장소 최상위에 넣으십시오.
+
+github pages deployment refresh
