@@ -1,9 +1,17 @@
 {
   "name": "승주 원정대",
   "short_name": "승주원정대",
-  "start_url": "./index.html?v=17",
+  "start_url": "./index.html",
+  "scope": "./",
   "display": "standalone",
-  "background_color": "#07162f",
-  "theme_color": "#07162f",
-  "icons": []
+  "background_color": "#071128",
+  "theme_color": "#101936",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
 }

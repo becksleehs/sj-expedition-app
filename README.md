@@ -1,34 +1,44 @@
-# 승주 원정대 v0.17 — 새로 만든 독립 프로젝트
+# 승주 원정대 v1.0
 
-## 주요 기능
-- 13명 학생 로그인
-- 남학생 3종 / 여학생 3종 캐릭터 선택
-- 얼굴·체형이 달라도 장비 좌표가 동일한 레이어 구조
-- 교복 → 탐험복 → 탐험모자 → 나침반 → 카메라 → 태극기 배지 → 황금 망원경
-- 미션 완료 보상 및 XP
-- 장비실
-- 관리자 미션 공개
-- 학생 공지
-- 참석자 체크
-- 11~13명 자동 3개 조 편성
-- 개인 점수 입력
-- PWA 기본 구성
+부산 롯데월드(12:00~17:00) → 울릉도 → 독도 체험학습을 위한 모바일 RPG형 정적 웹앱입니다.
+
+## v1.0 주요 내용
+- 모바일 RPG 스타일 학생 화면
+- 남학생 3종 / 여학생 3종 탐험가 캐릭터
+- 부산 롯데월드 필수·랜덤·숨은 미션
+- 경험치, 레벨, 장비, 배지
+- 출석 체크와 3개 조 자동 편성
+- 학생별 점수 입력
+- 미션 공개/닫기
+- 관리자 데이터 JSON 백업
+- PWA 홈 화면 설치 지원
+- GitHub Pages 바로 배포 가능
 
 ## 관리자
-- 주소: admin-login.html
-- 초기 비밀번호: 1004
+- 주소: `admin-login.html`
+- 초기 비밀번호: `1004`
+- 실제 운영 전에 관리자 화면에서 비밀번호를 변경하세요.
 
-## GitHub Desktop 배포
-1. Repository → Show in Explorer
-2. 기존 저장소 안의 파일을 모두 다른 곳에 백업합니다.
-3. 이 압축파일을 풀고, `sj-expedition-v0.17` 폴더 안의 파일과 폴더를 저장소 최상위에 복사합니다.
-4. GitHub Desktop에서 변경 파일을 확인합니다.
-5. Summary: `Rebuild SJ Expedition v0.17`
-6. Commit to main → Push origin
-7. Netlify Deploys에서 Published 확인
-8. `https://sj-expedition.netlify.app/?v=17` 접속
+## 학생 이름 수정
+`js/data.js` 파일의 `students` 목록에서 `2학년 학생 1`, `3학년 학생 1` 등의 이름을 실제 이름으로 바꿉니다.
 
-## 중요
-압축 폴더 자체를 저장소 안에 넣지 말고, 압축을 푼 폴더 안의 `index.html`, `student.html`, `assets`, `css`, `js` 등을 저장소 최상위에 넣으십시오.
+## 중요한 운영 제한
+현재 버전은 별도 서버나 Firebase 없이 브라우저 `localStorage`에 저장됩니다.
+따라서 교사 기기에서 입력한 점수·미션 상태가 학생들의 다른 휴대전화로 자동 동기화되지는 않습니다.
+v1.0은 디자인과 운영 흐름을 완성한 단계이며, 여러 기기의 실시간 동기화는 Firebase/Supabase 연결이 필요합니다.
 
-github pages deployment refresh
+## GitHub Desktop 업로드
+1. GitHub Desktop에서 `sj-expedition-app` 저장소를 엽니다.
+2. `Repository → Show in Explorer`를 누릅니다.
+3. 기존 파일을 별도 폴더에 백업합니다.
+4. 이 압축파일을 풀고, **폴더 안의 파일과 폴더**를 저장소 최상위에 덮어씁니다.
+5. GitHub Desktop의 Summary에 `Upgrade SJ Expedition to v1.0` 입력
+6. `Commit to main`
+7. `Push origin`
+8. Actions에서 초록 체크를 확인한 뒤 아래 주소 새로고침
+   - https://becksleehs.github.io/sj-expedition-app/
+
+## 캐시가 이전 화면을 보여줄 때
+- PC: `Ctrl + F5`
+- 휴대전화: 브라우저 탭을 닫고 다시 열기
+- 그래도 동일하면 사이트 데이터/캐시 삭제

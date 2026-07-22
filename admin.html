@@ -1,1 +1,53 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="css/app.css?v=17"><title>승주 원정대 관리자</title></head><body class="admin-body"><div class="admin-shell"><header class="admin-top"><h1>⚙️ 승주 원정대 관리자</h1><button id="logout" class="icon-btn">로그아웃</button></header><main class="admin-main"><div class="admin-grid"><section class="admin-card"><h2>미션 공개</h2><div class="field"><label>미션</label><select id="mission"><option value="경주월드 첫 원정|조원들과 첫 번째 현장 미션을 완료하세요.|20|hat">🎡 경주월드 → 탐험모자</option><option value="울릉도 길찾기|울릉도의 주요 장소를 확인하고 인증하세요.|30|compass">🏝️ 울릉도 → 나침반</option><option value="오늘의 베스트 사진|특별한 순간을 사진으로 남기세요.|20|camera">📸 사진 미션 → 카메라</option><option value="독도 태극기 미션|독도를 배경으로 인증 미션을 완료하세요.|30|badge">🇰🇷 독도 → 태극기 배지</option><option value="최종 원정 보고|3일간의 원정을 돌아보고 마지막 미션을 완료하세요.|40|telescope">⭐ 최종 → 황금 망원경</option></select></div><div id="missionState" class="field"></div><div class="actions"><button id="openMission">공개하기</button><button id="closeMission" class="danger">닫기</button></div></section><section class="admin-card"><h2>학생 공지</h2><div class="field"><textarea id="notice" rows="4" placeholder="학생 화면에 표시할 공지"></textarea></div><div class="actions"><button id="saveNotice">공지 저장</button><button id="toggleParty">원정대 공개/숨김</button></div></section><section class="admin-card full"><h2>참석자 확인</h2><div id="attendance" class="attendance"></div><div class="actions" style="margin-top:10px"><button id="saveAttendance">참석 저장</button><button id="makeTeams">자동 조편성</button></div></section><section class="admin-card full"><h2>조편성 결과</h2><div id="teams" class="team-output"></div></section><section class="admin-card full"><h2>개인 점수</h2><div id="ranks" class="rank-list"></div><div class="actions" style="margin-top:10px"><button id="saveRanks">점수 저장</button></div></section></div></main></div><script src="js/students.js"></script><script src="js/admin.js?v=17"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101936">
+  <title>관리자 · 승주 원정대</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="admin-bg">
+  <div class="admin-shell">
+    <header class="admin-header">
+      <div><span class="eyebrow">SJ EXPEDITION v1.0</span><h1>교사 관리자</h1></div>
+      <div class="admin-actions"><button id="exportBtn" class="small-btn">백업 저장</button><a class="small-btn" href="index.html">사이트 보기</a></div>
+    </header>
+
+    <section class="admin-stats">
+      <article><small>참석</small><strong id="attendanceCount">0</strong><span>/ 13명</span></article>
+      <article><small>공개 미션</small><strong id="openMissionCount">0</strong><span>개</span></article>
+      <article><small>총점</small><strong id="totalScore">0</strong><span>점</span></article>
+    </section>
+
+    <div class="admin-grid">
+      <section class="admin-panel">
+        <div class="section-head"><h2>출석 및 점수</h2><button id="selectAllBtn" class="small-btn">전체 참석</button></div>
+        <div id="adminStudentList" class="admin-student-list"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="section-head"><h2>조 편성</h2><button id="makeTeamsBtn" class="btn btn-accent">자동 편성</button></div>
+        <p class="help">참석 학생을 기준으로 3개 조에 균형 있게 배정합니다.</p>
+        <div id="teamBoard" class="team-board"></div>
+      </section>
+
+      <section class="admin-panel">
+        <div class="section-head"><h2>미션 관리</h2><span>공개/닫기</span></div>
+        <div id="adminMissionList" class="admin-mission-list"></div>
+      </section>
+
+      <section class="admin-panel">
+        <h2>공지와 설정</h2>
+        <label>학생 공지<textarea id="noticeInput" rows="3" placeholder="예: 16시 30분까지 입구 광장으로 모이세요."></textarea></label>
+        <button id="saveNoticeBtn" class="btn btn-primary">공지 저장</button>
+        <hr>
+        <label>새 관리자 비밀번호<input id="newPassword" type="password" placeholder="4자리 이상"></label>
+        <button id="changePasswordBtn" class="small-btn">비밀번호 변경</button>
+        <button id="resetDataBtn" class="danger-btn">모든 운영 데이터 초기화</button>
+      </section>
+    </div>
+  </div>
+  <script src="js/data.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>

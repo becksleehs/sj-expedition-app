@@ -1,1 +1,39 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#07162f"><link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/app.css?v=17"><title>승주 원정대</title></head><body class="login-page"><div class="login-card"><section class="login-hero"><div class="logo">🧭</div><h1>승주 원정대</h1><p>경주월드 · 울릉도 · 독도 역사문화예술 원정</p></section><section class="panel"><h2>학생을 선택하세요</h2><div id="studentList" class="student-list"></div><a class="admin-link" href="admin-login.html">⚙️ 교사 관리자</a></section></div><script src="js/students.js"></script><script src="js/login.js?v=17"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#101936">
+  <title>승주 원정대 v1.0</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="landing">
+  <main class="shell">
+    <section class="hero">
+      <div class="hero-orb orb-a"></div><div class="hero-orb orb-b"></div>
+      <div class="brand-badge">SJ EXPEDITION · v1.0</div>
+      <div class="compass">🧭</div>
+      <h1>승주 원정대</h1>
+      <p class="hero-copy">부산 롯데월드에서 울릉도, 독도까지.<br>우리만의 탐험이 지금 시작됩니다.</p>
+      <div class="route">
+        <div class="route-stop active"><b>DAY 1</b><span>🎢 부산 롯데월드</span></div>
+        <div class="route-line"></div>
+        <div class="route-stop"><b>DAY 2</b><span>🏝️ 울릉도</span></div>
+        <div class="route-line"></div>
+        <div class="route-stop"><b>DAY 3</b><span>🇰🇷 독도</span></div>
+      </div>
+      <a class="btn btn-primary btn-xl" href="student.html">원정대 입장하기 <span>→</span></a>
+      <a class="text-link" href="admin-login.html">⚙ 교사 관리자</a>
+    </section>
+    <section class="info-grid">
+      <article class="glass-card"><span class="big-icon">🎯</span><b>미션</b><small>필수·랜덤·숨은 미션</small></article>
+      <article class="glass-card"><span class="big-icon">🏆</span><b>랭킹</b><small>개인과 조별 점수</small></article>
+      <article class="glass-card"><span class="big-icon">🎖️</span><b>배지</b><small>탐험 성과 수집</small></article>
+    </section>
+    <footer>순천 승주중학교 · 역사문화예술 체험학습</footer>
+  </main>
+  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script>
+</body>
+</html>

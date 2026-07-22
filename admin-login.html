@@ -1,1 +1,32 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><link rel="stylesheet" href="css/app.css?v=17"><title>관리자 로그인</title></head><body class="login-page"><div class="login-card"><section class="login-hero"><div class="logo">⚙️</div><h1>교사 관리자</h1><p>초기 비밀번호: 1004</p></section><section class="panel"><div class="field"><label>비밀번호</label><input id="pw" type="password" inputmode="numeric"></div><button id="login" class="wide-btn" style="width:100%;margin:0">로그인</button><a class="admin-link" href="index.html">학생 화면으로 돌아가기</a></section></div><script>document.getElementById('login').onclick=()=>{if(document.getElementById('pw').value==='1004'){sessionStorage.setItem('sj17Admin','true');location.href='admin.html'}else alert('비밀번호를 확인하세요.')};document.getElementById('pw').onkeydown=e=>{if(e.key==='Enter')document.getElementById('login').click()}</script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101936">
+  <title>관리자 로그인 · 승주 원정대</title>
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body class="admin-bg">
+  <main class="login-card">
+    <div class="compass small">⚙️</div>
+    <span class="eyebrow">TEACHER ONLY</span>
+    <h1>관리자 로그인</h1>
+    <p>출석, 조 편성, 미션 공개와 점수를 관리합니다.</p>
+    <form id="adminLoginForm">
+      <label>비밀번호<input id="password" type="password" inputmode="numeric" placeholder="비밀번호 입력" required></label>
+      <button class="btn btn-primary" type="submit">관리자 화면 열기</button>
+    </form>
+    <a class="text-link" href="index.html">← 메인으로 돌아가기</a>
+    <p class="tiny-note">초기 비밀번호: 1004 · 배포 전 변경 권장</p>
+  </main>
+  <script>
+    document.getElementById('adminLoginForm').addEventListener('submit',e=>{
+      e.preventDefault();
+      const saved=localStorage.getItem('sj_admin_password')||'1004';
+      if(document.getElementById('password').value===saved){
+        sessionStorage.setItem('sj_admin_ok','1'); location.href='admin.html';
+      } else alert('비밀번호가 맞지 않습니다.');
+    });
+  </script>
+</body>
+</html>

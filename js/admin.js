@@ -1,1 +1,49 @@
-if(sessionStorage.getItem('sj17Admin')!=='true')location.replace('admin-login.html');const students=window.SJ_STUDENTS;const attendance=document.getElementById('attendance');const saved=JSON.parse(localStorage.getItem('sj17Attendance')||'null')||students.map(s=>s.id);students.forEach(s=>{const l=document.createElement('label');l.innerHTML=`<input type="checkbox" value="${s.id}" ${saved.includes(s.id)?'checked':''}> ${s.grade}-${s.id.slice(-2)} ${s.name}`;attendance.appendChild(l)});function checked(){return [...attendance.querySelectorAll('input:checked')].map(x=>x.value)}document.getElementById('saveAttendance').onclick=()=>{localStorage.setItem('sj17Attendance',JSON.stringify(checked()));alert(`${checked().length}명 참석 저장 완료`)};function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}document.getElementById('makeTeams').onclick=()=>{let pool=students.filter(s=>checked().includes(s.id));const byGrade=[1,2,3].flatMap(g=>shuffle(pool.filter(s=>s.grade===g)));const teams=[[],[],[]];byGrade.forEach((s,i)=>teams[i%3].push(s));localStorage.setItem('sj17Teams',JSON.stringify(teams));renderTeams(teams)};function renderTeams(teams){const box=document.getElementById('teams');box.innerHTML='';teams.forEach((t,i)=>{const a=document.createElement('article');a.innerHTML=`<h3>${i+1}조</h3>`+t.map(s=>`<p>${s.grade}학년 ${s.name} (${s.gender})</p>`).join('');box.appendChild(a)})}renderTeams(JSON.parse(localStorage.getItem('sj17Teams')||'[[],[],[]]'));function missionState(){document.getElementById('missionState').textContent=localStorage.getItem('sj17MissionOpen')==='true'?`공개 중: ${localStorage.getItem('sj17MissionTitle')}`:'현재 공개된 미션 없음'}document.getElementById('openMission').onclick=()=>{const [title,desc,points,reward]=document.getElementById('mission').value.split('|');localStorage.setItem('sj17MissionOpen','true');localStorage.setItem('sj17MissionTitle',title);localStorage.setItem('sj17MissionDesc',desc);localStorage.setItem('sj17MissionPoints',points);localStorage.setItem('sj17MissionReward',reward);missionState()};document.getElementById('closeMission').onclick=()=>{localStorage.setItem('sj17MissionOpen','false');missionState()};document.getElementById('notice').value=localStorage.getItem('sj17Notice')||'';document.getElementById('saveNotice').onclick=()=>{localStorage.setItem('sj17Notice',document.getElementById('notice').value.trim());alert('공지 저장 완료')};document.getElementById('toggleParty').onclick=()=>{const next=localStorage.getItem('sj17PartyOpen')!=='true';localStorage.setItem('sj17PartyOpen',String(next));alert(next?'원정대를 공개했습니다.':'원정대를 숨겼습니다.')};const ranks=JSON.parse(localStorage.getItem('sj17Ranks')||'{}');students.forEach(s=>{const r=document.createElement('div');r.className='rank-row';r.innerHTML=`<span>${s.grade}학년</span><b>${s.name}</b><input type="number" min="0" data-id="${s.id}" value="${ranks[s.id]||0}">`;document.getElementById('ranks').appendChild(r)});document.getElementById('saveRanks').onclick=()=>{const obj={};document.querySelectorAll('#ranks input').forEach(i=>obj[i.dataset.id]=Number(i.value||0));localStorage.setItem('sj17Ranks',JSON.stringify(obj));alert('개인 점수 저장 완료')};document.getElementById('logout').onclick=()=>{sessionStorage.removeItem('sj17Admin');location.href='admin-login.html'};missionState();
+if(sessionStorage.getItem('sj_admin_ok')!=='1'){location.href='admin-login.html'}
+const D=window.SJ_DATA,$=s=>document.querySelector(s);
+const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+let state=store.get('sj_state',{attendance:{},scores:{},teams:{},missions:{},avatars:{},completed:{},notice:''});
+D.missions.forEach(m=>{if(state.missions[m.id]===undefined)state.missions[m.id]=m.open});
+function save(){store.set('sj_state',state);renderAll()}
+function renderStudents(){
+ $('#adminStudentList').innerHTML=D.students.map(s=>`<div class="admin-student">
+ <label class="check"><input type="checkbox" data-att="${s.id}" ${state.attendance[s.id]?'checked':''}><i></i></label>
+ <div><b>${s.name}</b><small>${s.grade}학년 · ${s.gender==='M'?'남':'여'}</small></div>
+ <input class="score-input" data-score="${s.id}" type="number" min="0" value="${state.scores[s.id]||0}" aria-label="${s.name} 점수">
+ <button class="small-btn add10" data-id="${s.id}">+10</button></div>`).join('');
+ document.querySelectorAll('[data-att]').forEach(x=>x.onchange=()=>{state.attendance[x.dataset.att]=x.checked;save()});
+ document.querySelectorAll('[data-score]').forEach(x=>x.onchange=()=>{state.scores[x.dataset.score]=Number(x.value)||0;save()});
+ document.querySelectorAll('.add10').forEach(x=>x.onclick=()=>{state.scores[x.dataset.id]=Number(state.scores[x.dataset.id]||0)+10;save()});
+}
+function renderMissions(){
+ $('#adminMissionList').innerHTML=D.missions.map(m=>`<div class="admin-mission">
+ <span>${m.icon}</span><div><b>${m.title}</b><small>${m.type} · ${m.xp}EXP</small></div>
+ <label class="switch"><input type="checkbox" data-mission="${m.id}" ${state.missions[m.id]?'checked':''}><i></i></label></div>`).join('');
+ document.querySelectorAll('[data-mission]').forEach(x=>x.onchange=()=>{state.missions[x.dataset.mission]=x.checked;save()});
+}
+function renderTeams(){
+ const names=['별빛조','파도조','나침반조'];
+ $('#teamBoard').innerHTML=names.map(n=>`<div class="team-column"><h3>${n}</h3>${D.students.filter(s=>state.teams[s.id]===n).map(s=>`<span>${s.name}</span>`).join('')||'<small>아직 배정 없음</small>'}</div>`).join('');
+}
+function stats(){
+ const attend=D.students.filter(s=>state.attendance[s.id]).length;
+ $('#attendanceCount').textContent=attend;
+ $('#openMissionCount').textContent=Object.values(state.missions).filter(Boolean).length;
+ $('#totalScore').textContent=Object.values(state.scores).reduce((a,b)=>a+Number(b||0),0);
+}
+function renderAll(){renderStudents();renderMissions();renderTeams();stats();$('#noticeInput').value=state.notice||''}
+$('#selectAllBtn').onclick=()=>{D.students.forEach(s=>state.attendance[s.id]=true);save()};
+$('#makeTeamsBtn').onclick=()=>{
+ let list=D.students.filter(s=>state.attendance[s.id]);
+ if(!list.length){alert('먼저 참석 학생을 체크하세요.');return}
+ list=list.sort(()=>Math.random()-.5);
+ const names=['별빛조','파도조','나침반조']; state.teams={};
+ list.forEach((s,i)=>state.teams[s.id]=names[i%3]);save();
+};
+$('#saveNoticeBtn').onclick=()=>{state.notice=$('#noticeInput').value.trim();save();alert('공지가 저장되었습니다.')};
+$('#changePasswordBtn').onclick=()=>{const p=$('#newPassword').value;if(p.length<4)return alert('4자리 이상 입력하세요.');localStorage.setItem('sj_admin_password',p);$('#newPassword').value='';alert('비밀번호가 변경되었습니다.')};
+$('#resetDataBtn').onclick=()=>{if(confirm('출석, 점수, 조 편성, 미션 상태를 모두 초기화할까요?')){localStorage.removeItem('sj_state');location.reload()}};
+$('#exportBtn').onclick=()=>{
+ const blob=new Blob([JSON.stringify(state,null,2)],{type:'application/json'}),a=document.createElement('a');
+ a.href=URL.createObjectURL(blob);a.download='sj-expedition-backup.json';a.click();URL.revokeObjectURL(a.href);
+};
+renderAll();
