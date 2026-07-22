@@ -3,37 +3,131 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#101936">
-  <title>승주 원정대 v1.2</title>
+  <meta name="theme-color" content="#081b3a">
+  <title>승주 원정대 v2.0 · 모험 월드</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/app.css">
+  <link rel="stylesheet" href="css/app.css?v=200">
 </head>
-<body class="landing">
-  <main class="shell">
-    <section class="hero">
-      <div class="hero-orb orb-a"></div><div class="hero-orb orb-b"></div>
-      <div class="brand-badge">SJ EXPEDITION · v1.2</div>
-      <div class="compass">🧭</div>
-      <h1>승주 원정대</h1>
-      <p class="hero-copy">부산 롯데월드에서 울릉도, 독도까지.<br>우리만의 탐험이 지금 시작됩니다.</p>
-      <div class="route">
-        <div class="route-stop active"><b>DAY 1</b><span>🎢 부산 롯데월드</span></div>
-        <div class="route-line"></div>
-        <div class="route-stop"><b>DAY 2</b><span>🏝️ 울릉도</span></div>
-        <div class="route-line"></div>
-        <div class="route-stop"><b>DAY 3</b><span>🇰🇷 독도</span></div>
+<body class="rpg-home">
+  <div class="rpg-sky">
+    <i class="cloud cloud-1"></i><i class="cloud cloud-2"></i><i class="cloud cloud-3"></i>
+    <i class="star star-1">✦</i><i class="star star-2">✦</i><i class="star star-3">✧</i>
+  </div>
+
+  <main class="rpg-layout">
+    <header class="game-hud">
+      <div class="game-logo">
+        <span class="logo-compass">🧭</span>
+        <div><small>SJ EXPEDITION</small><h1>승주 원정대</h1><b>ADVENTURE RPG · v2.0</b></div>
       </div>
-      <a class="btn btn-primary btn-xl" href="student.html">원정대 입장하기 <span>→</span></a>
-      <a class="text-link" href="admin-login.html">⚙ 교사 관리자</a>
+      <div class="hud-actions">
+        <a class="hud-btn" href="admin-login.html" aria-label="교사 관리자">⚙️<span>관리자</span></a>
+      </div>
+    </header>
+
+    <section class="rpg-main-grid">
+      <aside class="player-card game-panel">
+        <div class="panel-ribbon">나의 탐험가</div>
+        <div id="homeAvatar" class="home-avatar-frame">
+          <div class="home-avatar-glow"></div>
+          <img id="homeAvatarImg" src="assets/avatars/m1.png?v=200" alt="승주 원정대 탐험가">
+          <span class="floating-item item-a">🧭</span>
+          <span class="floating-item item-b">📷</span>
+        </div>
+        <div class="player-name">
+          <span id="homeTeam">원정 준비 중</span>
+          <h2 id="homeStudentName">새로운 탐험가</h2>
+          <p id="homeLevel">Lv.1 · 초보 원정대원</p>
+        </div>
+        <div class="home-exp">
+          <div><b>EXP</b><span id="homeXpText">0 / 100</span></div>
+          <div class="progress"><i id="homeXpBar" style="width:0%"></i></div>
+        </div>
+        <a class="rpg-primary-btn" href="student.html"><span>⚔️</span><b id="enterText">원정 시작하기</b><em>▶</em></a>
+        <div class="mini-menu">
+          <a href="student.html">🎨<span>캐릭터</span></a>
+          <a href="student.html#missions">📜<span>미션</span></a>
+          <a href="student.html#badges">🎖️<span>배지</span></a>
+        </div>
+      </aside>
+
+      <section class="world-map game-panel">
+        <div class="map-title">
+          <div><span>WORLD MAP</span><h2>우리의 모험 지도</h2></div>
+          <div class="map-status"><i></i> 원정 준비</div>
+        </div>
+
+        <div class="fantasy-map">
+          <div class="ocean-waves wave-a"></div>
+          <div class="ocean-waves wave-b"></div>
+          <div class="ship">🚢<span class="ship-trail"></span></div>
+
+          <article class="map-island lotte-island unlocked">
+            <div class="island-art">
+              <span class="castle">🏰</span><span class="wheel">🎡</span><span class="coaster">🎢</span>
+            </div>
+            <div class="destination-card">
+              <span class="day-medal">1</span>
+              <div><small>DAY 1 · 12:00~17:00</small><h3>부산 롯데월드</h3><p>탐험대 결성 · 놀이기구 · 사진 미션</p></div>
+              <b class="state-badge open">OPEN</b>
+            </div>
+          </article>
+
+          <div class="route route-one"><span></span><span></span><span></span><span></span><span></span></div>
+
+          <article class="map-island ulleung-island">
+            <div class="island-art">
+              <span class="mountain">⛰️</span><span class="forest">🌲</span><span class="island-wave">🌊</span>
+            </div>
+            <div class="destination-card">
+              <span class="day-medal">2</span>
+              <div><small>DAY 2</small><h3>울릉도</h3><p>섬 탐험 · 자연 발견 · 스탬프 미션</p></div>
+              <b class="state-badge">NEXT</b>
+            </div>
+          </article>
+
+          <div class="route route-two"><span></span><span></span><span></span><span></span></div>
+
+          <article class="map-island dokdo-island locked">
+            <div class="island-art">
+              <span class="rock">🪨</span><span class="flag">🇰🇷</span><span class="seagull">🕊️</span>
+            </div>
+            <div class="destination-card">
+              <span class="day-medal">3</span>
+              <div><small>DAY 3 · FINAL</small><h3>독도</h3><p>최종 원정 · 태극기 인증 · 완주 배지</p></div>
+              <b class="state-badge lock">🔒</b>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <aside class="quest-board game-panel">
+        <div class="panel-ribbon purple">오늘의 퀘스트</div>
+        <div class="quest-day"><span>DAY 1</span><div><b>부산 롯데월드</b><small>12:00 입장 · 17:00 출발</small></div></div>
+        <ul class="quest-list">
+          <li><span>🎢</span><div><b>놀이기구 2개 이상</b><small>+120 EXP</small></div><i>필수</i></li>
+          <li><span>📸</span><div><b>조원 전원 단체사진</b><small>+100 EXP</small></div><i>필수</i></li>
+          <li><span>🏰</span><div><b>랜드마크 인증</b><small>+80 EXP</small></div><i>필수</i></li>
+          <li class="mystery"><span>🎁</span><div><b>숨은 미션</b><small>교사가 열어주면 공개!</small></div><i>???</i></li>
+        </ul>
+        <div class="reward-chest">
+          <span>🎁</span><div><small>오늘의 완주 보상</small><b>원정대 입단 배지 + 탐험 장비</b></div>
+        </div>
+      </aside>
     </section>
-    <section class="info-grid">
-      <article class="glass-card"><span class="big-icon">🎯</span><b>미션</b><small>필수·랜덤·숨은 미션</small></article>
-      <article class="glass-card"><span class="big-icon">🏆</span><b>랭킹</b><small>개인과 조별 점수</small></article>
-      <article class="glass-card"><span class="big-icon">🎖️</span><b>배지</b><small>탐험 성과 수집</small></article>
-    </section>
-    <footer>순천 승주중학교 · 역사문화예술 체험학습</footer>
+
+    <nav class="rpg-dock">
+      <a class="active" href="index.html"><span>🗺️</span><b>월드맵</b></a>
+      <a href="student.html"><span>⚔️</span><b>미션</b></a>
+      <a href="student.html"><span>🏆</span><b>랭킹</b></a>
+      <a href="student.html"><span>🎒</span><b>인벤토리</b></a>
+      <a href="student.html"><span>📸</span><b>사진첩</b></a>
+    </nav>
+
+    <footer class="rpg-footer">순천 승주중학교 · 역사문화예술 체험학습 · 2026</footer>
   </main>
-  <script>if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js').catch(()=>{});}</script>
+  <script src="js/data.js?v=200"></script>
+  <script src="js/home.js?v=200"></script>
 </body>
 </html>

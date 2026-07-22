@@ -14,7 +14,7 @@ const items=[
 function characterHTML(a,id){
  const selected=state.dress[id]||[];
  const deco=items.filter(i=>selected.includes(i.id)).map((i,n)=>`<span class="dress-item d${n%4}">${i.icon}</span>`).join('');
- return `<div class="cute-avatar" style="--accent:${a.accent}"><div class="avatar-halo"></div><img src="${a.image}" alt="${a.name}"><div class="dress-layer">${deco}</div></div>`;
+ return `<div class="cute-avatar" style="--accent:${a.accent}"><div class="avatar-halo"></div><img src="${a.image}?v=200" alt="${a.name}"><div class="dress-layer">${deco}</div></div>`;
 }
 function show(view){['#loginView','#avatarView','#dashboardView'].forEach(x=>$(x).classList.add('hidden'));$(view).classList.remove('hidden');$('#bottomNav').classList.toggle('hidden',view!=='#dashboardView')}
 function initLogin(){
@@ -23,7 +23,7 @@ function initLogin(){
 }
 function renderAvatars(){
  const s=D.students.find(x=>x.id===currentId);show('#avatarView');
- $('#avatarGrid').innerHTML=D.avatars.filter(a=>a.gender===s.gender).map(a=>`<button class="avatar-card" data-id="${a.id}"><div class="avatar-preview"><img src="${a.image}" alt="${a.name}"></div><b>${a.name}</b><span>이 캐릭터 선택</span></button>`).join('');
+ $('#avatarGrid').innerHTML=D.avatars.filter(a=>a.gender===s.gender).map(a=>`<button class="avatar-card" data-id="${a.id}"><div class="avatar-preview"><img src="${a.image}?v=200" alt="${a.name}"></div><b>${a.name}</b><span>이 캐릭터 선택</span></button>`).join('');
  document.querySelectorAll('.avatar-card').forEach(b=>b.onclick=()=>{state.avatars[currentId]=b.dataset.id;store.set('sj_state',state);renderDashboard()});
 }
 function getXp(id){const score=Number(state.scores[id]||0),done=state.completed[id]||[];return score+D.missions.filter(m=>done.includes(m.id)).reduce((n,m)=>n+m.xp,0)}
@@ -33,8 +33,15 @@ function renderDashboard(){
  show('#dashboardView');$('#studentName').textContent=s.name;
  const team=state.teams[currentId]||'미배정';$('#teamChip').textContent=team;$('#teamName').textContent=team;
  $('#heroCharacter').innerHTML=characterHTML(a,currentId);
+ const slot=$('#heroCharacter');
+ if(slot){slot.style.display='flex';slot.style.visibility='visible';slot.style.opacity='1';}
  const heroImg=$('#heroCharacter img');
  if(heroImg){
+   heroImg.style.display='block';
+   heroImg.style.visibility='visible';
+   heroImg.style.opacity='1';
+   heroImg.style.width='100%';
+   heroImg.style.height='auto';
    heroImg.onerror=()=>{
      const fallback=D.avatars.find(x=>x.gender===s.gender);
      if(fallback && heroImg.src.indexOf(fallback.image)===-1){

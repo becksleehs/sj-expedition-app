@@ -1,11 +1,11 @@
 {
-  "name": "승주 원정대",
+  "name": "승주 원정대 v2.0",
   "short_name": "승주원정대",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
   "background_color": "#071128",
-  "theme_color": "#101936",
+  "theme_color": "#081b3a",
   "icons": [
     {
       "src": "icons/icon.svg",
@@ -13,5 +13,6 @@
       "type": "image/svg+xml",
       "purpose": "any maskable"
     }
-  ]
+  ],
+  "description": "부산 롯데월드, 울릉도, 독도를 탐험하는 모바일 RPG형 체험학습 앱"
 }
