@@ -15,3 +15,37 @@
 .dress-btn small{display:block;font-size:8px;color:var(--muted);margin-top:3px}
 .dress-btn.on{background:linear-gradient(145deg,rgba(255,211,92,.25),rgba(156,114,255,.2));border-color:rgba(255,211,92,.55);transform:translateY(-2px)}
 .dress-btn.locked{opacity:.32;filter:grayscale(1)}
+
+/* v1.2 main character visibility fix */
+.hero-avatar-slot{
+  position:relative;
+  flex:0 0 min(320px,52vw);
+  width:min(320px,52vw);
+  min-width:190px;
+  min-height:250px;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  overflow:visible;
+}
+.hero-avatar-slot .cute-avatar{
+  width:100%;
+  height:auto;
+  min-height:250px;
+  display:block;
+}
+.hero-avatar-slot .cute-avatar img{
+  display:block !important;
+  width:100% !important;
+  height:auto !important;
+  aspect-ratio:1/1.08;
+  object-fit:cover;
+  opacity:1 !important;
+  visibility:visible !important;
+}
+@media(max-width:480px){
+  .hero-character-wrap{align-items:center;gap:4px}
+  .hero-avatar-slot{flex-basis:48vw;width:48vw;min-width:165px;min-height:215px}
+  .hero-avatar-slot .cute-avatar{min-height:215px}
+  .level-panel{min-width:120px}
+}

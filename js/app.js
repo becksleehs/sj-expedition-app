@@ -33,6 +33,15 @@ function renderDashboard(){
  show('#dashboardView');$('#studentName').textContent=s.name;
  const team=state.teams[currentId]||'미배정';$('#teamChip').textContent=team;$('#teamName').textContent=team;
  $('#heroCharacter').innerHTML=characterHTML(a,currentId);
+ const heroImg=$('#heroCharacter img');
+ if(heroImg){
+   heroImg.onerror=()=>{
+     const fallback=D.avatars.find(x=>x.gender===s.gender);
+     if(fallback && heroImg.src.indexOf(fallback.image)===-1){
+       heroImg.src=fallback.image;
+     }
+   };
+ }
  const xp=getXp(currentId),level=Math.floor(xp/100)+1,within=xp%100;
  $('#levelText').textContent=`Lv.${level}`;$('#xpText').textContent=`${within} / 100 EXP`;$('#xpBar').style.width=within+'%';
  $('#personalScore').textContent=state.scores[currentId]||0;
