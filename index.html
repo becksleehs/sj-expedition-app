@@ -4,10 +4,10 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#081b3a">
-  <title>승주 원정대 v2.0 · 모험 월드</title>
+  <title>승주 원정대 v2.1 · 모험 월드</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/app.css?v=200">
+  <link rel="stylesheet" href="css/app.css?v=210">
 </head>
 <body class="rpg-home">
   <div class="rpg-sky">
@@ -19,9 +19,15 @@
     <header class="game-hud">
       <div class="game-logo">
         <span class="logo-compass">🧭</span>
-        <div><small>SJ EXPEDITION</small><h1>승주 원정대</h1><b>ADVENTURE RPG · v2.0</b></div>
+        <div><small>SJ EXPEDITION</small><h1>승주 원정대</h1><b>ADVENTURE RPG · v2.1</b></div>
+      </div>
+      <div class="hud-profile">
+        <div class="hud-mini-avatar"><img id="hudAvatarImg" src="assets/avatars/m1.png?v=210" alt=""></div>
+        <div><small id="hudTeam">SJ 원정대</small><b id="hudName">탐험가</b><span id="hudLevel">Lv.1</span></div>
+        <div class="hud-currency"><span>⭐ <b id="hudStars">0</b></span><span>⚡ <b id="hudXp">0</b></span></div>
       </div>
       <div class="hud-actions">
+        <a class="hud-btn" href="quiz.html" aria-label="버스 원정 퀴즈">🚌<span>버스퀴즈</span></a>
         <a class="hud-btn" href="admin-login.html" aria-label="교사 관리자">⚙️<span>관리자</span></a>
       </div>
     </header>
@@ -31,7 +37,7 @@
         <div class="panel-ribbon">나의 탐험가</div>
         <div id="homeAvatar" class="home-avatar-frame">
           <div class="home-avatar-glow"></div>
-          <img id="homeAvatarImg" src="assets/avatars/m1.png?v=200" alt="승주 원정대 탐험가">
+          <img id="homeAvatarImg" src="assets/avatars/m1.png?v=210" alt="승주 원정대 탐험가">
           <span class="floating-item item-a">🧭</span>
           <span class="floating-item item-b">📷</span>
         </div>
@@ -45,6 +51,7 @@
           <div class="progress"><i id="homeXpBar" style="width:0%"></i></div>
         </div>
         <a class="rpg-primary-btn" href="student.html"><span>⚔️</span><b id="enterText">원정 시작하기</b><em>▶</em></a>
+        <a class="bus-quest-cta" href="quiz.html"><span>🚌</span><div><small>이동시간 특별 퀘스트</small><b>버스 원정 퀴즈</b><em>부산·울릉도·독도 지식 EXP 획득</em></div><strong>PLAY ▶</strong></a>
         <div class="mini-menu">
           <a href="student.html">🎨<span>캐릭터</span></a>
           <a href="student.html#missions">📜<span>미션</span></a>
@@ -52,6 +59,11 @@
         </div>
       </aside>
 
+      <div class="game-side-rail">
+        <a href="quiz.html"><span>🎁</span><b>일일퀘스트</b><i>!</i></a>
+        <a href="student.html"><span>✉️</span><b>공지사항</b></a>
+        <a href="quiz.html"><span>📣</span><b>이벤트</b></a>
+      </div>
       <section class="world-map game-panel">
         <div class="map-title">
           <div><span>WORLD MAP</span><h2>우리의 모험 지도</h2></div>
@@ -122,12 +134,12 @@
       <a href="student.html"><span>⚔️</span><b>미션</b></a>
       <a href="student.html"><span>🏆</span><b>랭킹</b></a>
       <a href="student.html"><span>🎒</span><b>인벤토리</b></a>
-      <a href="student.html"><span>📸</span><b>사진첩</b></a>
+      <a href="quiz.html"><span>🧠</span><b>퀴즈</b></a>
     </nav>
 
     <footer class="rpg-footer">순천 승주중학교 · 역사문화예술 체험학습 · 2026</footer>
   </main>
-  <script src="js/data.js?v=200"></script>
-  <script src="js/home.js?v=200"></script>
+  <script src="js/data.js?v=210"></script>
+  <script src="js/home.js?v=210"></script>
 </body>
 </html>

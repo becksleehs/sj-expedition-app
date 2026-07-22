@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#071a3a">
+  <title>버스 원정 퀴즈 · 승주 원정대</title>
+  <link rel="stylesheet" href="css/app.css?v=210">
+</head>
+<body class="quiz-body">
+  <header class="quiz-topbar">
+    <a href="index.html">← 월드맵</a>
+    <div><small>BUS QUEST</small><b>버스 원정 퀴즈</b></div>
+    <span id="quizTotalXp">⚡ 0 EXP</span>
+  </header>
+
+  <main class="quiz-shell">
+    <section id="quizLobby" class="quiz-lobby">
+      <div class="quiz-hero">
+        <div class="quiz-mascot">🚌<i>✨</i></div>
+        <div>
+          <span class="quest-label">이동 시간 특별 콘텐츠</span>
+          <h1>달리는 버스에서<br>원정 지식을 모아라!</h1>
+          <p>퀴즈를 풀고 경험치, 별, 지역 배지를 획득하세요. 인터넷이 끊겨도 한 번 접속한 뒤에는 계속 즐길 수 있습니다.</p>
+        </div>
+      </div>
+      <div class="quiz-stats">
+        <article><span>⭐</span><div><small>획득 별</small><b id="statStars">0</b></div></article>
+        <article><span>✅</span><div><small>정답 수</small><b id="statCorrect">0</b></div></article>
+        <article><span>🏅</span><div><small>완료 배지</small><b id="statBadges">0 / 3</b></div></article>
+      </div>
+      <h2 class="quiz-section-title">탐험 지역을 선택하세요</h2>
+      <div id="quizCategoryGrid" class="quiz-category-grid"></div>
+      <section class="daily-challenge">
+        <div><span>🎲</span><div><small>오늘의 랜덤 도전</small><b>세 지역에서 무작위 10문제</b><p>연속 정답 보너스가 적용됩니다.</p></div></div>
+        <button id="randomQuizBtn" type="button">도전하기 +200 EXP</button>
+      </section>
+      <section class="quiz-badge-shelf">
+        <h2>나의 지식 배지</h2>
+        <div id="quizBadgeList"></div>
+      </section>
+    </section>
+
+    <section id="quizGame" class="quiz-game hidden">
+      <div class="quiz-progress-head">
+        <button id="quitQuizBtn" type="button">✕</button>
+        <div><span id="quizCategoryName">탐험 퀴즈</span><b id="quizProgressText">1 / 10</b></div>
+        <span id="quizStreak">🔥 0</span>
+      </div>
+      <div class="quiz-progress-bar"><i id="quizProgressBar"></i></div>
+
+      <article class="question-card">
+        <div class="question-scene">
+          <span id="questionIcon">🎢</span>
+          <div class="scene-spark s1">✦</div><div class="scene-spark s2">✧</div>
+        </div>
+        <span id="questionNumber" class="question-number">QUESTION 1</span>
+        <h2 id="questionText"></h2>
+        <div id="answerChoices" class="answer-choices"></div>
+        <div id="answerFeedback" class="answer-feedback hidden" aria-live="polite">
+          <div id="feedbackTitle"></div>
+          <p id="feedbackExplanation"></p>
+          <button id="nextQuestionBtn" type="button">다음 문제 ▶</button>
+        </div>
+      </article>
+    </section>
+
+    <section id="quizResult" class="quiz-result hidden">
+      <div id="resultMedal" class="result-medal">🏆</div>
+      <span>QUEST COMPLETE</span>
+      <h1 id="resultTitle">퀴즈 완료!</h1>
+      <p id="resultMessage"></p>
+      <div class="result-score-ring"><b id="resultScore">0</b><small>/ 10</small></div>
+      <div class="result-rewards">
+        <article><span>⚡</span><small>획득 EXP</small><b id="resultXp">0</b></article>
+        <article><span>⭐</span><small>획득 별</small><b id="resultStars">0</b></article>
+        <article><span>🔥</span><small>최고 연속</small><b id="resultStreak">0</b></article>
+      </div>
+      <div id="newBadgeNotice" class="new-badge hidden"></div>
+      <button id="retryQuizBtn" type="button">다시 도전</button>
+      <a href="index.html">월드맵으로 돌아가기</a>
+    </section>
+  </main>
+
+  <script src="js/data.js?v=210"></script>
+  <script src="js/quiz-data.js?v=210"></script>
+  <script src="js/quiz.js?v=210"></script>
+</body>
+</html>

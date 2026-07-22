@@ -1,7 +1,7 @@
-const CACHE='sj-expedition-v2.0.0';
+const CACHE='sj-expedition-v2.1.0';
 const ASSETS=[
 './','./index.html','./student.html','./admin-login.html','./admin.html',
-'./css/app.css','./js/data.js','./js/home.js','./js/app.js','./js/admin.js',
+'./css/app.css','./js/data.js','./js/home.js','./quiz.html','./js/quiz-data.js','./js/quiz.js','./js/app.js','./js/admin.js',
 './manifest.json','./icons/icon.svg',
 './assets/avatars/m1.png','./assets/avatars/m2.png','./assets/avatars/m3.png',
 './assets/avatars/f1.png','./assets/avatars/f2.png','./assets/avatars/f3.png'
