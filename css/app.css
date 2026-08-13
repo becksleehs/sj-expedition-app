@@ -147,42 +147,27 @@
 @media(max-width:1180px){.game-hud{flex-wrap:wrap;gap:10px}.hud-profile{order:3;width:100%}.game-side-rail{display:none}.world-map{padding-right:16px}}
 @media(max-width:650px){.hud-profile{min-width:0}.hud-currency span{padding:6px;font-size:9px}.quiz-hero{grid-template-columns:1fr;text-align:center}.quiz-mascot{font-size:90px}.quiz-hero h1{font-size:24px}.quiz-category-grid,.quiz-badge-shelf>div{grid-template-columns:1fr}.quiz-stats{grid-template-columns:1fr}.daily-challenge{align-items:stretch;flex-direction:column}.question-card{padding:16px}.question-card h2{font-size:18px}.question-scene{height:135px}.quiz-topbar{grid-template-columns:auto 1fr auto}.quiz-topbar>div b{font-size:15px}}
 
-/* =========================================================
-   v2.3 Character & Equipment System Fix
-   Existing RPG / quiz / mission styles above remain unchanged.
-   ========================================================= */
-.profile-actions{display:flex;gap:7px;align-items:center}.equip-room-link{white-space:nowrap}
-.v23-character{position:relative;width:min(300px,49vw);aspect-ratio:360/520;flex:0 0 auto;isolation:isolate}
-.v23-character img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
-.v23-base-avatar{z-index:2}.gear-layer.behind{z-index:1}.gear-layer.outfit-layer{z-index:3}.gear-layer.scarf-layer{z-index:4}.gear-layer.camera-layer{z-index:5}.gear-layer.compass-layer{z-index:6}.gear-layer.badge-layer{z-index:7}.gear-layer.telescope-layer{z-index:8}.gear-layer.hat-layer{z-index:9}
-.v23-avatar-glow{position:absolute;z-index:0;left:12%;right:12%;top:19%;bottom:7%;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 67%);filter:blur(30px);opacity:.24}
-.hero-avatar-slot{display:flex!important;align-items:center;justify-content:center;min-height:330px;overflow:visible!important}
-.hero-avatar-slot .v23-character{width:min(310px,49vw)}
-.avatar-preview{aspect-ratio:360/520!important;background:radial-gradient(circle at 50% 36%,rgba(255,255,255,.96),rgba(139,176,255,.26) 57%,rgba(20,35,72,.94));}
+/* v2.4 STABLE CUSTOMIZE */
+.profile-actions{display:flex;gap:8px;align-items:center}
+.v24-avatar-stage{position:relative;width:min(315px,50vw);aspect-ratio:342/512;isolation:isolate;flex:0 0 auto}
+.v24-avatar-stage.big{width:min(360px,78vw)}
+.v24-avatar-stage .avatar-halo{position:absolute;inset:15% 7% 5%;border-radius:50%;background:radial-gradient(circle,var(--accent),transparent 67%);filter:blur(30px);opacity:.18}
+.v24-avatar-stage img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.v24-base{z-index:2}.v24-gear{z-index:4}.v24-gear.outfit{z-index:3}.v24-gear.hat{z-index:9}.v24-gear.scarf{z-index:5}.v24-gear.camera{z-index:6}.v24-gear.compass{z-index:7}.v24-gear.badge{z-index:8}.v24-gear.telescope{z-index:10}
+.hero-avatar-slot{display:flex!important;align-items:center;justify-content:center;min-height:350px!important;overflow:visible!important}
+.hero-avatar-slot .v24-avatar-stage{width:min(315px,49vw)}
+.avatar-preview{aspect-ratio:342/512!important;background:radial-gradient(circle at 50% 35%,#fff,rgba(130,180,255,.25) 58%,rgba(18,31,63,.95));overflow:hidden}
 .avatar-preview img{width:100%;height:100%;object-fit:contain!important;transform:none!important}
-.avatar-confirm-dialog{border:0;background:transparent;padding:0;max-width:none;width:100%;height:100%;margin:auto}
-.avatar-confirm-dialog::backdrop{background:rgba(3,9,24,.72);backdrop-filter:blur(8px)}
-.avatar-confirm-box{position:relative;width:min(390px,calc(100vw - 28px));margin:8vh auto 0;padding:23px;text-align:center;border:1px solid rgba(255,255,255,.16);border-radius:26px;background:linear-gradient(150deg,#192c58,#0c1835);box-shadow:0 26px 70px rgba(0,0,0,.48);color:#fff}
-.avatar-confirm-box h2{margin:12px 0 4px}.avatar-confirm-box>p{color:var(--muted);font-size:12px;line-height:1.55}
-.confirm-close{position:absolute;right:12px;top:12px;width:34px;height:34px;border:1px solid rgba(255,255,255,.13);border-radius:50%;background:rgba(255,255,255,.07);color:#fff;font-size:22px}
-.confirm-avatar-preview{width:180px;height:260px;margin:12px auto 8px;border-radius:22px;background:radial-gradient(circle at 50% 35%,#fff,rgba(111,199,239,.26) 58%,rgba(19,39,73,.85));border:1px solid rgba(255,255,255,.14);overflow:hidden}
-.confirm-avatar-preview img{width:100%;height:100%;object-fit:contain}
-.confirm-actions{display:grid;grid-template-columns:1fr 1.45fr;gap:9px;margin-top:15px}.confirm-actions button{border-radius:14px;padding:12px;font-weight:900}
-.confirm-secondary{border:1px solid rgba(255,255,255,.15);background:#263652;color:#d8e2f1}.confirm-primary{border:0;background:linear-gradient(90deg,#41d6e8,#7868ff);color:#071128;box-shadow:0 8px 22px rgba(72,203,255,.23)}
-.equipment-v23-page{max-width:720px;margin:auto}.equipment-preview-card{text-align:center}.equipment-preview-card>div:first-child p{color:var(--muted);font-size:12px}
-.equipment-character-stage{display:flex;justify-content:center;align-items:center;min-height:400px;margin:5px 0;background:radial-gradient(circle at 50% 43%,rgba(88,216,255,.15),transparent 58%)}
-.v23-character.equipment-large{width:min(330px,75vw)}
-.equipment-level-row{display:flex;justify-content:center;gap:12px;align-items:center}.equipment-level-row b{color:var(--gold);font-size:20px}.equipment-level-row span{color:var(--muted);font-size:11px}
-.equipment-v23-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.equipment-v23-item{min-height:118px;border:1px solid rgba(255,255,255,.1);border-radius:17px;padding:11px 6px;background:rgba(255,255,255,.05);color:#fff;text-align:center}.equipment-v23-item .eq-icon{display:block;font-size:30px}.equipment-v23-item b,.equipment-v23-item small,.equipment-v23-item em{display:block}.equipment-v23-item b{font-size:12px;margin:5px 0}.equipment-v23-item small{font-size:9px;color:var(--muted)}.equipment-v23-item em{font-size:9px;color:var(--cyan);font-style:normal;margin-top:8px}.equipment-v23-item.equipped{background:linear-gradient(145deg,rgba(255,211,92,.19),rgba(86,109,255,.13));border-color:rgba(255,211,92,.5);box-shadow:inset 0 0 0 1px rgba(255,211,92,.12)}.equipment-v23-item.equipped em{color:var(--gold)}.equipment-v23-item.locked{opacity:.36;filter:grayscale(1)}
-.equipment-location-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}.equipment-location-grid span{padding:10px;border-radius:12px;background:rgba(255,255,255,.055);font-size:11px}.equipment-help>p{margin-bottom:0;color:var(--muted);font-size:11px;line-height:1.55}
-@media(min-width:821px){
- .hero-avatar-slot{min-width:320px!important;width:320px!important;flex:0 0 320px!important;min-height:400px!important}
- .hero-avatar-slot .v23-character{width:300px!important}
-}
-@media(max-width:520px){
- .profile-actions{flex-direction:column;align-items:stretch}.profile-actions .small-btn{font-size:9px;padding:7px}
- .hero-character-wrap{align-items:center}.hero-avatar-slot{min-height:280px!important}
- .hero-avatar-slot .v23-character{width:48vw}
- .equipment-v23-grid{grid-template-columns:repeat(2,1fr)}
- .equipment-character-stage{min-height:360px}
-}
+.v24-dialog{border:0;padding:0;background:transparent;width:100%;height:100%;max-width:none;max-height:none}
+.v24-dialog::backdrop{background:rgba(3,9,25,.72);backdrop-filter:blur(8px)}
+.v24-dialog-card{position:relative;width:min(410px,calc(100vw - 28px));margin:6vh auto 0;padding:24px;text-align:center;border-radius:28px;background:linear-gradient(150deg,#1b315e,#0c1936);border:1px solid rgba(255,255,255,.17);box-shadow:0 28px 80px rgba(0,0,0,.5);color:white}
+.v24-dialog-card h2{margin:13px 0 4px}.v24-dialog-card p{font-size:12px;line-height:1.55;color:var(--muted)}
+.v24-x{position:absolute;right:13px;top:13px;width:34px;height:34px;border-radius:50%;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.08);color:white;font-size:21px}
+.v24-confirm-preview{width:195px;height:290px;margin:13px auto 8px;border-radius:22px;background:radial-gradient(circle at 50% 35%,#fff,rgba(91,180,230,.25) 57%,rgba(17,35,69,.88));border:1px solid rgba(255,255,255,.15);overflow:hidden}.v24-confirm-preview img{width:100%;height:100%;object-fit:contain}
+.v24-dialog-actions{display:grid;grid-template-columns:1fr 1.35fr;gap:10px;margin-top:16px}.v24-dialog-actions button{padding:13px;border-radius:14px;font-weight:900;border:1px solid rgba(255,255,255,.14);background:#263754;color:white}.v24-dialog-actions .yes{border:0;background:linear-gradient(90deg,#2fd7e8,#7368ff);color:#071128;box-shadow:0 8px 23px rgba(68,200,255,.25)}
+.v24-equip-hero{text-align:center}.v24-equip-stage{display:flex;justify-content:center;align-items:center;min-height:450px;background:radial-gradient(circle at 50% 47%,rgba(83,214,255,.12),transparent 60%)}
+.v24-equip-info{display:flex;justify-content:center;gap:14px;align-items:center}.v24-equip-info b{font-size:21px;color:var(--gold)}.v24-equip-info span{font-size:11px;color:var(--muted)}
+.v24-equip-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}.v24-equip-item{min-height:120px;padding:11px 6px;border-radius:17px;border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.05);color:white}.v24-equip-item span,.v24-equip-item b,.v24-equip-item small,.v24-equip-item em{display:block}.v24-equip-item span{font-size:31px}.v24-equip-item b{font-size:12px;margin:6px 0}.v24-equip-item small{font-size:9px;color:var(--muted)}.v24-equip-item em{font-size:9px;font-style:normal;color:var(--cyan);margin-top:8px}.v24-equip-item.on{background:linear-gradient(145deg,rgba(255,211,92,.19),rgba(94,91,255,.14));border-color:rgba(255,211,92,.52);box-shadow:inset 0 0 0 1px rgba(255,211,92,.1)}.v24-equip-item.on em{color:var(--gold)}.v24-equip-item.locked{opacity:.33;filter:grayscale(1)}
+.v24-note p{color:var(--muted);font-size:11px;line-height:1.6}
+@media(min-width:821px){.hero-avatar-slot{width:325px!important;min-width:325px!important;flex:0 0 325px!important;min-height:430px!important}.hero-avatar-slot .v24-avatar-stage{width:310px!important}}
+@media(max-width:520px){.profile-actions{flex-direction:column;align-items:stretch}.profile-actions .small-btn{font-size:9px;padding:7px}.hero-avatar-slot{min-height:300px!important}.hero-avatar-slot .v24-avatar-stage{width:49vw}.v24-equip-grid{grid-template-columns:repeat(2,1fr)}.v24-equip-stage{min-height:390px}.v24-dialog-card{margin-top:3vh}}

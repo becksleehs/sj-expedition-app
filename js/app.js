@@ -4,98 +4,65 @@ const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch
 const state=store.get('sj_state',{attendance:{},scores:{},teams:{},missions:{},avatars:{},completed:{},notice:'',dress:{}});
 D.missions.forEach(m=>{if(state.missions[m.id]===undefined)state.missions[m.id]=m.open});
 let currentId=localStorage.getItem('sj_current_student');
-let pendingAvatar=null;
 
 const items=[
-{id:'outfit',icon:'🧥',name:'탐험복',level:1,src:'assets/equipment-v23/outfit.svg'},
-{id:'hat',icon:'🧢',name:'탐험 모자',level:2,src:'assets/equipment-v23/hat.svg'},
-{id:'scarf',icon:'🧣',name:'컬러 스카프',level:3,src:'assets/equipment-v23/scarf.svg'},
-{id:'camera',icon:'📷',name:'카메라',level:4,src:'assets/equipment-v23/camera.svg'},
-{id:'compass',icon:'🧭',name:'나침반',level:5,src:'assets/equipment-v23/compass.svg'},
-{id:'badge',icon:'🇰🇷',name:'태극기 배지',level:6,src:'assets/equipment-v23/badge.svg'},
-{id:'telescope',icon:'🔭',name:'황금 망원경',level:8,src:'assets/equipment-v23/telescope.svg'}
+{id:'outfit',icon:'🧥',name:'탐험복',level:1},
+{id:'hat',icon:'🧢',name:'탐험 모자',level:2},
+{id:'scarf',icon:'🧣',name:'파란 스카프',level:3},
+{id:'camera',icon:'📷',name:'카메라',level:4},
+{id:'compass',icon:'🧭',name:'나침반',level:5},
+{id:'badge',icon:'🇰🇷',name:'태극기 배지',level:6},
+{id:'telescope',icon:'🔭',name:'황금 망원경',level:8}
 ];
 
-function layerHTML(src,cls=''){
- return `<img class="gear-layer ${cls}" src="${src}?v=230" alt="">`;
-}
 function characterHTML(a,id){
  const selected=state.dress[id]||[];
- const equipped=items.filter(i=>selected.includes(i.id));
- return `<div class="v23-character" style="--accent:${a.accent}">
-   <div class="v23-avatar-glow"></div>
-   ${selected.includes('outfit')?layerHTML('assets/equipment-v23/backpack.svg','behind'):''}
-   <img class="v23-base-avatar" src="${a.image}?v=230" alt="${a.name}">
-   ${equipped.filter(i=>i.id==='outfit').map(i=>layerHTML(i.src,'outfit-layer')).join('')}
-   ${equipped.filter(i=>i.id==='scarf').map(i=>layerHTML(i.src,'scarf-layer')).join('')}
-   ${equipped.filter(i=>i.id==='camera').map(i=>layerHTML(i.src,'camera-layer')).join('')}
-   ${equipped.filter(i=>i.id==='compass').map(i=>layerHTML(i.src,'compass-layer')).join('')}
-   ${equipped.filter(i=>i.id==='badge').map(i=>layerHTML(i.src,'badge-layer')).join('')}
-   ${equipped.filter(i=>i.id==='telescope').map(i=>layerHTML(i.src,'telescope-layer')).join('')}
-   ${equipped.filter(i=>i.id==='hat').map(i=>layerHTML(i.src,'hat-layer')).join('')}
+ const layers=[
+   ['outfit','outfit.svg'],['scarf','scarf.svg'],['camera','camera.svg'],
+   ['compass','compass.svg'],['badge','badge.svg'],['telescope','telescope.svg'],['hat','hat.svg']
+ ].filter(([key])=>selected.includes(key))
+  .map(([key,file])=>`<img class="v24-gear ${key}" src="assets/custom-v24/${file}?v=240" alt="">`).join('');
+ return `<div class="v24-avatar-stage" style="--accent:${a.accent}">
+   <div class="avatar-halo"></div>
+   <img class="v24-base" src="${a.image}?v=240" alt="${a.name}">
+   ${layers}
  </div>`;
 }
-function show(view){
- ['#loginView','#avatarView','#dashboardView'].forEach(x=>$(x).classList.add('hidden'));
- $(view).classList.remove('hidden');
- $('#bottomNav').classList.toggle('hidden',view!=='#dashboardView');
-}
+function show(view){['#loginView','#avatarView','#dashboardView'].forEach(x=>$(x).classList.add('hidden'));$(view).classList.remove('hidden');$('#bottomNav').classList.toggle('hidden',view!=='#dashboardView')}
 function initLogin(){
- $('#studentGrid').innerHTML=D.students.map(s=>`<button class="student-card" data-id="${s.id}">
- <span>${s.grade}학년</span><b>${s.name}</b><small>${s.gender==='M'?'남학생':'여학생'}</small></button>`).join('');
- document.querySelectorAll('.student-card').forEach(b=>b.onclick=()=>{
-   currentId=b.dataset.id;
-   localStorage.setItem('sj_current_student',currentId);
-   state.avatars[currentId]?renderDashboard():renderAvatars();
- });
+ $('#studentGrid').innerHTML=D.students.map(s=>`<button class="student-card" data-id="${s.id}"><span>${s.grade}학년</span><b>${s.name}</b><small>${s.gender==='M'?'남학생':'여학생'}</small></button>`).join('');
+ document.querySelectorAll('.student-card').forEach(b=>b.onclick=()=>{currentId=b.dataset.id;localStorage.setItem('sj_current_student',currentId);state.avatars[currentId]?renderDashboard():renderAvatars()});
 }
 function renderAvatars(){
- const s=D.students.find(x=>x.id===currentId);
- if(!s)return show('#loginView');
+ const s=D.students.find(x=>x.id===currentId); if(!s)return show('#loginView');
  show('#avatarView');
- const list=D.avatars.filter(a=>a.gender===s.gender);
- $('#avatarGrid').innerHTML=list.map(a=>`<button class="avatar-card v23-avatar-choice" data-id="${a.id}">
- <div class="avatar-preview"><img src="${a.image}?v=230" alt="${a.name}"></div>
- <b>${a.name}</b><span>선택하기</span></button>`).join('');
- document.querySelectorAll('.v23-avatar-choice').forEach(b=>b.onclick=()=>openAvatarConfirm(b.dataset.id));
+ $('#avatarGrid').innerHTML=D.avatars.filter(a=>a.gender===s.gender).map(a=>`<button class="avatar-card" data-id="${a.id}">
+ <div class="avatar-preview"><img src="${a.image}?v=240" alt="${a.name}"></div><b>${a.name}</b><span>선택하기</span></button>`).join('');
+ document.querySelectorAll('.avatar-card').forEach(b=>b.onclick=()=>openAvatarConfirm(b.dataset.id));
 }
-function openAvatarConfirm(avatarId){
- const a=D.avatars.find(x=>x.id===avatarId);
- if(!a)return;
- pendingAvatar=avatarId;
- $('#confirmAvatarImage').src=`${a.image}?v=230`;
- $('#confirmAvatarName').textContent=a.name;
- const dialog=$('#avatarConfirmDialog');
- if(typeof dialog.showModal==='function') dialog.showModal();
- else dialog.setAttribute('open','');
-}
-function closeAvatarConfirm(){
- pendingAvatar=null;
- const dialog=$('#avatarConfirmDialog');
- if(typeof dialog.close==='function')dialog.close(); else dialog.removeAttribute('open');
-}
-function confirmAvatar(){
- if(!pendingAvatar||!currentId)return;
- state.avatars[currentId]=pendingAvatar;
- if(!state.dress[currentId])state.dress[currentId]=[];
- store.set('sj_state',state);
- pendingAvatar=null;
- const dialog=$('#avatarConfirmDialog');
- if(dialog.open && typeof dialog.close==='function')dialog.close(); else dialog.removeAttribute('open');
- renderDashboard();
-}
-function getXp(id){
- const score=Number(state.scores[id]||0),done=state.completed[id]||[];
- return score+D.missions.filter(m=>done.includes(m.id)).reduce((n,m)=>n+m.xp,0);
-}
+function getXp(id){const score=Number(state.scores[id]||0),done=state.completed[id]||[];return score+D.missions.filter(m=>done.includes(m.id)).reduce((n,m)=>n+m.xp,0)}
 function renderDashboard(){
  const s=D.students.find(x=>x.id===currentId);if(!s)return show('#loginView');
  const a=D.avatars.find(x=>x.id===state.avatars[currentId])||D.avatars.find(x=>x.gender===s.gender);
- show('#dashboardView');
- $('#studentName').textContent=s.name;
- const team=state.teams[currentId]||'미배정';
- $('#teamChip').textContent=team;$('#teamName').textContent=team;
+ show('#dashboardView');$('#studentName').textContent=s.name;
+ const team=state.teams[currentId]||'미배정';$('#teamChip').textContent=team;$('#teamName').textContent=team;
  $('#heroCharacter').innerHTML=characterHTML(a,currentId);
+ const slot=$('#heroCharacter');
+ if(slot){slot.style.display='flex';slot.style.visibility='visible';slot.style.opacity='1';}
+ const heroImg=$('#heroCharacter img');
+ if(heroImg){
+   heroImg.style.display='block';
+   heroImg.style.visibility='visible';
+   heroImg.style.opacity='1';
+   heroImg.style.width='100%';
+   heroImg.style.height='auto';
+   heroImg.onerror=()=>{
+     const fallback=D.avatars.find(x=>x.gender===s.gender);
+     if(fallback && heroImg.src.indexOf(fallback.image)===-1){
+       heroImg.src=fallback.image;
+     }
+   };
+ }
  const xp=getXp(currentId),level=Math.floor(xp/100)+1,within=xp%100;
  $('#levelText').textContent=`Lv.${level}`;$('#xpText').textContent=`${within} / 100 EXP`;$('#xpBar').style.width=within+'%';
  $('#personalScore').textContent=state.scores[currentId]||0;
@@ -105,21 +72,13 @@ function renderDashboard(){
 }
 function renderDress(level){
  const selected=state.dress[currentId]||[];
- $('#equipmentRow').innerHTML=items.map(i=>`<button class="dress-btn ${selected.includes(i.id)?'on':''} ${level<i.level?'locked':''}" data-item="${i.id}" ${level<i.level?'disabled':''}>
- <span>${i.icon}</span><small>${level<i.level?`Lv.${i.level}`:i.name}</small></button>`).join('');
- document.querySelectorAll('.dress-btn:not(.locked)').forEach(b=>b.onclick=()=>{
-   const arr=state.dress[currentId]||[],id=b.dataset.item;
-   state.dress[currentId]=arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];
-   store.set('sj_state',state);renderDashboard();
- });
+ $('#equipmentRow').innerHTML=items.map(i=>`<button class="dress-btn ${selected.includes(i.id)?'on':''} ${level<i.level?'locked':''}" data-item="${i.id}" ${level<i.level?'disabled':''}><span>${i.icon}</span><small>${level<i.level?`Lv.${i.level}`:i.name}</small></button>`).join('');
+ document.querySelectorAll('.dress-btn:not(.locked)').forEach(b=>b.onclick=()=>{const arr=state.dress[currentId]||[],id=b.dataset.item;state.dress[currentId]=arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];store.set('sj_state',state);renderDashboard()});
 }
 function renderMissions(){
  const open=D.missions.filter(m=>state.missions[m.id]),done=state.completed[currentId]||[];
- $('#missionList').innerHTML=open.map(m=>`<article class="mission-card ${done.includes(m.id)?'done':''}">
- <div class="mission-icon">${done.includes(m.id)?'✓':m.icon}</div><div><span class="mission-type">${m.type}</span><h4>${m.title}</h4><p>${m.desc}</p></div>
- <b>+${m.xp}<small> EXP</small></b></article>`).join('')||'<p class="empty">아직 공개된 미션이 없습니다.</p>';
- const count=open.filter(m=>done.includes(m.id)).length,pct=open.length?Math.round(count/open.length*100):0;
- $('#missionCount').textContent=`${count} / ${open.length} 완료`;$('#missionPercent').textContent=pct+'%';
+ $('#missionList').innerHTML=open.map(m=>`<article class="mission-card ${done.includes(m.id)?'done':''}"><div class="mission-icon">${done.includes(m.id)?'✓':m.icon}</div><div><span class="mission-type">${m.type}</span><h4>${m.title}</h4><p>${m.desc}</p></div><b>+${m.xp}<small> EXP</small></b></article>`).join('')||'<p class="empty">아직 공개된 미션이 없습니다.</p>';
+ const count=open.filter(m=>done.includes(m.id)).length,pct=open.length?Math.round(count/open.length*100):0;$('#missionCount').textContent=`${count} / ${open.length} 완료`;$('#missionPercent').textContent=pct+'%';
 }
 function renderBadges(level){
  const defs=[['🧭','원정대 입단',1],['🎢','탑승왕',2],['📸','포토그래퍼',3],['🤝','협동왕',4],['🏝️','울릉도 탐험가',6],['🇰🇷','독도 수호대',8]];
@@ -127,8 +86,33 @@ function renderBadges(level){
 }
 $('#resetBtn').onclick=()=>{localStorage.removeItem('sj_current_student');currentId=null;show('#loginView')};
 $('#changeAvatarBtn').onclick=renderAvatars;
-$('#confirmAvatarYes').onclick=confirmAvatar;
-$('#confirmAvatarNo').onclick=closeAvatarConfirm;$('#confirmAvatarCancel').onclick=closeAvatarConfirm;
-$('#avatarConfirmDialog').addEventListener('cancel',e=>{e.preventDefault();closeAvatarConfirm()});
-initLogin();
-currentId?(state.avatars[currentId]?renderDashboard():renderAvatars()):show('#loginView');
+
+let pendingAvatarId=null;
+function openAvatarConfirm(id){
+ const a=D.avatars.find(x=>x.id===id); if(!a)return;
+ pendingAvatarId=id;
+ $('#avatarConfirmImg').src=`${a.image}?v=240`;
+ $('#avatarConfirmName').textContent=a.name;
+ const dlg=$('#avatarConfirm');
+ if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open');
+}
+function closeAvatarConfirm(){
+ const dlg=$('#avatarConfirm');
+ if(dlg.open && dlg.close) dlg.close(); else dlg.removeAttribute('open');
+ pendingAvatarId=null;
+}
+function acceptAvatar(){
+ if(!pendingAvatarId||!currentId)return;
+ state.avatars[currentId]=pendingAvatarId;
+ store.set('sj_state',state);
+ const dlg=$('#avatarConfirm');
+ if(dlg.open && dlg.close) dlg.close(); else dlg.removeAttribute('open');
+ pendingAvatarId=null;
+ renderDashboard();
+}
+$('#avatarYes').addEventListener('click',acceptAvatar);
+$('#avatarNo').addEventListener('click',closeAvatarConfirm);
+$('#avatarNoX').addEventListener('click',closeAvatarConfirm);
+$('#avatarConfirm').addEventListener('cancel',e=>{e.preventDefault();closeAvatarConfirm();});
+
+initLogin();currentId?(state.avatars[currentId]?renderDashboard():renderAvatars()):show('#loginView');

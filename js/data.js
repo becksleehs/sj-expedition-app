@@ -15,12 +15,12 @@ window.SJ_DATA = {
     {id:'s13',grade:3,gender:'F',name:'오예린'}
   ],
   avatars: [
-    {id:'m1',gender:'M',name:'빨간 고글 탐험가',image:'assets/characters-v23/m1.svg',accent:'#ff6b5f'},
-    {id:'m2',gender:'M',name:'사파리 탐험가',image:'assets/characters-v23/m2.svg',accent:'#e9b95d'},
-    {id:'m3',gender:'M',name:'번개 모자 탐험가',image:'assets/characters-v23/m3.svg',accent:'#4a8dff'},
-    {id:'f1',gender:'F',name:'깃털 모자 탐험가',image:'assets/characters-v23/f1.svg',accent:'#d69a55'},
-    {id:'f2',gender:'F',name:'핑크 카메라 탐험가',image:'assets/characters-v23/f2.svg',accent:'#ff7fb2'},
-    {id:'f3',gender:'F',name:'초록 카메라 탐험가',image:'assets/characters-v23/f3.svg',accent:'#61bd70'}
+    {id:'m1',gender:'M',name:'빨간 고글 탐험가',image:'assets/avatars/m1.png',accent:'#ff6b5f'},
+    {id:'m2',gender:'M',name:'사파리 탐험가',image:'assets/avatars/m2.png',accent:'#e9b95d'},
+    {id:'m3',gender:'M',name:'번개 모자 탐험가',image:'assets/avatars/m3.png',accent:'#4a8dff'},
+    {id:'f1',gender:'F',name:'깃털 모자 탐험가',image:'assets/avatars/f1.png',accent:'#d69a55'},
+    {id:'f2',gender:'F',name:'핑크 카메라 탐험가',image:'assets/avatars/f2.png',accent:'#ff7fb2'},
+    {id:'f3',gender:'F',name:'초록 카메라 탐험가',image:'assets/avatars/f3.png',accent:'#61bd70'}
   ],
   missions: [
     {id:'lot01',type:'필수',icon:'🎢',title:'놀이기구 2개 이상 탑승',desc:'조원이 함께 즐긴 놀이기구를 기록해요.',xp:120,open:true},
