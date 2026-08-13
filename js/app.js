@@ -6,27 +6,15 @@ D.missions.forEach(m=>{if(state.missions[m.id]===undefined)state.missions[m.id]=
 let currentId=localStorage.getItem('sj_current_student');
 
 const items=[
-{id:'outfit',icon:'🧥',name:'탐험복',level:1},
-{id:'hat',icon:'🧢',name:'탐험 모자',level:2},
-{id:'scarf',icon:'🧣',name:'파란 스카프',level:3},
-{id:'camera',icon:'📷',name:'카메라',level:4},
-{id:'compass',icon:'🧭',name:'나침반',level:5},
-{id:'badge',icon:'🇰🇷',name:'태극기 배지',level:6},
-{id:'telescope',icon:'🔭',name:'황금 망원경',level:8}
+{id:'hat',icon:'🧢',name:'탐험 모자',level:1},{id:'scarf',icon:'🧣',name:'컬러 스카프',level:2},
+{id:'camera',icon:'📷',name:'카메라',level:3},{id:'compass',icon:'🧭',name:'나침반',level:4},
+{id:'flag',icon:'🇰🇷',name:'태극기 배지',level:6},{id:'scope',icon:'🔭',name:'황금 망원경',level:8}
 ];
 
 function characterHTML(a,id){
  const selected=state.dress[id]||[];
- const layers=[
-   ['outfit','outfit.svg'],['scarf','scarf.svg'],['camera','camera.svg'],
-   ['compass','compass.svg'],['badge','badge.svg'],['telescope','telescope.svg'],['hat','hat.svg']
- ].filter(([key])=>selected.includes(key))
-  .map(([key,file])=>`<img class="v24-gear ${key}" src="assets/custom-v24/${file}?v=240" alt="">`).join('');
- return `<div class="v24-avatar-stage" style="--accent:${a.accent}">
-   <div class="avatar-halo"></div>
-   <img class="v24-base" src="${a.image}?v=240" alt="${a.name}">
-   ${layers}
- </div>`;
+ const deco=items.filter(i=>selected.includes(i.id)).map((i,n)=>`<span class="dress-item d${n%4}">${i.icon}</span>`).join('');
+ return `<div class="cute-avatar" style="--accent:${a.accent}"><div class="avatar-halo"></div><img src="${a.image}?v=200" alt="${a.name}"><div class="dress-layer">${deco}</div></div>`;
 }
 function show(view){['#loginView','#avatarView','#dashboardView'].forEach(x=>$(x).classList.add('hidden'));$(view).classList.remove('hidden');$('#bottomNav').classList.toggle('hidden',view!=='#dashboardView')}
 function initLogin(){
@@ -34,11 +22,9 @@ function initLogin(){
  document.querySelectorAll('.student-card').forEach(b=>b.onclick=()=>{currentId=b.dataset.id;localStorage.setItem('sj_current_student',currentId);state.avatars[currentId]?renderDashboard():renderAvatars()});
 }
 function renderAvatars(){
- const s=D.students.find(x=>x.id===currentId); if(!s)return show('#loginView');
- show('#avatarView');
- $('#avatarGrid').innerHTML=D.avatars.filter(a=>a.gender===s.gender).map(a=>`<button class="avatar-card" data-id="${a.id}">
- <div class="avatar-preview"><img src="${a.image}?v=240" alt="${a.name}"></div><b>${a.name}</b><span>선택하기</span></button>`).join('');
- document.querySelectorAll('.avatar-card').forEach(b=>b.onclick=()=>openAvatarConfirm(b.dataset.id));
+ const s=D.students.find(x=>x.id===currentId);show('#avatarView');
+ $('#avatarGrid').innerHTML=D.avatars.filter(a=>a.gender===s.gender).map(a=>`<button class="avatar-card" data-id="${a.id}"><div class="avatar-preview"><img src="${a.image}?v=200" alt="${a.name}"></div><b>${a.name}</b><span>이 캐릭터 선택</span></button>`).join('');
+ document.querySelectorAll('.avatar-card').forEach(b=>b.onclick=()=>{state.avatars[currentId]=b.dataset.id;store.set('sj_state',state);renderDashboard()});
 }
 function getXp(id){const score=Number(state.scores[id]||0),done=state.completed[id]||[];return score+D.missions.filter(m=>done.includes(m.id)).reduce((n,m)=>n+m.xp,0)}
 function renderDashboard(){
@@ -86,33 +72,4 @@ function renderBadges(level){
 }
 $('#resetBtn').onclick=()=>{localStorage.removeItem('sj_current_student');currentId=null;show('#loginView')};
 $('#changeAvatarBtn').onclick=renderAvatars;
-
-let pendingAvatarId=null;
-function openAvatarConfirm(id){
- const a=D.avatars.find(x=>x.id===id); if(!a)return;
- pendingAvatarId=id;
- $('#avatarConfirmImg').src=`${a.image}?v=240`;
- $('#avatarConfirmName').textContent=a.name;
- const dlg=$('#avatarConfirm');
- if(dlg.showModal) dlg.showModal(); else dlg.setAttribute('open','open');
-}
-function closeAvatarConfirm(){
- const dlg=$('#avatarConfirm');
- if(dlg.open && dlg.close) dlg.close(); else dlg.removeAttribute('open');
- pendingAvatarId=null;
-}
-function acceptAvatar(){
- if(!pendingAvatarId||!currentId)return;
- state.avatars[currentId]=pendingAvatarId;
- store.set('sj_state',state);
- const dlg=$('#avatarConfirm');
- if(dlg.open && dlg.close) dlg.close(); else dlg.removeAttribute('open');
- pendingAvatarId=null;
- renderDashboard();
-}
-$('#avatarYes').addEventListener('click',acceptAvatar);
-$('#avatarNo').addEventListener('click',closeAvatarConfirm);
-$('#avatarNoX').addEventListener('click',closeAvatarConfirm);
-$('#avatarConfirm').addEventListener('cancel',e=>{e.preventDefault();closeAvatarConfirm();});
-
 initLogin();currentId?(state.avatars[currentId]?renderDashboard():renderAvatars()):show('#loginView');

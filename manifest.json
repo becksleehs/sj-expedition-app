@@ -1,11 +1,11 @@
 {
-  "name": "승주 원정대 v2.1 RPG 퀴즈",
+  "name": "승주 원정대 v3.0",
   "short_name": "승주원정대",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
-  "background_color": "#071128",
-  "theme_color": "#081b3a",
+  "background_color": "#07182f",
+  "theme_color": "#0759a9",
   "icons": [
     {
       "src": "icons/icon.svg",

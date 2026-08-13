@@ -1,109 +1,53 @@
-<!doctype html>
-<html lang="ko">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#101936">
-  <title>학생 탐험본부 · 승주 원정대</title>
-  <link rel="manifest" href="manifest.json">
-  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
-  <link rel="stylesheet" href="css/app.css?v=240">
-</head>
-<body>
-  <div class="app-shell">
-    <header class="topbar">
-      <a class="icon-btn" href="index.html" aria-label="홈">⌂</a>
-      <div><b>승주 원정대</b><small>학생 탐험본부</small></div>
-      <button class="icon-btn" id="resetBtn" aria-label="학생 다시 선택">↻</button>
-    </header>
+<!doctype html><html lang="ko"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0759a9"><title>학생 탐험본부 · 승주 원정대</title>
+<link rel="stylesheet" href="css/v3.css?v=300"></head><body><div class="v3-app">
+<header class="v3-top"><a class="v3-brand" href="index.html"><span class="compass">🧭</span><div><small>SJ EXPEDITION</small><b>학생 탐험본부</b></div></a><div class="v3-top-actions"><button id="resetStudent">↻ 다시 선택</button></div></header>
+<main class="v3-shell">
+<section id="studentStep" class="v3-panel v3-card">
+ <div class="v3-panel-head"><h2>STEP 1 · 내 이름 선택</h2><span>13명</span></div>
+ <div style="padding:14px"><div id="studentGrid" class="v3-students"></div></div>
+</section>
+<section id="avatarStep" class="v3-panel v3-card hidden">
+ <div class="v3-panel-head"><h2>STEP 2 · 캐릭터 선택</h2><span>꾸미기는 나중에도 가능</span></div>
+ <div style="padding:14px"><div id="avatarGrid" class="v3-avatar-grid"></div></div>
+</section>
+<section id="dashStep" class="hidden">
+ <section class="v3-dashboard">
+  <aside class="v3-panel v3-profile">
+   <div class="v3-profile-top"><div><small id="studentTeam">미배정</small><h2 id="studentName">탐험가</h2></div><span id="studentLevel">Lv.1</span></div>
+   <div id="studentAvatar"></div>
+   <div>
+    <div class="v3-level"><b id="studentXp">0 EXP</b><div class="v3-progress"><i id="studentXpBar"></i></div></div>
+    <a class="v3-big-btn" href="equipment.html">🎒 캐릭터 꾸미기</a>
+    <div class="v3-sub-buttons"><button id="changeAvatar">👤 캐릭터 변경</button><a href="quiz.html">🚌 버스 퀴즈</a></div>
+   </div>
+  </aside>
+  <section class="v3-panel">
+   <div class="v3-panel-head"><h2>🎢 부산 롯데월드 탐험</h2><span>12:00 ~ 17:00</span></div>
+   <div id="studentMissions" class="v3-mission-list"></div>
+  </section>
+ </section>
+</section>
+</main>
+<nav id="studentNav" class="v3-bottom hidden"><a href="index.html"><span>🗺️</span>메인</a><a class="active" href="student.html"><span>🎯</span>미션</a><a href="quiz.html"><span>🚌</span>퀴즈</a><a href="equipment.html"><span>🎒</span>꾸미기</a><a href="index.html"><span>🏠</span>홈</a></nav>
 
-    <main id="loginView" class="content">
-      <section class="panel intro-panel">
-        <span class="eyebrow">STEP 1</span>
-        <h2>내 이름을 선택하세요</h2>
-        <p>선택한 정보는 이 기기에 저장됩니다.</p>
-        <div id="studentGrid" class="student-grid"></div>
-      </section>
-    </main>
-
-    <main id="avatarView" class="content hidden">
-      <section class="panel">
-        <span class="eyebrow">STEP 2</span>
-        <h2>탐험가를 선택하세요</h2>
-        <p>캐릭터는 나중에 다시 바꿀 수 있습니다.</p>
-        <div id="avatarGrid" class="avatar-grid"></div>
-      </section>
-    </main>
-
-    <main id="dashboardView" class="content hidden">
-      <section class="profile-card">
-        <div class="profile-top">
-          <div>
-            <span class="chip" id="teamChip">미배정</span>
-            <h2><span id="studentName"></span> 탐험가</h2>
-            <p>오늘도 멋진 추억을 획득하세요!</p>
-          </div>
-          <div class="profile-actions"><button class="small-btn" id="changeAvatarBtn">캐릭터 변경</button><a class="small-btn" href="equipment.html">🎒 꾸미기</a></div>
-        </div>
-
-        <div class="hero-character-wrap">
-          <div id="heroCharacter" class="hero-avatar-slot"></div>
-          <div class="level-panel">
-            <div class="level-row"><b id="levelText">Lv.1</b><span id="xpText">0 / 100 EXP</span></div>
-            <div class="progress"><i id="xpBar"></i></div>
-            <div class="equipment-row" id="equipmentRow"></div>
-          </div>
-        </div>
-      </section>
-
-      <section class="day-banner">
-        <div><span>DAY 1 · 12:00–17:00</span><h3>🎢 부산 롯데월드 탐험</h3></div>
-        <div class="day-progress"><strong id="missionPercent">0%</strong><small>달성률</small></div>
-      </section>
-
-      <section>
-        <div class="section-head"><h3>오늘의 미션</h3><span id="missionCount">0 / 0 완료</span></div>
-        <div id="missionList" class="mission-list"></div>
-      </section>
-
-      <section>
-        <div class="section-head"><h3>획득 배지</h3><span>COLLECTION</span></div>
-        <div id="badgeList" class="badge-list"></div>
-      </section>
-
-      <section>
-        <div class="section-head"><h3>현재 랭킹</h3><span>LIVE</span></div>
-        <div class="rank-card">
-          <div><small>개인 점수</small><strong id="personalScore">0</strong><span>점</span></div>
-          <div><small>소속 조</small><strong id="teamName">-</strong><span id="teamScore">0점</span></div>
-        </div>
-      </section>
-    </main>
-
-    <nav class="bottom-nav hidden" id="bottomNav">
-      <button class="active">🏠<span>탐험</span></button>
-      <button onclick="document.querySelector('.mission-list').scrollIntoView({behavior:'smooth'})">🎯<span>미션</span></button>
-      <button onclick="document.querySelector('.badge-list').scrollIntoView({behavior:'smooth'})">🎖️<span>배지</span></button>
-      <button onclick="alert('사진첩 기능은 다음 업데이트에서 온라인 저장소와 연결됩니다.')">📸<span>사진</span></button>
-    </nav>
-  
-<dialog id="avatarConfirm" class="v24-dialog">
-  <div class="v24-dialog-card">
-    <button id="avatarNoX" class="v24-x" type="button">×</button>
-    <span class="eyebrow">CHARACTER SELECT</span>
-    <h2>이 캐릭터로 선택할까요?</h2>
-    <div class="v24-confirm-preview"><img id="avatarConfirmImg" alt=""></div>
-    <strong id="avatarConfirmName"></strong>
-    <p>예를 누르면 캐릭터를 저장하고 학생 메인화면으로 이동합니다.</p>
-    <div class="v24-dialog-actions">
-      <button id="avatarNo" type="button">아니오</button>
-      <button id="avatarYes" class="yes" type="button">✓ 예</button>
-    </div>
-  </div>
+<dialog id="avatarConfirm" class="v3-dialog">
+ <div class="v3-dialog-box"><button id="confirmX" class="v3-close" type="button">×</button><div class="v3-dialog-title">캐릭터 선택 확인</div>
+ <div class="v3-confirm-body"><div class="v3-confirm-img"><img id="confirmImg" alt=""></div><div class="v3-confirm-copy"><h2>이 캐릭터로<br>선택할까요?</h2><strong id="confirmName"></strong><p>‘예’를 누르면 캐릭터가 저장되고 학생 메인화면으로 이동합니다.</p></div></div>
+ <div class="v3-dialog-actions"><button id="confirmNo" class="no" type="button">아니오</button><button id="confirmYes" class="yes" type="button">✓ 예</button></div>
+ </div>
 </dialog>
-
 </div>
-  <script src="js/data.js?v=240"></script>
-  <script src="js/app.js?v=240"></script>
-</body>
-</html>
+<script src="js/data.js?v=300"></script><script src="js/v3-core.js?v=300"></script><script>
+let currentId=localStorage.getItem('sj_current_student'), pendingAvatar=null;
+function view(n){['studentStep','avatarStep','dashStep'].forEach(x=>$('#'+x).classList.add('hidden'));$('#'+n).classList.remove('hidden');$('#studentNav').classList.toggle('hidden',n!=='dashStep')}
+function showStudents(){view('studentStep');$('#studentGrid').innerHTML=D.students.map(s=>`<button data-id="${s.id}"><small>${s.grade}학년 · ${s.gender==='M'?'남학생':'여학생'}</small><b>${s.name}</b></button>`).join('');document.querySelectorAll('#studentGrid button').forEach(b=>b.onclick=()=>{currentId=b.dataset.id;localStorage.setItem('sj_current_student',currentId);state.avatars[currentId]?showDash():showAvatars()})}
+function showAvatars(){const s=studentById(currentId);if(!s)return showStudents();view('avatarStep');const arr=D.avatars.filter(a=>a.gender===s.gender);$('#avatarGrid').innerHTML=arr.map(a=>`<button class="v3-avatar-choice" data-id="${a.id}"><div class="v3-avatar-thumb"><img src="${a.image}?v=300" alt="${a.name}"></div><b>${a.name}</b><small>선택하기</small></button>`).join('');document.querySelectorAll('.v3-avatar-choice').forEach(b=>b.onclick=()=>openConfirm(b.dataset.id))}
+function openConfirm(aid){const a=D.avatars.find(x=>x.id===aid);if(!a)return;pendingAvatar=aid;$('#confirmImg').src=a.image+'?v=300';$('#confirmName').textContent=a.name;const d=$('#avatarConfirm');if(d.showModal)d.showModal();else d.setAttribute('open','')}
+function closeConfirm(){const d=$('#avatarConfirm');if(d.open&&d.close)d.close();else d.removeAttribute('open');pendingAvatar=null}
+function acceptConfirm(){if(!currentId||!pendingAvatar)return;state.avatars[currentId]=pendingAvatar;if(!state.dress[currentId])state.dress[currentId]=[];persist();const d=$('#avatarConfirm');if(d.open&&d.close)d.close();pendingAvatar=null;showDash()}
+function showDash(){const s=studentById(currentId);if(!s)return showStudents();view('dashStep');const xp=totalXp(currentId),lv=Math.floor(xp/100)+1;$('#studentTeam').textContent=state.teams[currentId]||s.grade+'학년 원정대';$('#studentName').textContent=s.name+' 탐험가';$('#studentLevel').textContent='Lv.'+lv;$('#studentXp').textContent=xp+' EXP';$('#studentXpBar').style.width=(xp%100)+'%';$('#studentAvatar').innerHTML=avatarStage(currentId);const open=D.missions.filter(m=>state.missions[m.id]);$('#studentMissions').innerHTML=open.map(m=>`<div class="v3-mission"><span class="icon">${m.icon}</span><div><b>${m.title}</b><small>${m.desc}</small></div><strong>+${m.xp} EXP</strong></div>`).join('')}
+$('#confirmYes').onclick=acceptConfirm;$('#confirmNo').onclick=closeConfirm;$('#confirmX').onclick=closeConfirm;$('#avatarConfirm').addEventListener('cancel',e=>{e.preventDefault();closeConfirm()});$('#changeAvatar').onclick=showAvatars;$('#resetStudent').onclick=()=>{localStorage.removeItem('sj_current_student');currentId=null;showStudents()};
+currentId&&studentById(currentId)?(state.avatars[currentId]?showDash():showAvatars()):showStudents();
+</script></body></html>

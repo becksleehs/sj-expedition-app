@@ -1,16 +1,5 @@
-const CACHE='sj-expedition-v2.4-stable-customize';
-const ASSETS=['./equipment.html','./assets/custom-v24/outfit.svg','./assets/custom-v24/hat.svg','./assets/custom-v24/scarf.svg','./assets/custom-v24/camera.svg','./assets/custom-v24/compass.svg','./assets/custom-v24/badge.svg','./assets/custom-v24/telescope.svg',
-'./','./index.html','./student.html','./admin-login.html','./admin.html',
-'./css/app.css','./js/data.js','./js/home.js','./quiz.html','./js/quiz-data.js','./js/quiz.js','./js/app.js','./js/admin.js',
-'./manifest.json','./icons/icon.svg',
-'./assets/avatars/m1.png','./assets/avatars/m2.png','./assets/avatars/m3.png',
-'./assets/avatars/f1.png','./assets/avatars/f2.png','./assets/avatars/f3.png'
-];
-self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
-self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
-self.addEventListener('fetch',e=>{
-  if(e.request.method!=='GET')return;
-  e.respondWith(fetch(e.request).then(res=>{
-    const copy=res.clone();caches.open(CACHE).then(c=>c.put(e.request,copy));return res;
-  }).catch(()=>caches.match(e.request).then(r=>r||caches.match('./index.html'))));
-});
+const CACHE='sj-expedition-v3.0';
+const CORE=['./','./index.html','./student.html','./equipment.html','./quiz.html','./css/v3.css','./js/data.js','./js/v3-core.js','./assets/ui/worldmap-rpg.jpg'];
+self.addEventListener('install',e=>e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',e=>e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',e=>{if(e.request.method!=='GET')return;e.respondWith(fetch(e.request).then(r=>{const c=r.clone();caches.open(CACHE).then(x=>x.put(e.request,c));return r}).catch(()=>caches.match(e.request)))});

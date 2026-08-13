@@ -1,0 +1,28 @@
+승주 원정대 v3.0 RPG 안정화판
+
+핵심
+- 메인 화면을 실제 RPG 일러스트 월드맵으로 교체
+- 부산 롯데월드 / 울릉도 베이스 / 독도 원정을 그림 속 지도에서 클릭
+- DAY2/DAY3 고정 표기 대신 울릉도 베이스 + 독도 출항 상태 구조
+- 정상 v2.1의 귀여운 PNG 캐릭터 6종 유지
+- 캐릭터 선택 확인 팝업을 새 코드로 작성: '예' 클릭 즉시 저장 후 학생 메인화면 표시
+- 꾸미기 화면을 별도 독립 화면으로 새로 작성하여 빈 화면 방지
+- 장비는 캐릭터와 동일한 342x512 좌표계 레이어로 동작
+- PC/모바일 반응형
+- 기존 quiz.html / 관리자 화면은 유지
+- 서비스워커는 v3.0으로 교체해 이전 깨진 캐시를 정리
+
+업로드
+1. ZIP 압축 해제
+2. GitHub Desktop > sj-expedition-app > Repository > Show in Explorer
+3. 이 폴더 안의 파일/폴더 전체를 기존 저장소 폴더에 덮어쓰기
+4. GitHub Desktop Summary:
+   v3.0 RPG 메인 + 캐릭터 꾸미기 안정화
+5. Commit to main
+6. Push origin
+7. GitHub Actions 초록 체크 확인
+8. https://becksleehs.github.io/sj-expedition-app/
+9. PC: Ctrl + Shift + R
+
+첫 확인 순서
+학생 선택 > 캐릭터 선택 > 팝업 '예' > 학생 메인 > 캐릭터 꾸미기
