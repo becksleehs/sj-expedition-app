@@ -83,3 +83,18 @@ button,a,input{font:inherit} a{text-decoration:none}.hidden{display:none!importa
 /* Disable legacy full-canvas gear SVGs from earlier versions */
 .v3-avatar-stage>svg.gear{display:none!important}
 .v32-warning{margin:12px;padding:11px;border-radius:13px;background:#fff7dc;border:1px solid #f0cf69;color:#77540f;font-size:11px;line-height:1.55}
+
+/* ===== v3.3 equipment toggle + living map ===== */
+.v3-equip-item{padding:0!important;overflow:hidden}.v33-equip-main{width:100%;min-height:92px;border:0;background:transparent;color:inherit;padding:10px;cursor:pointer}.v33-equip-main span,.v33-equip-main b,.v33-equip-main small,.v33-equip-main em{display:block}.v33-equip-main span{font-size:28px}.v33-equip-main small{color:#7890a7}.v33-equip-main em{font-size:9px;font-style:normal;color:#0b76cf;margin-top:5px}.v3-equip-item.on .v33-equip-main em{color:#c67f00}.v33-color-btn{width:100%;border:0;border-top:1px solid #cbddea;background:#eaf5ff;color:#174273;padding:7px;font-weight:800;font-size:10px}.v33-color-btn:disabled{opacity:.35}
+.v3-avatar-stage .integrated-patch.scarf{z-index:5}.v3-avatar-stage .integrated-patch.hat{z-index:6}.v3-avatar-stage .integrated-patch.outfit{z-index:3}
+
+/* Living RPG map */
+.v33-wave-layer{position:absolute;left:-10%;width:120%;height:16%;pointer-events:none;opacity:.38;background:repeating-radial-gradient(ellipse at 50% 100%,transparent 0 18px,rgba(255,255,255,.75) 19px 21px,transparent 22px 42px);animation:v33Wave 7s linear infinite}
+.v33-wave-layer.wave-a{top:44%}.v33-wave-layer.wave-b{top:67%;opacity:.25;animation-duration:10s;animation-direction:reverse}
+.v33-boat{position:absolute;z-index:6;left:38%;top:54%;font-size:34px;filter:drop-shadow(0 5px 4px #003b6680);animation:v33Sail 13s ease-in-out infinite}
+.v33-gull{position:absolute;z-index:7;color:#fff;font-size:38px;font-weight:900;text-shadow:0 2px 4px #2d6d9c;pointer-events:none;animation:v33Fly 12s linear infinite}
+.v33-gull.g1{top:15%;left:-8%}.v33-gull.g2{top:25%;left:-16%;animation-delay:-4s;animation-duration:15s;font-size:30px}.v33-gull.g3{top:38%;left:-12%;animation-delay:-8s;animation-duration:18s;font-size:24px}
+@keyframes v33Wave{from{transform:translateX(0)}to{transform:translateX(70px)}}
+@keyframes v33Sail{0%,100%{transform:translate(0,0) rotate(-2deg)}35%{transform:translate(90px,-22px) rotate(3deg)}65%{transform:translate(155px,8px) rotate(-2deg)}}
+@keyframes v33Fly{0%{transform:translateX(0) translateY(0) scaleX(1)}45%{transform:translateX(55vw) translateY(-18px) scaleX(1.04)}50%{transform:translateX(60vw) translateY(-10px) scaleX(-1)}95%{transform:translateX(112vw) translateY(12px) scaleX(-1)}100%{transform:translateX(120vw) translateY(0) scaleX(1)}}
+@media(prefers-reduced-motion:reduce){.v33-wave-layer,.v33-boat,.v33-gull{animation:none}}

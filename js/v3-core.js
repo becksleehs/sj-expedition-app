@@ -54,15 +54,15 @@ function avatarStage(id, cls=''){
  let layers='';
  for(const k of selected){
    if(['hat','scarf','outfit'].includes(k)){
-     layers+=`<img class="integrated-patch ${k}" src="assets/gear-patches-v32/${a.id}/${k}-${gearIndex(id,k)}.png?v=320" alt="">`;
+     layers+=`<img class="integrated-patch ${k}" src="assets/gear-patches-v33/${a.id}/${k}-${gearIndex(id,k)}.png?v=330" alt="">`;
    }else{
      const an=(ACC_ANCHOR[a.id]&&ACC_ANCHOR[a.id][k])||[50,55,14];
      const c=(GEAR_COLORS[k]||['#fff'])[gearIndex(id,k)]||GEAR_COLORS[k][0];
-     layers+=`<span class="small-gear ${k}" style="--x:${an[0]}%;--y:${an[1]}%;--s:${an[2]}%;--gear:${c}"><img src="assets/gear-v32/${k}.svg?v=320" alt=""></span>`;
+     layers+=`<span class="small-gear ${k}" style="--x:${an[0]}%;--y:${an[1]}%;--s:${an[2]}%;--gear:${c}"><img src="assets/gear-v32/${k}.svg?v=330" alt=""></span>`;
    }
  }
  return `<div class="v3-avatar-stage ${cls}" data-avatar="${a.id}" style="--accent:${a.accent}">
-   <img class="base-avatar" src="${a.image}?v=320" alt="${a.name}">${layers}
+   <img class="base-avatar" src="${a.image}?v=330" alt="${a.name}">${layers}
  </div>`;
 }
 function persist(){save('sj_state',state)}
