@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0759a9"><title>학생 탐험본부 · 승주 원정대</title>
-<link rel="stylesheet" href="css/v3.css?v=310"></head><body><div class="v3-app">
+<link rel="stylesheet" href="css/v3.css?v=320"></head><body><div class="v3-app">
 <header class="v3-top"><a class="v3-brand" href="index.html"><span class="compass">🧭</span><div><small>SJ EXPEDITION</small><b>학생 탐험본부</b></div></a><div class="v3-top-actions"><button id="resetStudent">↻ 다시 선택</button></div></header>
 <main class="v3-shell">
 <section id="studentStep" class="v3-panel v3-card">
@@ -39,7 +39,7 @@
  </div>
 </dialog>
 </div>
-<script src="js/data.js?v=310"></script><script src="js/v3-core.js?v=310"></script><script>
+<script src="js/data.js?v=320"></script><script src="js/v3-core.js?v=320"></script><script>
 let currentId=localStorage.getItem('sj_current_student'), pendingAvatar=null;
 function view(n){['studentStep','avatarStep','dashStep'].forEach(x=>$('#'+x).classList.add('hidden'));$('#'+n).classList.remove('hidden');$('#studentNav').classList.toggle('hidden',n!=='dashStep')}
 function showStudents(){view('studentStep');$('#studentGrid').innerHTML=D.students.map(s=>`<button data-id="${s.id}"><small>${s.grade}학년 · ${s.gender==='M'?'남학생':'여학생'}</small><b>${s.name}</b></button>`).join('');document.querySelectorAll('#studentGrid button').forEach(b=>b.onclick=()=>{currentId=b.dataset.id;localStorage.setItem('sj_current_student',currentId);state.avatars[currentId]?showDash():showAvatars()})}

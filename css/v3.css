@@ -71,3 +71,15 @@ button,a,input{font:inherit} a{text-decoration:none}.hidden{display:none!importa
   .v3-side-section{display:none}.v3-map-note{display:none}
   .v3-bottom{bottom:4px;width:min(650px,calc(100% - 12px));padding:4px}
 }
+
+/* ===== v3.2 integrated gear fix ===== */
+.v3-avatar-stage .base-avatar,
+.v3-avatar-stage .integrated-patch{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block}
+.v3-avatar-stage .base-avatar{z-index:2}
+.v3-avatar-stage .integrated-patch{z-index:4;pointer-events:none}
+.v3-avatar-stage .small-gear{position:absolute;z-index:7;left:var(--x);top:var(--y);width:var(--s);transform:translate(-50%,-50%);pointer-events:none}
+.v3-avatar-stage .small-gear img{position:static!important;width:100%!important;height:auto!important;display:block!important;object-fit:contain!important}
+.v3-avatar-stage .small-gear.telescope{transform:translate(-50%,-50%) rotate(-18deg)}
+/* Disable legacy full-canvas gear SVGs from earlier versions */
+.v3-avatar-stage>svg.gear{display:none!important}
+.v32-warning{margin:12px;padding:11px;border-radius:13px;background:#fff7dc;border:1px solid #f0cf69;color:#77540f;font-size:11px;line-height:1.55}

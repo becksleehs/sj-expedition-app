@@ -1,22 +1,22 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0759a9"><title>캐릭터 꾸미기 · 승주 원정대</title><link rel="stylesheet" href="css/v3.css?v=310"></head>
+<meta name="theme-color" content="#0759a9"><title>캐릭터 꾸미기 · 승주 원정대</title><link rel="stylesheet" href="css/v3.css?v=320"></head>
 <body><div class="v3-app"><header class="v3-top"><a class="v3-brand" href="student.html"><span class="compass">🎒</span><div><small>EQUIPMENT ROOM</small><b>캐릭터 꾸미기</b></div></a><div class="v3-top-actions"><a href="student.html">✓ 완료</a></div></header>
 <main class="v3-shell"><section id="noStudent" class="v3-panel v3-card hidden"><h2>먼저 학생과 캐릭터를 선택해주세요.</h2><a class="v3-big-btn" href="student.html">학생 선택으로 이동</a></section>
 <section id="equipContent" class="v3-equip-layout hidden">
  <section class="v3-panel v3-equip-stage-panel"><div class="v3-panel-head"><h2 id="equipName">나의 탐험가</h2><span id="equipLevel">Lv.1</span></div><div id="equipAvatar"></div><div class="v3-level"><b id="equipXp">0 EXP</b><div class="v3-progress"><i id="equipXpBar"></i></div></div></section>
  <section class="v3-panel"><div class="v3-panel-head"><h2>보유 장비</h2><span>장착 + 색상 변경</span></div>
-<div id="equipGrid" class="v3-equip-grid"></div>
+<div class="v32-warning">이번 버전은 기존 캐릭터 그림에서 실제 모자·스카프·옷 부분의 픽셀을 그대로 다시 칠합니다. 그래서 큰 도형을 덧씌우지 않습니다.</div><div id="equipGrid" class="v3-equip-grid"></div>
 <div id="colorEditor" class="v31-color-editor hidden">
   <div class="v31-color-title"><span id="colorItemIcon">🎨</span><div><b id="colorItemName">아이템 색상</b><small>원하는 색을 선택하세요</small></div></div>
   <div id="colorPalette" class="v31-palette"></div>
 </div></section>
 </section></main>
 <nav class="v3-bottom"><a href="index.html"><span>🗺️</span>메인</a><a href="student.html"><span>🎯</span>미션</a><a href="quiz.html"><span>🚌</span>퀴즈</a><a class="active" href="equipment.html"><span>🎒</span>꾸미기</a><a href="student.html"><span>👤</span>캐릭터</a></nav>
-</div><script src="js/data.js?v=310"></script><script src="js/v3-core.js?v=310"></script><script>
+</div><script src="js/data.js?v=320"></script><script src="js/v3-core.js?v=320"></script><script>
 const id=localStorage.getItem('sj_current_student'),s=id&&studentById(id),a=id&&avatarFor(id);
 if(!s||!a){$('#noStudent').classList.remove('hidden')}else{
- $('#equipContent').classList.remove('hidden');if(!state.dress[id])state.dress[id]=[];if(!state.gearColors[id])state.gearColors[id]={};
+ $('#equipContent').classList.remove('hidden');if(!state.dress[id])state.dress[id]=[];if(!state.gearColorIndex)state.gearColorIndex={};if(!state.gearColorIndex[id])state.gearColorIndex[id]={};
  function render(){const xp=totalXp(id),lv=Math.floor(xp/100)+1;$('#equipName').textContent=s.name+'의 탐험가';$('#equipLevel').textContent='Lv.'+lv;$('#equipXp').textContent=xp+' EXP';$('#equipXpBar').style.width=(xp%100)+'%';$('#equipAvatar').innerHTML=avatarStage(id,'big');const sel=state.dress[id];$('#equipGrid').innerHTML=GEAR.map(g=>{const locked=lv<g.level,on=sel.includes(g.id);return `<button class="v3-equip-item ${on?'on':''} ${locked?'locked':''}" data-id="${g.id}" ${locked?'disabled':''}><span>${locked?'🔒':g.icon}</span><b>${g.name}</b><small>${locked?'Lv.'+g.level+' 해금':'캐릭터에 장착'}</small><em>${on?'장착 중':locked?'잠김':'장착하기'}</em></button>`}).join('');document.querySelectorAll('.v3-equip-item:not(.locked)').forEach(b=>b.onclick=()=>{
  const k=b.dataset.id,arr=state.dress[id];
  if(!arr.includes(k))state.dress[id]=[...arr,k];
@@ -26,9 +26,9 @@ if(!s||!a){$('#noStudent').classList.remove('hidden')}else{
 function openColorEditor(key){
  const g=GEAR.find(x=>x.id===key);if(!g)return;
  $('#colorEditor').classList.remove('hidden');$('#colorItemIcon').textContent=g.icon;$('#colorItemName').textContent=g.name+' 색상';
- const current=gearColor(id,key);
- $('#colorPalette').innerHTML=GEAR_COLORS[key].map(c=>`<button class="v31-swatch ${c===current?'selected':''}" data-color="${c}" style="--swatch:${c}" aria-label="${c}"></button>`).join('');
- document.querySelectorAll('.v31-swatch').forEach(s=>s.onclick=()=>{state.gearColors[id][key]=s.dataset.color;persist();render();openColorEditor(key)});
+ const current=gearIndex(id,key);
+ $('#colorPalette').innerHTML=GEAR_COLORS[key].map((c,i)=>`<button class="v31-swatch ${i===current?'selected':''}" data-index="${i}" style="--swatch:${c}" aria-label="${c}"></button>`).join('');
+ document.querySelectorAll('.v31-swatch').forEach(s=>s.onclick=()=>{state.gearColorIndex[id][key]=Number(s.dataset.index);persist();render();openColorEditor(key)});
 }
 render();
 }
