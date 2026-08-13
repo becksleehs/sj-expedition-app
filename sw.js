@@ -1,5 +1,5 @@
-const CACHE='sj-expedition-v2.1.0';
-const ASSETS=[
+const CACHE='sj-expedition-v2.3-character-fix';
+const ASSETS=['./equipment.html','./assets/characters-v23/m1.svg','./assets/characters-v23/m2.svg','./assets/characters-v23/m3.svg','./assets/characters-v23/f1.svg','./assets/characters-v23/f2.svg','./assets/characters-v23/f3.svg','./assets/equipment-v23/backpack.svg','./assets/equipment-v23/outfit.svg','./assets/equipment-v23/hat.svg','./assets/equipment-v23/scarf.svg','./assets/equipment-v23/camera.svg','./assets/equipment-v23/compass.svg','./assets/equipment-v23/badge.svg','./assets/equipment-v23/telescope.svg',
 './','./index.html','./student.html','./admin-login.html','./admin.html',
 './css/app.css','./js/data.js','./js/home.js','./quiz.html','./js/quiz-data.js','./js/quiz.js','./js/app.js','./js/admin.js',
 './manifest.json','./icons/icon.svg',

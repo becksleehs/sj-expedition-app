@@ -1,1 +1,61 @@
-const avatar=localStorage.getItem('sj17Avatar');if(!avatar)location.replace('index.html');const unlocks=JSON.parse(localStorage.getItem('sj17Unlocks')||'[]');const data=[['outfit','🧥','탐험복','버스 미션'],['hat','🧢','탐험모자','경주월드'],['compass','🧭','나침반','울릉도'],['camera','📷','카메라','사진 미션'],['badge','🇰🇷','태극기 배지','독도'],['telescope','🔭','황금 망원경','최종 미션']];document.getElementById('base').src=`assets/characters/${avatar}.svg`;data.forEach(([key,emoji,name,src])=>{document.getElementById(key).classList.toggle('show',unlocks.includes(key));const a=document.createElement('article');a.className=unlocks.includes(key)?'unlocked':'';a.innerHTML=`<span>${unlocks.includes(key)?emoji:'🔒'}</span><b>${name}</b><small>${unlocks.includes(key)?'획득 완료':src+' 완료 시'}</small>`;document.getElementById('locker').appendChild(a)});document.getElementById('name').textContent=localStorage.getItem('sj17Name');document.getElementById('title').textContent=['입단 준비생','정식 원정대원','초보 탐험가','울릉 길잡이','원정 사진가','독도 수호대','원정대 마스터'][Math.min(unlocks.length,6)];
+const D=window.SJ_DATA;
+const $=s=>document.querySelector(s);
+const store={get:(k,d)=>{try{return JSON.parse(localStorage.getItem(k))??d}catch{return d}},set:(k,v)=>localStorage.setItem(k,JSON.stringify(v))};
+const currentId=localStorage.getItem('sj_current_student');
+if(!currentId)location.replace('student.html');
+const student=D.students.find(s=>s.id===currentId);
+if(!student)location.replace('student.html');
+const state=store.get('sj_state',{attendance:{},scores:{},teams:{},missions:{},avatars:{},completed:{},notice:'',dress:{}});
+const avatar=D.avatars.find(a=>a.id===state.avatars[currentId])||D.avatars.find(a=>a.gender===student.gender);
+if(!state.dress[currentId])state.dress[currentId]=[];
+
+const items=[
+{id:'outfit',icon:'🧥',name:'탐험복',level:1,src:'assets/equipment-v23/outfit.svg',where:'몸통 + 배낭'},
+{id:'hat',icon:'🧢',name:'탐험 모자',level:2,src:'assets/equipment-v23/hat.svg',where:'머리'},
+{id:'scarf',icon:'🧣',name:'컬러 스카프',level:3,src:'assets/equipment-v23/scarf.svg',where:'목'},
+{id:'camera',icon:'📷',name:'카메라',level:4,src:'assets/equipment-v23/camera.svg',where:'가슴'},
+{id:'compass',icon:'🧭',name:'나침반',level:5,src:'assets/equipment-v23/compass.svg',where:'허리'},
+{id:'badge',icon:'🇰🇷',name:'태극기 배지',level:6,src:'assets/equipment-v23/badge.svg',where:'가슴'},
+{id:'telescope',icon:'🔭',name:'황금 망원경',level:8,src:'assets/equipment-v23/telescope.svg',where:'손/어깨'}
+];
+function xp(){
+ const score=Number(state.scores[currentId]||0),done=state.completed[currentId]||[];
+ return score+D.missions.filter(m=>done.includes(m.id)).reduce((n,m)=>n+m.xp,0);
+}
+function layer(src,cls=''){return `<img class="gear-layer ${cls}" src="${src}?v=230" alt="">`;}
+function character(){
+ const selected=state.dress[currentId]||[];
+ return `<div class="v23-character equipment-large" style="--accent:${avatar.accent}">
+ <div class="v23-avatar-glow"></div>
+ ${selected.includes('outfit')?layer('assets/equipment-v23/backpack.svg','behind'):''}
+ <img class="v23-base-avatar" src="${avatar.image}?v=230" alt="${avatar.name}">
+ ${selected.includes('outfit')?layer('assets/equipment-v23/outfit.svg','outfit-layer'):''}
+ ${selected.includes('scarf')?layer('assets/equipment-v23/scarf.svg','scarf-layer'):''}
+ ${selected.includes('camera')?layer('assets/equipment-v23/camera.svg','camera-layer'):''}
+ ${selected.includes('compass')?layer('assets/equipment-v23/compass.svg','compass-layer'):''}
+ ${selected.includes('badge')?layer('assets/equipment-v23/badge.svg','badge-layer'):''}
+ ${selected.includes('telescope')?layer('assets/equipment-v23/telescope.svg','telescope-layer'):''}
+ ${selected.includes('hat')?layer('assets/equipment-v23/hat.svg','hat-layer'):''}
+ </div>`;
+}
+function render(){
+ const total=xp(),level=Math.floor(total/100)+1;
+ $('#equipmentStudentName').textContent=student.name;
+ $('#equipmentLevel').textContent=`Lv.${level}`;
+ $('#equipmentXp').textContent=`${total} EXP`;
+ $('#equipmentCharacterStage').innerHTML=character();
+ const selected=state.dress[currentId]||[];
+ $('#equipmentLocker').innerHTML=items.map(i=>{
+   const locked=level<i.level,on=selected.includes(i.id);
+   return `<button class="equipment-v23-item ${on?'equipped':''} ${locked?'locked':''}" data-id="${i.id}" ${locked?'disabled':''}>
+   <span class="eq-icon">${locked?'🔒':i.icon}</span>
+   <b>${i.name}</b><small>${locked?`Lv.${i.level} 해금`:i.where}</small>
+   <em>${on?'장착 중':locked?'잠김':'장착하기'}</em></button>`;
+ }).join('');
+ document.querySelectorAll('.equipment-v23-item:not(.locked)').forEach(b=>b.onclick=()=>{
+   const id=b.dataset.id,arr=state.dress[currentId]||[];
+   state.dress[currentId]=arr.includes(id)?arr.filter(x=>x!==id):[...arr,id];
+   store.set('sj_state',state);render();
+ });
+}
+render();

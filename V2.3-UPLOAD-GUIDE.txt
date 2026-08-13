@@ -1,0 +1,16 @@
+승주 원정대 v2.3 업로드
+
+1. 이 ZIP 압축을 풉니다.
+2. GitHub Desktop → sj-expedition-app → Repository → Show in Explorer
+3. 이 폴더 안의 파일/폴더 전체를 기존 sj-expedition-app 폴더에 덮어씁니다.
+4. GitHub Desktop에서 변경 파일을 확인합니다.
+5. Summary:
+   v2.3 캐릭터 선택 팝업 + 장비 장착 시스템 수정
+6. Commit to main
+7. Push origin
+8. GitHub Actions 완료 후
+   https://becksleehs.github.io/sj-expedition-app/
+   에서 Ctrl + Shift + R
+
+확인 순서:
+학생 선택 → 캐릭터 클릭 → 확인 팝업 → '예' → 학생 메인 → 장비실
