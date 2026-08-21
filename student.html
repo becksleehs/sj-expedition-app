@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0759a9"><title>학생 탐험본부 · 승주 원정대</title>
-<link rel="stylesheet" href="css/v3.css?v=320"></head><body><div class="v3-app">
+<link rel="stylesheet" href="css/v3.css?v=400"></head><body><div class="v3-app">
 <header class="v3-top"><a class="v3-brand" href="index.html"><span class="compass">🧭</span><div><small>SJ EXPEDITION</small><b>학생 탐험본부</b></div></a><div class="v3-top-actions"><button id="resetStudent">↻ 다시 선택</button></div></header>
 <main class="v3-shell">
 <section id="studentStep" class="v3-panel v3-card">
@@ -39,12 +39,12 @@
  </div>
 </dialog>
 </div>
-<script src="js/data.js?v=320"></script><script src="js/v3-core.js?v=320"></script><script>
+<script src="js/data.js?v=400"></script><script src="js/v3-core.js?v=400"></script><script>
 let currentId=localStorage.getItem('sj_current_student'), pendingAvatar=null;
 function view(n){['studentStep','avatarStep','dashStep'].forEach(x=>$('#'+x).classList.add('hidden'));$('#'+n).classList.remove('hidden');$('#studentNav').classList.toggle('hidden',n!=='dashStep')}
 function showStudents(){view('studentStep');$('#studentGrid').innerHTML=D.students.map(s=>`<button data-id="${s.id}"><small>${s.grade}학년 · ${s.gender==='M'?'남학생':'여학생'}</small><b>${s.name}</b></button>`).join('');document.querySelectorAll('#studentGrid button').forEach(b=>b.onclick=()=>{currentId=b.dataset.id;localStorage.setItem('sj_current_student',currentId);state.avatars[currentId]?showDash():showAvatars()})}
-function showAvatars(){const s=studentById(currentId);if(!s)return showStudents();view('avatarStep');const arr=D.avatars.filter(a=>a.gender===s.gender);$('#avatarGrid').innerHTML=arr.map(a=>`<button class="v3-avatar-choice" data-id="${a.id}"><div class="v3-avatar-thumb"><img src="${a.image}?v=300" alt="${a.name}"></div><b>${a.name}</b><small>선택하기</small></button>`).join('');document.querySelectorAll('.v3-avatar-choice').forEach(b=>b.onclick=()=>openConfirm(b.dataset.id))}
-function openConfirm(aid){const a=D.avatars.find(x=>x.id===aid);if(!a)return;pendingAvatar=aid;$('#confirmImg').src=a.image+'?v=300';$('#confirmName').textContent=a.name;const d=$('#avatarConfirm');if(d.showModal)d.showModal();else d.setAttribute('open','')}
+function showAvatars(){const s=studentById(currentId);if(!s)return showStudents();view('avatarStep');const arr=D.avatars.filter(a=>a.gender===s.gender);$('#avatarGrid').innerHTML=arr.map(a=>`<button class="v3-avatar-choice" data-id="${a.id}"><div class="v3-avatar-thumb"><img src="${a.image}?v=400" alt="${a.name}"></div><b>${a.name}</b><small>선택하기</small></button>`).join('');document.querySelectorAll('.v3-avatar-choice').forEach(b=>b.onclick=()=>openConfirm(b.dataset.id))}
+function openConfirm(aid){const a=D.avatars.find(x=>x.id===aid);if(!a)return;pendingAvatar=aid;$('#confirmImg').src=a.image+'?v=400';$('#confirmName').textContent=a.name;const d=$('#avatarConfirm');if(d.showModal)d.showModal();else d.setAttribute('open','')}
 function closeConfirm(){const d=$('#avatarConfirm');if(d.open&&d.close)d.close();else d.removeAttribute('open');pendingAvatar=null}
 function acceptConfirm(){if(!currentId||!pendingAvatar)return;state.avatars[currentId]=pendingAvatar;if(!state.dress[currentId])state.dress[currentId]=[];persist();const d=$('#avatarConfirm');if(d.open&&d.close)d.close();pendingAvatar=null;showDash()}
 function showDash(){const s=studentById(currentId);if(!s)return showStudents();view('dashStep');const xp=totalXp(currentId),lv=Math.floor(xp/100)+1;$('#studentTeam').textContent=state.teams[currentId]||s.grade+'학년 원정대';$('#studentName').textContent=s.name+' 탐험가';$('#studentLevel').textContent='Lv.'+lv;$('#studentXp').textContent=xp+' EXP';$('#studentXpBar').style.width=(xp%100)+'%';$('#studentAvatar').innerHTML=avatarStage(currentId);const open=D.missions.filter(m=>state.missions[m.id]);$('#studentMissions').innerHTML=open.map(m=>`<div class="v3-mission"><span class="icon">${m.icon}</span><div><b>${m.title}</b><small>${m.desc}</small></div><strong>+${m.xp} EXP</strong></div>`).join('')}

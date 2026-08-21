@@ -98,3 +98,17 @@ button,a,input{font:inherit} a{text-decoration:none}.hidden{display:none!importa
 @keyframes v33Sail{0%,100%{transform:translate(0,0) rotate(-2deg)}35%{transform:translate(90px,-22px) rotate(3deg)}65%{transform:translate(155px,8px) rotate(-2deg)}}
 @keyframes v33Fly{0%{transform:translateX(0) translateY(0) scaleX(1)}45%{transform:translateX(55vw) translateY(-18px) scaleX(1.04)}50%{transform:translateX(60vw) translateY(-10px) scaleX(-1)}95%{transform:translateX(112vw) translateY(12px) scaleX(-1)}100%{transform:translateX(120vw) translateY(0) scaleX(1)}}
 @media(prefers-reduced-motion:reduce){.v33-wave-layer,.v33-boat,.v33-gull{animation:none}}
+/* ===== v4.0 chibi character system ===== */
+.v4-chibi-stage{isolation:isolate}
+.v4-chibi-stage .base-avatar,
+.v4-chibi-stage .v4-gear-layer{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;display:block;pointer-events:none}
+.v4-chibi-stage .base-avatar{z-index:2}
+.v4-chibi-stage .v4-gear-layer{z-index:7}
+.v4-chibi-stage .v4-gear-layer.backpack{z-index:1!important}
+.v4-chibi-stage .v4-gear-layer.outfit{z-index:3!important}
+.v4-chibi-stage .v4-gear-layer.scarf{z-index:5!important}
+.v4-chibi-stage .v4-gear-layer.hat{z-index:6!important}
+.v4-chibi-stage .v4-gear-layer.telescope{z-index:8!important}
+.v4-chibi-stage .small-gear,.v4-chibi-stage .integrated-patch{display:none!important}
+.v4-chibi-stage{background:radial-gradient(circle at 50% 34%,#fff 0,#dff6ff 40%,#9bdcff 68%,#5ca8d8 100%)}
+.v4-chibi-stage:before{content:'✦';position:absolute;left:12%;top:12%;font-size:20px;color:#fff;opacity:.85;z-index:0}

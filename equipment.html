@@ -1,6 +1,6 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0759a9"><title>캐릭터 꾸미기 · 승주 원정대</title><link rel="stylesheet" href="css/v3.css?v=330"></head>
+<meta name="theme-color" content="#0759a9"><title>캐릭터 꾸미기 · 승주 원정대</title><link rel="stylesheet" href="css/v3.css?v=400"></head>
 <body><div class="v3-app"><header class="v3-top"><a class="v3-brand" href="student.html"><span class="compass">🎒</span><div><small>EQUIPMENT ROOM</small><b>캐릭터 꾸미기</b></div></a><div class="v3-top-actions"><a href="student.html">✓ 완료</a></div></header>
 <main class="v3-shell"><section id="noStudent" class="v3-panel v3-card hidden"><h2>먼저 학생과 캐릭터를 선택해주세요.</h2><a class="v3-big-btn" href="student.html">학생 선택으로 이동</a></section>
 <section id="equipContent" class="v3-equip-layout hidden">
@@ -13,7 +13,7 @@
 </div></section>
 </section></main>
 <nav class="v3-bottom"><a href="index.html"><span>🗺️</span>메인</a><a href="student.html"><span>🎯</span>미션</a><a href="quiz.html"><span>🚌</span>퀴즈</a><a class="active" href="equipment.html"><span>🎒</span>꾸미기</a><a href="student.html"><span>👤</span>캐릭터</a></nav>
-</div><script src="js/data.js?v=330"></script><script src="js/v3-core.js?v=330"></script><script>
+</div><script src="js/data.js?v=400"></script><script src="js/v3-core.js?v=400"></script><script>
 const id=localStorage.getItem('sj_current_student'),s=id&&studentById(id),a=id&&avatarFor(id);
 if(!s||!a){$('#noStudent').classList.remove('hidden')}else{
  $('#equipContent').classList.remove('hidden');if(!state.dress[id])state.dress[id]=[];if(!state.gearColorIndex)state.gearColorIndex={};if(!state.gearColorIndex[id])state.gearColorIndex[id]={};

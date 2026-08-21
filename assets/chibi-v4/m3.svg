@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 341 512">
+<defs><linearGradient id="skin" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#f1c59d"/><stop offset="1" stop-color="#e4a97f"/></linearGradient></defs>
+<!-- legs -->
+<path d="M126 382 L125 442 Q125 451 116 460 L104 469 Q99 476 109 480 L143 480 Q153 477 151 466 L154 408Z" fill="#f1c79d" stroke="#5b3b2a" stroke-width="5"/>
+<path d="M188 382 L187 443 Q187 451 197 460 L209 469 Q214 476 204 480 L170 480 Q160 477 162 466 L159 408Z" fill="#f1c79d" stroke="#5b3b2a" stroke-width="5"/>
+<!-- shorts --> <path d="M112 335 Q170 320 229 335 L221 403 Q171 421 119 402Z" fill="#4c4d62" stroke="#2e3345" stroke-width="5"/>
+<!-- shoes --> <path d="M99 466 Q122 452 151 465 L156 483 Q153 493 107 492 Q96 487 99 466Z" fill="#3b2b22" stroke="#3a281e" stroke-width="5"/>
+<path d="M161 465 Q190 452 218 466 L221 483 Q218 493 172 492 Q159 487 161 465Z" fill="#3b2b22" stroke="#3a281e" stroke-width="5"/>
+<!-- body --> <path d="M112 225 Q170 207 229 225 L235 345 Q220 375 171 380 Q121 375 106 345Z" fill="#5c78b6" stroke="#283b54" stroke-width="6"/>
+<!-- shirt center --> <path d="M161 228 L180 228 L184 322 L158 322Z" fill="#fff6e7" opacity=".9"/>
+<!-- arms --> <path d="M112 236 Q89 252 82 304 Q82 319 96 321 Q107 321 111 306 L126 270Z" fill="url(#skin)" stroke="#5b3b2a" stroke-width="5"/><path d="M229 236 Q252 252 259 304 Q259 319 245 321 Q234 321 230 306 L215 270Z" fill="url(#skin)" stroke="#5b3b2a" stroke-width="5"/>
+<!-- neck --> <path d="M151 205 L189 205 L191 234 L149 234Z" fill="url(#skin)" stroke="#5b3b2a" stroke-width="4"/>
+<!-- hair back --> 
+<!-- head --> <ellipse cx="170" cy="150" rx="83" ry="86" fill="url(#skin)" stroke="#5b3b2a" stroke-width="6"/>
+<!-- hair cap --> <path d="M88 145 Q92 68 170 62 Q249 68 252 145 Q229 117 204 112 Q171 101 138 112 Q111 119 88 145Z" fill="#241b18" stroke="#3a2923" stroke-width="6"/>
+<!-- bangs --> <path d="M99 126 Q115 93 143 92 Q168 113 170 128 Q185 105 207 94 Q234 106 243 132 Q214 122 196 137 Q178 145 164 125 Q148 146 128 137 Q111 128 99 126Z" fill="#3a2921"/>
+<!-- ears --> <circle cx="86" cy="155" r="13" fill="#f1c59d" stroke="#5b3b2a" stroke-width="4"/><circle cx="254" cy="155" r="13" fill="#f1c59d" stroke="#5b3b2a" stroke-width="4"/>
+<!-- eyes --> <ellipse cx="139" cy="157" rx="13" ry="17" fill="#2a211e"/><ellipse cx="201" cy="157" rx="13" ry="17" fill="#2a211e"/><circle cx="135" cy="151" r="4" fill="#fff"/><circle cx="197" cy="151" r="4" fill="#fff"/>
+<!-- cheeks --> <ellipse cx="115" cy="188" rx="15" ry="7" fill="#ef8e87" opacity=".55"/><ellipse cx="225" cy="188" rx="15" ry="7" fill="#ef8e87" opacity=".55"/>
+<!-- smile --> <path d="M157 185 Q170 197 183 185" fill="none" stroke="#713c3b" stroke-width="5" stroke-linecap="round"/>
+<!-- belt --> <rect x="108" y="329" width="124" height="15" rx="7" fill="#6a482e"/><rect x="160" y="327" width="20" height="19" rx="4" fill="#f1c45e" stroke="#6a482e" stroke-width="3"/>
+<!-- tiny gloves --> <circle cx="92" cy="311" r="12" fill="#704c36"/><circle cx="249" cy="311" r="12" fill="#704c36"/>
+</svg>

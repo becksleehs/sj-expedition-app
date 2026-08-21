@@ -28,7 +28,7 @@
   if(avatar){
     const img=$('#homeAvatarImg');
     img.src=`${avatar.image}?v=210`; $('#hudAvatarImg').src=`${avatar.image}?v=210`;
-    img.onerror=()=>{ img.src=`assets/avatars/${student.gender==='F'?'f1':'m1'}.png?v=210`; };
+    img.onerror=()=>{ img.src=`assets/chibi-v4/${student.gender==='F'?'f1':'m1'}.svg?v=400`; };
   }
 })();
 if('serviceWorker' in navigator){
