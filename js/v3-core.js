@@ -31,6 +31,14 @@ const GEAR_COLORS={
 function studentById(id){return D.students.find(x=>x.id===id)}
 function avatarFor(id){
  const s=studentById(id); if(!s)return null;
+ // 이전 버전(sj17Avatar) 선택값도 자동으로 현재 시스템으로 이전
+ if(!state.avatars[id]){
+   const legacy=localStorage.getItem('sj17Avatar');
+   if(legacy && D.avatars.some(a=>a.id===legacy)){
+     state.avatars[id]=legacy;
+     persist();
+   }
+ }
  return D.avatars.find(a=>a.id===state.avatars[id])||D.avatars.find(a=>a.gender===s.gender);
 }
 function totalXp(id){
@@ -52,7 +60,7 @@ function avatarStage(id, cls=''){
    layers+=`<img class="v4-gear-layer ${k}" style="z-index:${z[k]||7}" src="assets/chibi-gear-v4/${a.id}/${k}-${idx}.svg?v=400" alt="">`;
  }
  return `<div class="v3-avatar-stage ${cls} v4-chibi-stage" data-avatar="${a.id}" style="--accent:${a.accent}">
-   <img class="base-avatar" src="${a.image}?v=400" alt="${a.name}">${layers}
+   <img class="base-avatar" src="${a.image}?v=510" alt="${a.name}">${layers}
  </div>`;
 }
 
