@@ -15,12 +15,12 @@ window.SJ_DATA = {
     {id:'s13',grade:3,gender:'F',name:'오예린'}
   ],
   avatars: [
-    {id:'m1',gender:'M',name:'레드 어드벤처',image:'assets/chibi-v4/m1.svg',accent:'#ff6b5f'},
-    {id:'m2',gender:'M',name:'정글 레인저',image:'assets/chibi-v4/m2.svg',accent:'#e9b95d'},
-    {id:'m3',gender:'M',name:'블루 스카우트',image:'assets/chibi-v4/m3.svg',accent:'#4a8dff'},
-    {id:'f1',gender:'F',name:'포레스트 걸',image:'assets/chibi-v4/f1.svg',accent:'#d69a55'},
-    {id:'f2',gender:'F',name:'핑크 러너',image:'assets/chibi-v4/f2.svg',accent:'#ff7fb2'},
-    {id:'f3',gender:'F',name:'그린 익스플로러',image:'assets/chibi-v4/f3.svg',accent:'#61bd70'}
+    {id:'m1',gender:'M',name:'활발한 탐험가',image:'assets/chibi-arcade-v42/m1.svg',accent:'#ff6b5f'},
+    {id:'m2',gender:'M',name:'사파리 탐험가',image:'assets/chibi-arcade-v42/m2.svg',accent:'#e9b95d'},
+    {id:'m3',gender:'M',name:'씩씩한 탐험가',image:'assets/chibi-arcade-v42/m3.svg',accent:'#4a8dff'},
+    {id:'f1',gender:'F',name:'자연사랑 탐험가',image:'assets/chibi-arcade-v42/f1.svg',accent:'#d69a55'},
+    {id:'f2',gender:'F',name:'활기찬 탐험가',image:'assets/chibi-arcade-v42/f2.svg',accent:'#ff7fb2'},
+    {id:'f3',gender:'F',name:'에너지 탐험가',image:'assets/chibi-arcade-v42/f3.svg',accent:'#61bd70'}
   ],
   missions: [
     {id:'lot01',type:'필수',icon:'🎢',title:'놀이기구 2개 이상 탑승',desc:'조원이 함께 즐긴 놀이기구를 기록해요.',xp:120,open:true},
