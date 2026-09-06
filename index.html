@@ -1,7 +1,7 @@
 <!doctype html><html lang="ko"><head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#0759a9"><title>승주 원정대 · RPG 모험지도</title>
-<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/v3.css?v=330">
+<link rel="manifest" href="manifest.json"><link rel="stylesheet" href="css/v3.css?v=500">
 </head><body><div id="rotateHint" class="v31-rotate-hint"><div><span>📱↻</span><b>모험지도는 가로 화면이 더 좋아요!</b><p>휴대폰을 가로로 돌리면 전체 RPG 지도를 한눈에 볼 수 있습니다.</p></div></div><div class="v3-app">
 <header class="v3-top"><a class="v3-brand" href="index.html"><span class="compass">🧭</span><div><small>SJ EXPEDITION</small><b>승주 원정대</b></div></a>
 <div class="v3-top-actions"><a href="quiz.html">🚌 퀴즈</a><a href="admin-login.html">⚙️ 관리자</a></div></header>
@@ -42,7 +42,7 @@
 </section>
 </main>
 <nav class="v3-bottom"><a class="active" href="index.html"><span>🗺️</span>메인</a><a href="student.html"><span>🎯</span>미션</a><a href="quiz.html"><span>🚌</span>퀴즈</a><a href="equipment.html"><span>🎒</span>꾸미기</a><a href="admin-login.html"><span>⚙️</span>설정</a></nav>
-</div><script src="js/data.js?v=330"></script><script src="js/v3-core.js?v=330"></script><script>
+</div><script src="js/data.js?v=500"></script><script src="js/v3-core.js?v=500"></script><script src="js/v5-avatar.js?v=500"></script><script>
 const id=localStorage.getItem('sj_current_student');
 if(id && studentById(id)){
  const s=studentById(id),xp=totalXp(id),lv=Math.floor(xp/100)+1,within=xp%100;
@@ -54,5 +54,5 @@ const open=D.missions.filter(m=>state.missions[m.id]);
 $('#missionSummary').textContent=open.length+'개 공개';
 $('#homeMissions').innerHTML=open.slice(0,5).map(m=>`<div class="v3-mission"><span class="icon">${m.icon}</span><div><b>${m.title}</b><small>${m.desc}</small></div><strong>+${m.xp} EXP</strong></div>`).join('');
 const ds=state.dokdoStatus||'waiting'; $('#dokdoLabel').textContent=ds==='open'?'독도 원정 · 출항 가능':ds==='retry'?'독도 원정 · 재도전':'독도 원정 · 출항 대기';
-if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v=300').catch(()=>{});}
+if('serviceWorker' in navigator){navigator.serviceWorker.register('./sw.js?v=500').catch(()=>{});}
 </script></body></html>
