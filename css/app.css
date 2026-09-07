@@ -141,3 +141,14 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 .arcade-choice{width:100%;max-width:150px;aspect-ratio:64/102;object-fit:cover;border-radius:14px;display:block;margin:auto}
 .avatar-gear-chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:7px;max-width:210px}
 .avatar-gear-chips span{font-size:9px;padding:3px 6px;border-radius:999px;background:#eaf7ff;border:1px solid #b8def3;color:#24506b;font-weight:700}
+/* FRESH v1.9 — label-free PNG character assets */
+.avatar-stage.photo{width:250px;height:auto;min-height:330px;padding:8px 8px 6px;background:linear-gradient(180deg,#e7f7ff,#fff);overflow:visible}
+.arcade-photo{width:220px;height:285px;object-fit:contain;object-position:center bottom;border-radius:0;box-shadow:none;background:transparent;display:block;filter:contrast(1.04) saturate(1.04)}
+.avatar-stage.photo.small{width:88px;height:112px;min-height:112px;padding:0;background:transparent}
+.avatar-stage.photo.small .arcade-photo{width:82px;height:102px;object-fit:contain;border-radius:0;box-shadow:none}
+.arcade-choice{width:100%;height:205px;max-width:none;aspect-ratio:auto;object-fit:contain;object-position:center bottom;border-radius:12px;background:linear-gradient(#f5fbff,#fff);padding:2px}
+.char-art{height:215px;background:linear-gradient(#eef9ff,#fff)}
+.avatar-gear-chips{margin-top:2px;gap:3px;max-width:230px;min-height:22px}
+.avatar-gear-chips span{font-size:15px;line-height:1;padding:2px 3px;border:0;background:transparent;color:inherit}
+.equip-stage-card{overflow:visible}
+@media(max-width:390px){.avatar-stage.photo{width:230px;min-height:310px}.arcade-photo{width:205px;height:265px}.arcade-choice{height:180px}.char-art{height:188px}}
