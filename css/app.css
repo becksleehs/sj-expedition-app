@@ -61,3 +61,38 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 @keyframes tileFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
 
 @media (prefers-reduced-motion:reduce){.hero-motion .worldmap,.sea-shine,.seagull,.moving-boat,.boat-emoji,.route-dot,.sparkle,.water-bubble,.pulse-start,.float-tile{animation:none!important}}
+
+/* ===== FRESH v1.2 : object motion from the actual map artwork ===== */
+.sprite{position:absolute;z-index:8;pointer-events:none;user-select:none;will-change:transform,opacity;transform-origin:center}
+.boat-sprite{left:48.6%;top:46.6%;width:19.75%;animation:realBoat 5.2s ease-in-out infinite;filter:drop-shadow(0 4px 4px rgba(0,70,110,.2))}
+@keyframes realBoat{0%,100%{transform:translate(0,0) rotate(-1.2deg)}25%{transform:translate(3px,-4px) rotate(1deg)}50%{transform:translate(7px,-1px) rotate(-.6deg)}75%{transform:translate(3px,3px) rotate(1.2deg)}}
+
+.gull-img{z-index:10;filter:drop-shadow(0 2px 1px rgba(0,80,130,.18))}
+.gull-a{width:13.9%;left:6%;top:8.1%;animation:gullCrossA 12s linear infinite}
+.gull-b{width:12.4%;left:82%;top:9.5%;animation:gullCrossB 15s linear -6s infinite}
+@keyframes gullCrossA{0%{transform:translate(-90px,15px) scale(.85) rotate(-6deg)}25%{transform:translate(90px,-8px) scale(.95) rotate(2deg)}55%{transform:translate(270px,13px) scale(1) rotate(-2deg)}100%{transform:translate(610px,-20px) scale(.82) rotate(5deg)}}
+@keyframes gullCrossB{0%{transform:translate(120px,8px) scale(.8) rotate(5deg)}50%{transform:translate(-220px,-20px) scale(1) rotate(-4deg)}100%{transform:translate(-650px,18px) scale(.84) rotate(4deg)}}
+
+.dolphin{z-index:9;filter:drop-shadow(0 4px 3px rgba(0,87,135,.25))}
+.dolphin-1{left:53.6%;top:63.3%;width:11.4%;animation:dolphinJump1 4.8s ease-in-out infinite}
+.dolphin-2{left:53.4%;top:68.6%;width:11.5%;animation:dolphinJump2 5.4s ease-in-out 1.5s infinite}
+@keyframes dolphinJump1{0%,28%,100%{transform:translateY(0) rotate(0);opacity:.97}45%{transform:translate(8px,-32px) rotate(-12deg) scale(1.08);opacity:1}62%{transform:translate(12px,-6px) rotate(8deg) scale(.98)}}
+@keyframes dolphinJump2{0%,32%,100%{transform:translateY(0) rotate(0);opacity:.96}50%{transform:translate(-5px,-27px) rotate(10deg) scale(1.05);opacity:1}68%{transform:translate(-9px,-4px) rotate(-6deg)}}
+
+.whale-sprite{left:74.7%;top:42.6%;width:14.2%;animation:whaleBreathe 6s ease-in-out infinite;opacity:.98}
+@keyframes whaleBreathe{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(-2deg)}}
+
+.student-motion{position:absolute;inset:0;z-index:9;pointer-events:none}
+.student{z-index:9}
+.student-1{left:15.95%;top:80.8%;width:18.5%;animation:studentBob1 3.2s ease-in-out infinite}
+.student-2{left:31.1%;top:80.9%;width:19.6%;animation:studentBob2 3.4s ease-in-out .35s infinite}
+.student-3{left:48.5%;top:79.6%;width:19.6%;animation:studentBob1 3.6s ease-in-out .7s infinite}
+.student-4{left:65.2%;top:81.1%;width:19.5%;animation:studentBob2 3.3s ease-in-out 1.05s infinite}
+@keyframes studentBob1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2.5px) rotate(.7deg)}}
+@keyframes studentBob2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-.7deg)}}
+
+/* tiny splash rings under animated animals/boat */
+.hero-motion:before{content:"";position:absolute;z-index:7;left:52%;top:55%;width:22%;height:3%;border-radius:50%;border-bottom:3px solid rgba(255,255,255,.7);opacity:.7;animation:wakePulse 2s ease-in-out infinite;pointer-events:none}
+@keyframes wakePulse{0%,100%{transform:scaleX(.7);opacity:.25}50%{transform:scaleX(1.08);opacity:.75}}
+
+@media (prefers-reduced-motion:reduce){.sprite{animation:none!important}}
