@@ -1,38 +1,102 @@
 (function(){
   const gearMeta={
-    scarf:{label:'스카프',emoji:'🧣'},
-    vest:{label:'탐험복',emoji:'🧥'},
-    camera:{label:'카메라',emoji:'📷'},
-    compass:{label:'나침반',emoji:'🧭'},
-    binoculars:{label:'망원경',emoji:'🔭'},
-    flag:{label:'태극기',emoji:'🇰🇷'},
-    badge:{label:'원정대 배지',emoji:'🏅'}
+    scarf:{label:'스카프',emoji:'🧣',slot:'wear'},
+    vest:{label:'탐험복',emoji:'🧥',slot:'wear'},
+    camera:{label:'카메라',emoji:'📷',slot:'tool'},
+    compass:{label:'나침반',emoji:'🧭',slot:'tool'},
+    binoculars:{label:'망원경',emoji:'🔭',slot:'tool'},
+    flag:{label:'태극기',emoji:'🇰🇷',slot:'tool'},
+    badge:{label:'원정대 배지',emoji:'🏅',slot:'wear'}
   };
   const colors=['#ef4444','#2563eb','#16a34a','#f59e0b','#7c3aed'];
+  const toolKeys=Object.keys(gearMeta).filter(k=>gearMeta[k].slot==='tool');
+
   function normalizeState(s){
     s.gear=s.gear||{}; s.gearColors=s.gearColors||{};
-    Object.keys(gearMeta).forEach(k=>{ if(!(k in s.gear)) s.gear[k]=false; if(!s.gearColors[k]) s.gearColors[k]=colors[0]; });
+    Object.keys(gearMeta).forEach(k=>{
+      if(!(k in s.gear)) s.gear[k]=false;
+      if(!s.gearColors[k]) s.gearColors[k]=colors[0];
+    });
+    // v1.6 migration: old versions could stack many large layers on the face/body.
+    // Clear that one time so every device starts from a clean, predictable state.
+    if(s.gearSystemVersion!==16){
+      Object.keys(gearMeta).forEach(k=>s.gear[k]=false);
+      s.gearSystemVersion=16;
+    }
+    // Only one hand/tool item at a time. Wearables may coexist.
+    const activeTools=toolKeys.filter(k=>s.gear[k]);
+    if(activeTools.length>1){
+      activeTools.slice(0,-1).forEach(k=>s.gear[k]=false);
+    }
     return s;
   }
+
+  function common(color){
+    return `fill="${color}" stroke="#3e3027" stroke-width="1.8" stroke-linejoin="round" stroke-linecap="round"`;
+  }
   function svgLayer(type,color){
-    const C=color||'#ef4444';
-    const common=`fill="${C}" stroke="#473626" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"`;
-    if(type==='scarf') return `<path ${common} d="M46 73 Q64 81 82 73 L78 85 Q64 91 50 85 Z"/><path ${common} d="M69 84 L79 116 L67 108 L59 118 L58 87 Z"/>`;
-    if(type==='vest') return `<path ${common} opacity=".93" d="M44 88 L54 82 L62 93 L70 82 L81 89 L78 139 L46 139 Z"/><path fill="#fff6" stroke="#473626" stroke-width="1.6" d="M59 94 L65 94 L65 136 L59 136 Z"/><circle cx="53" cy="116" r="4" fill="#fff9"/><circle cx="72" cy="116" r="4" fill="#fff9"/>`;
-    if(type==='camera') return `<path ${common} d="M47 119 h31 a5 5 0 0 1 5 5 v20 a5 5 0 0 1-5 5 H47 a5 5 0 0 1-5-5 v-20 a5 5 0 0 1 5-5Z"/><path fill="#1f2937" stroke="#473626" stroke-width="2" d="M52 115 h10 l4 5 H50Z"/><circle cx="63" cy="134" r="8" fill="#bfe8ff" stroke="#1f2937" stroke-width="3"/><circle cx="63" cy="134" r="3" fill="#2563eb"/>`;
-    if(type==='compass') return `<circle cx="87" cy="128" r="11" fill="#fff8e7" stroke="#473626" stroke-width="2.3"/><circle cx="87" cy="128" r="7" fill="#bde8ff" stroke="#7c5b39" stroke-width="1.5"/><path d="M87 122 l3 6 -6 3 3-9Z" fill="${C}" stroke="#473626" stroke-width="1"/>`;
-    if(type==='binoculars') return `<g transform="translate(41 111)"><rect x="7" y="11" width="26" height="9" rx="4" ${common}/><circle cx="8" cy="16" r="8" ${common}/><circle cx="32" cy="16" r="8" ${common}/><circle cx="8" cy="16" r="4" fill="#9fe8ff"/><circle cx="32" cy="16" r="4" fill="#9fe8ff"/></g>`;
-    if(type==='flag') return `<g transform="translate(82 65)"><path d="M0 10 v70" stroke="#6b4b2a" stroke-width="3.5"/><path d="M2 12 Q20 6 35 14 L35 38 Q20 30 2 36Z" fill="white" stroke="#473626" stroke-width="1.8"/><circle cx="18" cy="24" r="7" fill="#ef4444"/><path d="M11 24 a7 7 0 0 0 14 0 a7 7 0 0 1-14 0" fill="#2563eb"/></g>`;
-    if(type==='badge') return `<g transform="translate(74 90)"><circle cx="0" cy="0" r="10" fill="#ffd34d" stroke="#7b5213" stroke-width="2.2"/><path d="M0-6 2-2 7-1 3 2 4 7 0 4-4 7-3 2-7-1-2-2Z" fill="${C}"/></g>`;
+    const C=color||'#ef4444', K=common(C);
+    // All coordinates use the same 128 x 210 avatar canvas.
+    if(type==='scarf') return `
+      <path ${K} d="M48 77 Q63 83 79 77 L77 84 Q63 90 50 84 Z"/>
+      <path ${K} d="M64 84 L72 105 L65 101 L59 108 L58 86 Z"/>`;
+    if(type==='vest') return `
+      <path ${K} opacity=".86" d="M47 91 L55 86 L62 95 L69 86 L78 91 L76 137 L49 137 Z"/>
+      <path d="M62 96 V136" stroke="#fff" stroke-opacity=".6" stroke-width="2"/>
+      <rect x="51" y="116" width="7" height="7" rx="2" fill="#fff" fill-opacity=".38"/>
+      <rect x="68" y="116" width="7" height="7" rx="2" fill="#fff" fill-opacity=".38"/>`;
+    if(type==='camera') return `
+      <path d="M53 88 Q63 100 72 88" fill="none" stroke="#2f3640" stroke-width="1.6"/>
+      <rect x="54" y="111" width="24" height="17" rx="4" ${K}/>
+      <rect x="58" y="107" width="8" height="5" rx="2" fill="#2f3640"/>
+      <circle cx="66" cy="119.5" r="6" fill="#dff6ff" stroke="#26313c" stroke-width="2"/>
+      <circle cx="66" cy="119.5" r="2.4" fill="#2879c8"/>`;
+    if(type==='compass') return `
+      <path d="M78 105 Q84 110 86 120" fill="none" stroke="#6d4b2b" stroke-width="1.5"/>
+      <circle cx="85" cy="126" r="8.5" fill="#fff7dc" stroke="#4b3523" stroke-width="1.8"/>
+      <circle cx="85" cy="126" r="5.5" fill="#cceeff" stroke="#7b674f" stroke-width="1"/>
+      <path d="M85 121 l2.4 5 -4.8 2.2 z" fill="${C}"/>`;
+    if(type==='binoculars') return `
+      <path d="M50 88 Q63 100 77 88" fill="none" stroke="#314052" stroke-width="1.6"/>
+      <g transform="translate(51 108)">
+        <rect x="5" y="5" width="19" height="7" rx="3" ${K}/>
+        <circle cx="6" cy="9" r="6" ${K}/><circle cx="24" cy="9" r="6" ${K}/>
+        <circle cx="6" cy="9" r="2.7" fill="#bcefff"/><circle cx="24" cy="9" r="2.7" fill="#bcefff"/>
+      </g>`;
+    if(type==='flag') return `
+      <g>
+        <path d="M103 74 V151" stroke="#6b4a2b" stroke-width="2.7"/>
+        <path d="M103 76 Q92 72 81 77 L81 95 Q92 90 103 94 Z" fill="#fff" stroke="#4b3627" stroke-width="1.3"/>
+        <path d="M88 84 a4 4 0 0 0 8 0 a4 4 0 0 1-8 0" fill="#2563eb"/>
+        <path d="M88 84 a4 4 0 0 1 8 0 a4 4 0 0 0-8 0" fill="#ef4444"/>
+        <path d="M84 79 l4 1 M96 79 l4 1 M84 91 l4-1 M96 91 l4-1" stroke="#111827" stroke-width="1"/>
+      </g>`;
+    if(type==='badge') return `
+      <g transform="translate(76 101)">
+        <circle r="6.5" fill="#ffd453" stroke="#694914" stroke-width="1.6"/>
+        <path d="M0-4 1.4-1.5 4.5-.8 2.2 1.3 2.8 4.2 0 2.7-2.8 4.2-2.2 1.3-4.5-.8-1.4-1.5Z" fill="${C}"/>
+      </g>`;
     return '';
   }
+
   function renderStage(el,avatar,state,opts={}){
     state=normalizeState(state||{});
-    const cls=opts.small?'avatar-stage small':'avatar-stage';
-    el.className=cls;
-    const base=`<img class="avatar-base" src="assets/characters-clean/${avatar}.png?v=14" alt="선택 캐릭터">`;
-    const layers=Object.keys(gearMeta).filter(k=>state.gear[k]).map(k=>`<svg class="gear-layer gear-${k}" viewBox="0 0 128 210" aria-hidden="true">${svgLayer(k,state.gearColors[k])}</svg>`).join('');
+    el.className=opts.small?'avatar-stage small':'avatar-stage';
+    const base=`<img class="avatar-base" src="assets/characters-clean/${avatar}.png?v=160" alt="선택 캐릭터">`;
+    const order=['vest','scarf','badge','camera','compass','binoculars','flag'];
+    const layers=order.filter(k=>state.gear[k]).map(k=>
+      `<svg class="gear-layer gear-${k}" viewBox="0 0 128 210" preserveAspectRatio="none" aria-hidden="true">${svgLayer(k,state.gearColors[k])}</svg>`
+    ).join('');
     el.innerHTML=base+layers;
   }
-  window.SJGear={gearMeta,colors,normalizeState,renderStage};
+
+  function toggleGear(state,key){
+    state=normalizeState(state);
+    const willOn=!state.gear[key];
+    if(willOn && gearMeta[key].slot==='tool') toolKeys.forEach(k=>state.gear[k]=false);
+    state.gear[key]=willOn;
+    return state;
+  }
+
+  window.SJGear={gearMeta,colors,normalizeState,renderStage,toggleGear,toolKeys};
 })();
