@@ -125,3 +125,11 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 .gear-camera,.gear-compass,.gear-binoculars,.gear-flag{z-index:5}
 .gear-item small{min-height:12px}
 .slot-help{font-size:11px;color:#628096;font-weight:850;text-align:center;margin:-5px 0 10px}
+
+/* ===== FRESH v1.7 : unified arcade SVG character system ===== */
+.avatar-stage{width:230px;height:365px;display:flex;align-items:center;justify-content:center;overflow:hidden;background:linear-gradient(#dff5ff,#fff);}
+.avatar-stage svg{width:100%;height:100%;display:block;}
+.avatar-stage.small{width:118px;height:188px;background:transparent;box-shadow:none;}
+.char-art{height:205px;background:linear-gradient(180deg,#e9f8ff,#fff);display:flex;align-items:center;justify-content:center;padding:4px;}
+.char-art svg{width:100%;height:100%;display:block;}
+@media(max-width:390px){.avatar-stage{width:205px;height:326px}.char-art{height:176px}}
