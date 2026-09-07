@@ -4,57 +4,49 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>승주 원정대 2026</title>
-  <link rel="stylesheet" href="css/app.css?v=fresh143">
+  <link rel="stylesheet" href="css/app.css?v=fresh150">
 </head>
 <body>
 <main class="app">
   <header class="topbar">
-    <button class="iconbtn" aria-label="설정">⚙️</button>
-    <div class="brand">승주 원정대 <span class="badge">FRESH v1.3</span></div>
+    <button class="iconbtn" id="teacherBtn" aria-label="교사 설정">⚙️</button>
+    <div class="brand">승주 원정대 <span class="badge">FRESH v1.5</span></div>
     <button class="iconbtn" aria-label="메뉴">☰</button>
   </header>
 
   <section class="hero hero-motion" aria-label="부산 롯데월드, 울릉도, 독도 바다 월드맵">
-    <img class="worldmap" src="assets/map/worldmap.jpg?v=fresh143" alt="부산 롯데월드 울릉도 독도 바다 월드맵">
-
-    <!-- FRESH v1.3: 원본 월드맵의 대상만 마스킹해 자연스럽게 움직이는 레이어 -->
-    <div class="sea-shine sea-shine-a" aria-hidden="true"></div>
-    <div class="sea-shine sea-shine-b" aria-hidden="true"></div>
-
-    <img class="map-sprite gull-sprite gull-left" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite gull-sprite gull-right" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite boat-sprite" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite dolphin-sprite dolphin-a" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite dolphin-sprite dolphin-b" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite whale-sprite" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-
-    <img class="map-sprite student-sprite student-1" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite student-sprite student-2" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite student-sprite student-3" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-    <img class="map-sprite student-sprite student-4" src="assets/map/worldmap.jpg?v=fresh143" aria-hidden="true" alt="">
-
-    <div class="route-dot dot-1" aria-hidden="true"></div>
-    <div class="route-dot dot-2" aria-hidden="true"></div>
-    <div class="route-dot dot-3" aria-hidden="true"></div>
-
-    <div class="sparkle sp-1" aria-hidden="true">✦</div>
-    <div class="sparkle sp-2" aria-hidden="true">✦</div>
-    <div class="sparkle sp-3" aria-hidden="true">✦</div>
-
+    <img class="worldmap" src="assets/map/worldmap.jpg?v=fresh150" alt="부산 롯데월드 울릉도 독도 바다 월드맵">
+    <div class="sea-shine sea-shine-a" aria-hidden="true"></div><div class="sea-shine sea-shine-b" aria-hidden="true"></div>
+    <div class="route-dot dot-1" aria-hidden="true"></div><div class="route-dot dot-2" aria-hidden="true"></div><div class="route-dot dot-3" aria-hidden="true"></div>
+    <div class="sparkle sp-1" aria-hidden="true">✦</div><div class="sparkle sp-2" aria-hidden="true">✦</div><div class="sparkle sp-3" aria-hidden="true">✦</div>
     <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
   </section>
 
-  <div class="start-wrap">
-    <button class="gamebtn pulse-start" onclick="location.href='select-student.html'">🧭 원정대 시작하기 〉</button>
+  <div id="homeCharacter" class="home-character-card" hidden>
+    <div id="homeAvatar"></div>
+    <div class="home-character-text"><small>MY EXPEDITION</small><strong id="homeStudentName"></strong><span id="homeGearText">기본 장비</span></div>
+    <span class="home-character-arrow">›</span>
   </div>
 
-  <section class="menu">
-    <div class="tile float-tile"><span>🚩</span>미션</div>
-    <div class="tile float-tile delay-1"><span>📸</span>사진첩</div>
-    <div class="tile float-tile delay-2"><span>🏆</span>랭킹</div>
-  </section>
+  <div class="start-wrap"><button id="startBtn" class="gamebtn pulse-start">🧭 원정대 시작하기 〉</button></div>
+  <section class="menu"><div class="tile float-tile"><span>🚩</span>미션</div><div class="tile float-tile delay-1"><span>📸</span>사진첩</div><div class="tile float-tile delay-2"><span>🏆</span>랭킹</div></section>
 </main>
-<script src="js/app.js?v=fresh143"></script>
-<script src="js/home-motion.js?v=fresh143"></script>
-</body>
-</html>
+<script src="js/app.js?v=fresh150"></script>
+<script src="js/avatar-gear.js?v=fresh150"></script>
+<script src="js/home-motion.js?v=fresh150"></script>
+<script>
+const startBtn=document.querySelector('#startBtn');
+startBtn.onclick=()=>location.href=SJ.entryUrl();
+document.querySelector('#teacherBtn').onclick=()=>location.href='teacher.html';
+if(SJ.isRegistered()){
+  const st=SJGear.normalizeState(SJ.load()), p=SJ.current();
+  const card=document.querySelector('#homeCharacter'); card.hidden=false;
+  document.querySelector('#homeStudentName').textContent=p.name+' 원정대원';
+  SJGear.renderStage(document.querySelector('#homeAvatar'),st.avatar,st,{small:true});
+  const on=Object.entries(st.gear).filter(([,v])=>v).map(([k])=>SJGear.gearMeta[k].emoji);
+  document.querySelector('#homeGearText').textContent=on.length?on.join(' ')+' 장착':'기본 장비';
+  card.onclick=()=>location.href='home.html';
+  startBtn.innerHTML='🧭 '+p.name+' 원정대 계속하기 〉';
+}
+</script>
+</body></html>
