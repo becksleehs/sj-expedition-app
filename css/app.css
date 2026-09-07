@@ -133,3 +133,11 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 .char-art{height:205px;background:linear-gradient(180deg,#e9f8ff,#fff);display:flex;align-items:center;justify-content:center;padding:4px;}
 .char-art svg{width:100%;height:100%;display:block;}
 @media(max-width:390px){.avatar-stage{width:205px;height:326px}.char-art{height:176px}}
+
+/* v1.8 pre-rendered arcade character photos */
+.avatar-stage.photo{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:180px}
+.arcade-photo{width:128px;height:204px;object-fit:cover;object-position:center top;border-radius:14px;box-shadow:0 6px 18px rgba(14,66,100,.16);background:#fff}
+.avatar-stage.photo.small .arcade-photo{width:86px;height:137px}
+.arcade-choice{width:100%;max-width:150px;aspect-ratio:64/102;object-fit:cover;border-radius:14px;display:block;margin:auto}
+.avatar-gear-chips{display:flex;flex-wrap:wrap;gap:4px;justify-content:center;margin-top:7px;max-width:210px}
+.avatar-gear-chips span{font-size:9px;padding:3px 6px;border-radius:999px;background:#eaf7ff;border:1px solid #b8def3;color:#24506b;font-weight:700}
