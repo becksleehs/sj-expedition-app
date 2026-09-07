@@ -62,37 +62,45 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 
 @media (prefers-reduced-motion:reduce){.hero-motion .worldmap,.sea-shine,.seagull,.moving-boat,.boat-emoji,.route-dot,.sparkle,.water-bubble,.pulse-start,.float-tile{animation:none!important}}
 
-/* ===== FRESH v1.2 : object motion from the actual map artwork ===== */
-.sprite{position:absolute;z-index:8;pointer-events:none;user-select:none;will-change:transform,opacity;transform-origin:center}
-.boat-sprite{left:48.6%;top:46.6%;width:19.75%;animation:realBoat 5.2s ease-in-out infinite;filter:drop-shadow(0 4px 4px rgba(0,70,110,.2))}
-@keyframes realBoat{0%,100%{transform:translate(0,0) rotate(-1.2deg)}25%{transform:translate(3px,-4px) rotate(1deg)}50%{transform:translate(7px,-1px) rotate(-.6deg)}75%{transform:translate(3px,3px) rotate(1.2deg)}}
 
-.gull-img{z-index:10;filter:drop-shadow(0 2px 1px rgba(0,80,130,.18))}
-.gull-a{width:13.9%;left:6%;top:8.1%;animation:gullCrossA 12s linear infinite}
-.gull-b{width:12.4%;left:82%;top:9.5%;animation:gullCrossB 15s linear -6s infinite}
-@keyframes gullCrossA{0%{transform:translate(-90px,15px) scale(.85) rotate(-6deg)}25%{transform:translate(90px,-8px) scale(.95) rotate(2deg)}55%{transform:translate(270px,13px) scale(1) rotate(-2deg)}100%{transform:translate(610px,-20px) scale(.82) rotate(5deg)}}
-@keyframes gullCrossB{0%{transform:translate(120px,8px) scale(.8) rotate(5deg)}50%{transform:translate(-220px,-20px) scale(1) rotate(-4deg)}100%{transform:translate(-650px,18px) scale(.84) rotate(4deg)}}
+/* ===== FRESH v1.3 : masked live-map motion (no rectangular crop artifacts) ===== */
+/* Disable the old emoji/crop motion pieces if an older cached DOM survives briefly. */
+.seagull,.moving-boat{display:none!important}
 
-.dolphin{z-index:9;filter:drop-shadow(0 4px 3px rgba(0,87,135,.25))}
-.dolphin-1{left:53.6%;top:63.3%;width:11.4%;animation:dolphinJump1 4.8s ease-in-out infinite}
-.dolphin-2{left:53.4%;top:68.6%;width:11.5%;animation:dolphinJump2 5.4s ease-in-out 1.5s infinite}
-@keyframes dolphinJump1{0%,28%,100%{transform:translateY(0) rotate(0);opacity:.97}45%{transform:translate(8px,-32px) rotate(-12deg) scale(1.08);opacity:1}62%{transform:translate(12px,-6px) rotate(8deg) scale(.98)}}
-@keyframes dolphinJump2{0%,32%,100%{transform:translateY(0) rotate(0);opacity:.96}50%{transform:translate(-5px,-27px) rotate(10deg) scale(1.05);opacity:1}68%{transform:translate(-9px,-4px) rotate(-6deg)}}
+.hero-motion .worldmap{animation:none!important;transform:none!important;filter:none!important}
+.map-sprite{position:absolute;inset:0;width:100%!important;height:100%!important;object-fit:fill;z-index:6;pointer-events:none;will-change:transform;transform-origin:center}
 
-.whale-sprite{left:74.7%;top:42.6%;width:14.2%;animation:whaleBreathe 6s ease-in-out infinite;opacity:.98}
-@keyframes whaleBreathe{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-7px) rotate(-2deg)}}
+/* Tight masks around objects already painted in the base illustration.  Because the
+   whole map is duplicated and clipped, there is no square/rectangular background. */
+.gull-left{clip-path:polygon(5% 8%,11% 6%,17% 8%,22% 12%,18% 16%,11% 15%,5% 12%);animation:gullLeftLive 5.8s ease-in-out infinite}
+.gull-right{clip-path:polygon(81% 8%,87% 7%,94% 10%,97% 14%,92% 16%,85% 15%,80% 12%);animation:gullRightLive 6.7s ease-in-out .7s infinite}
+@keyframes gullLeftLive{0%,100%{transform:translate(0,0) rotate(0)}35%{transform:translate(8px,-5px) rotate(-1deg)}70%{transform:translate(-4px,3px) rotate(1deg)}}
+@keyframes gullRightLive{0%,100%{transform:translate(0,0) rotate(0)}40%{transform:translate(-7px,-4px) rotate(1deg)}75%{transform:translate(4px,2px) rotate(-1deg)}}
 
-.student-motion{position:absolute;inset:0;z-index:9;pointer-events:none}
-.student{z-index:9}
-.student-1{left:15.95%;top:80.8%;width:18.5%;animation:studentBob1 3.2s ease-in-out infinite}
-.student-2{left:31.1%;top:80.9%;width:19.6%;animation:studentBob2 3.4s ease-in-out .35s infinite}
-.student-3{left:48.5%;top:79.6%;width:19.6%;animation:studentBob1 3.6s ease-in-out .7s infinite}
-.student-4{left:65.2%;top:81.1%;width:19.5%;animation:studentBob2 3.3s ease-in-out 1.05s infinite}
-@keyframes studentBob1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2.5px) rotate(.7deg)}}
-@keyframes studentBob2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-.7deg)}}
+.boat-sprite{clip-path:polygon(49% 47%,53% 45%,61% 46%,68% 50%,69% 56%,64% 59%,55% 59%,50% 56%);animation:boatLive 3.8s ease-in-out infinite;transform-origin:59% 53%}
+@keyframes boatLive{0%,100%{transform:translate(0,1px) rotate(-.25deg)}50%{transform:translate(5px,-4px) rotate(.7deg)}}
 
-/* tiny splash rings under animated animals/boat */
-.hero-motion:before{content:"";position:absolute;z-index:7;left:52%;top:55%;width:22%;height:3%;border-radius:50%;border-bottom:3px solid rgba(255,255,255,.7);opacity:.7;animation:wakePulse 2s ease-in-out infinite;pointer-events:none}
-@keyframes wakePulse{0%,100%{transform:scaleX(.7);opacity:.25}50%{transform:scaleX(1.08);opacity:.75}}
+.dolphin-a{clip-path:polygon(53% 64%,57% 62%,62% 64%,64% 68%,61% 70%,57% 69%,53% 67%);animation:dolphinJumpA 4.3s cubic-bezier(.45,0,.35,1) infinite;transform-origin:59% 68%}
+.dolphin-b{clip-path:polygon(53% 69%,57% 68%,63% 70%,65% 73%,62% 75%,57% 74%,53% 72%);animation:dolphinJumpB 4.3s cubic-bezier(.45,0,.35,1) 2.1s infinite;transform-origin:59% 73%}
+@keyframes dolphinJumpA{0%,18%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(-14px) rotate(-4deg)}48%{transform:translateY(-20px) rotate(1deg)}62%{transform:translateY(-7px) rotate(3deg)}74%{transform:translateY(0) rotate(0)}}
+@keyframes dolphinJumpB{0%,18%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(-11px) rotate(4deg)}48%{transform:translateY(-17px) rotate(-1deg)}62%{transform:translateY(-5px) rotate(-3deg)}74%{transform:translateY(0) rotate(0)}}
 
-@media (prefers-reduced-motion:reduce){.sprite{animation:none!important}}
+.whale-sprite{clip-path:polygon(75% 43%,80% 42%,87% 43%,92% 46%,91% 50%,86% 51%,79% 50%,75% 47%);animation:whaleLive 5.2s ease-in-out infinite;transform-origin:84% 48%}
+@keyframes whaleLive{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-4px) rotate(-.5deg)}}
+
+/* Four student backs: each mask is intentionally close to the figure. Motion is
+   only 1-3px so the static art underneath remains invisible to the eye. */
+.student-1{clip-path:polygon(18% 81%,21% 79%,27% 79%,31% 84%,32% 95%,27% 100%,17% 100%,15% 92%);animation:kidBob1 2.7s ease-in-out infinite;transform-origin:24% 94%}
+.student-2{clip-path:polygon(34% 80%,39% 79%,45% 81%,48% 88%,48% 100%,34% 100%,31% 91%);animation:kidBob2 3.1s ease-in-out .35s infinite;transform-origin:40% 95%}
+.student-3{clip-path:polygon(50% 79%,56% 78%,62% 81%,66% 88%,66% 100%,49% 100%,47% 90%);animation:kidBob3 2.9s ease-in-out .7s infinite;transform-origin:57% 95%}
+.student-4{clip-path:polygon(68% 80%,74% 79%,81% 82%,84% 89%,84% 100%,67% 100%,65% 91%);animation:kidBob4 3.3s ease-in-out 1.05s infinite;transform-origin:75% 95%}
+@keyframes kidBob1{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2.5px) rotate(-.25deg)}}
+@keyframes kidBob2{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(.25deg)}}
+@keyframes kidBob3{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-3px) rotate(-.2deg)}}
+@keyframes kidBob4{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(-2px) rotate(.2deg)}}
+
+/* Small water ripples beneath the active wildlife/boat. */
+.hero-motion:before{content:"";position:absolute;z-index:5;left:53%;top:56%;width:17%;height:3%;border:2px solid rgba(255,255,255,.6);border-left-color:transparent;border-right-color:transparent;border-radius:50%;animation:wakePulse 2.2s ease-out infinite;pointer-events:none}
+@keyframes wakePulse{0%{transform:scale(.7);opacity:.15}50%{opacity:.75}100%{transform:scale(1.25);opacity:0}}
+
+@media (prefers-reduced-motion:reduce){.map-sprite{animation:none!important}.hero-motion:before{animation:none!important}}

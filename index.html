@@ -4,43 +4,43 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <title>승주 원정대 2026</title>
-  <link rel="stylesheet" href="css/app.css?v=fresh12">
+  <link rel="stylesheet" href="css/app.css?v=fresh13">
 </head>
 <body>
 <main class="app">
   <header class="topbar">
     <button class="iconbtn" aria-label="설정">⚙️</button>
-    <div class="brand">승주 원정대 <span class="badge">FRESH v1.2</span></div>
+    <div class="brand">승주 원정대 <span class="badge">FRESH v1.3</span></div>
     <button class="iconbtn" aria-label="메뉴">☰</button>
   </header>
 
   <section class="hero hero-motion" aria-label="부산 롯데월드, 울릉도, 독도 바다 월드맵">
-    <img class="worldmap" src="assets/map/worldmap.jpg?v=fresh12" alt="부산 롯데월드 울릉도 독도 바다 월드맵">
+    <img class="worldmap" src="assets/map/worldmap.jpg?v=fresh13" alt="부산 롯데월드 울릉도 독도 바다 월드맵">
 
+    <!-- FRESH v1.3: 원본 월드맵의 대상만 마스킹해 자연스럽게 움직이는 레이어 -->
     <div class="sea-shine sea-shine-a" aria-hidden="true"></div>
     <div class="sea-shine sea-shine-b" aria-hidden="true"></div>
 
-    <!-- 원본 그림에서 잘라낸 오브젝트를 같은 위치에 겹쳐 실제로 움직이게 함 -->
-    <img class="sprite gull-img gull-a" src="assets/sprites/gullA.png?v=fresh12" alt="" aria-hidden="true">
-    <img class="sprite gull-img gull-b" src="assets/sprites/gullB.png?v=fresh12" alt="" aria-hidden="true">
-    <img class="sprite boat-sprite" src="assets/sprites/boat.png?v=fresh12" alt="" aria-hidden="true">
-    <img class="sprite dolphin dolphin-1" src="assets/sprites/dolphin1.png?v=fresh12" alt="" aria-hidden="true">
-    <img class="sprite dolphin dolphin-2" src="assets/sprites/dolphin2.png?v=fresh12" alt="" aria-hidden="true">
-    <img class="sprite whale-sprite" src="assets/sprites/whale.png?v=fresh12" alt="" aria-hidden="true">
+    <img class="map-sprite gull-sprite gull-left" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite gull-sprite gull-right" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite boat-sprite" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite dolphin-sprite dolphin-a" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite dolphin-sprite dolphin-b" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite whale-sprite" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
 
-    <div class="student-motion" aria-hidden="true">
-      <img class="sprite student student-1" src="assets/sprites/student1.png?v=fresh12" alt="">
-      <img class="sprite student student-2" src="assets/sprites/student2.png?v=fresh12" alt="">
-      <img class="sprite student student-3" src="assets/sprites/student3.png?v=fresh12" alt="">
-      <img class="sprite student student-4" src="assets/sprites/student4.png?v=fresh12" alt="">
-    </div>
+    <img class="map-sprite student-sprite student-1" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite student-sprite student-2" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite student-sprite student-3" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
+    <img class="map-sprite student-sprite student-4" src="assets/map/worldmap.jpg?v=fresh13" aria-hidden="true" alt="">
 
     <div class="route-dot dot-1" aria-hidden="true"></div>
     <div class="route-dot dot-2" aria-hidden="true"></div>
     <div class="route-dot dot-3" aria-hidden="true"></div>
+
     <div class="sparkle sp-1" aria-hidden="true">✦</div>
     <div class="sparkle sp-2" aria-hidden="true">✦</div>
     <div class="sparkle sp-3" aria-hidden="true">✦</div>
+
     <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
   </section>
 
@@ -54,7 +54,7 @@
     <div class="tile float-tile delay-2"><span>🏆</span>랭킹</div>
   </section>
 </main>
-<script src="js/app.js?v=fresh12"></script>
-<script src="js/home-motion.js?v=fresh12"></script>
+<script src="js/app.js?v=fresh13"></script>
+<script src="js/home-motion.js?v=fresh13"></script>
 </body>
 </html>
