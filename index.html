@@ -1,6 +1,57 @@
-<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><title>승주 원정대 2026</title><link rel="stylesheet" href="css/app.css?v=fresh1"></head><body><main class="app">
-<header class="topbar"><button class="iconbtn">⚙️</button><div class="brand">승주 원정대 <span class="badge">FRESH v1</span></div><button class="iconbtn">☰</button></header>
-<section class="hero"><img src="assets/map/worldmap.jpg?v=fresh1" alt="부산 롯데월드 울릉도 독도 바다 월드맵"></section>
-<div class="start-wrap"><button class="gamebtn" onclick="location.href='select-student.html'">🧭 원정대 시작하기 〉</button></div>
-<section class="menu"><div class="tile"><span>🚩</span>미션</div><div class="tile"><span>📸</span>사진첩</div><div class="tile"><span>🏆</span>랭킹</div></section>
-</main><script src="js/app.js?v=fresh1"></script></body></html>
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>승주 원정대 2026</title>
+  <link rel="stylesheet" href="css/app.css?v=fresh11">
+</head>
+<body>
+<main class="app">
+  <header class="topbar">
+    <button class="iconbtn" aria-label="설정">⚙️</button>
+    <div class="brand">승주 원정대 <span class="badge">FRESH v1.1</span></div>
+    <button class="iconbtn" aria-label="메뉴">☰</button>
+  </header>
+
+  <section class="hero hero-motion" aria-label="부산 롯데월드, 울릉도, 독도 바다 월드맵">
+    <img class="worldmap" src="assets/map/worldmap.jpg?v=fresh11" alt="부산 롯데월드 울릉도 독도 바다 월드맵">
+
+    <!-- 움직이는 바다 연출: 원본 월드맵은 그대로 사용 -->
+    <div class="sea-shine sea-shine-a" aria-hidden="true"></div>
+    <div class="sea-shine sea-shine-b" aria-hidden="true"></div>
+
+    <div class="seagull gull-1" aria-hidden="true">◜⌒◝</div>
+    <div class="seagull gull-2" aria-hidden="true">◜⌒◝</div>
+    <div class="seagull gull-3" aria-hidden="true">◜⌒◝</div>
+
+    <div class="moving-boat" aria-hidden="true">
+      <span class="boat-emoji">⛴️</span>
+      <span class="boat-wake"></span>
+    </div>
+
+    <div class="route-dot dot-1" aria-hidden="true"></div>
+    <div class="route-dot dot-2" aria-hidden="true"></div>
+    <div class="route-dot dot-3" aria-hidden="true"></div>
+
+    <div class="sparkle sp-1" aria-hidden="true">✦</div>
+    <div class="sparkle sp-2" aria-hidden="true">✦</div>
+    <div class="sparkle sp-3" aria-hidden="true">✦</div>
+
+    <div id="bubbleLayer" class="bubble-layer" aria-hidden="true"></div>
+  </section>
+
+  <div class="start-wrap">
+    <button class="gamebtn pulse-start" onclick="location.href='select-student.html'">🧭 원정대 시작하기 〉</button>
+  </div>
+
+  <section class="menu">
+    <div class="tile float-tile"><span>🚩</span>미션</div>
+    <div class="tile float-tile delay-1"><span>📸</span>사진첩</div>
+    <div class="tile float-tile delay-2"><span>🏆</span>랭킹</div>
+  </section>
+</main>
+<script src="js/app.js?v=fresh11"></script>
+<script src="js/home-motion.js?v=fresh11"></script>
+</body>
+</html>
