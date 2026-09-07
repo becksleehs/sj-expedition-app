@@ -2,60 +2,67 @@
   const gearMeta={
     vest:{label:'탐험복',emoji:'🧥'},hat:{label:'모자',emoji:'👒'},scarf:{label:'스카프',emoji:'🧣'},backpack:{label:'가방',emoji:'🎒'},shoes:{label:'신발',emoji:'🥾'},camera:{label:'카메라',emoji:'📷'},binoculars:{label:'망원경',emoji:'🔭'},compass:{label:'나침반',emoji:'🧭'},flag:{label:'태극기',emoji:'🇰🇷'},badge:{label:'배지',emoji:'🏅'}
   };
-  const colors=['#e84646','#2f80d8','#3e9b64','#e6a028','#7b61c9'];
   const profiles={
-    f1:{name:'밝은 기록가',accent:'#ef6fa7',x:0,y:0,scale:1},
-    f2:{name:'차분한 지식가',accent:'#6f64c8',x:0,y:0,scale:1},
-    f3:{name:'다정한 소통가',accent:'#ef8b3c',x:0,y:0,scale:1},
-    m1:{name:'활발한 탐험가',accent:'#2f80d8',x:0,y:6,scale:0.99},
-    m2:{name:'든든한 전략가',accent:'#3e9b64',x:0,y:7,scale:0.99},
-    m3:{name:'긍정 에너지',accent:'#ef8b3c',x:0,y:6,scale:0.99}
+    f1:{name:'밝은 기록가',accent:'#ef6fa7',dx:0,dy:0},
+    f2:{name:'차분한 지식가',accent:'#6659bd',dx:0,dy:0},
+    f3:{name:'다정한 소통가',accent:'#ef8b3c',dx:0,dy:0},
+    m1:{name:'활발한 탐험가',accent:'#2f80d8',dx:0,dy:2},
+    m2:{name:'든든한 전략가',accent:'#3e9b64',dx:0,dy:4},
+    m3:{name:'긍정 에너지',accent:'#ef8b3c',dx:0,dy:2}
   };
   const order=Object.keys(gearMeta);
   function normalizeState(s){
-    s=s||{}; s.gear=s.gear||{}; s.gearColors=s.gearColors||{};
-    order.forEach(k=>{ if(!(k in s.gear)) s.gear[k]=false; if(!s.gearColors[k]) s.gearColors[k]=colors[0]; });
-    s.gearSystemVersion=22; return s;
+    s=s||{}; s.gear=s.gear||{};
+    const previous=Number(s.gearSystemVersion||0);
+    order.forEach(k=>{ if(!(k in s.gear)) s.gear[k]=false; });
+    // v2.3은 이전 버전의 과도하게 겹친 장비 상태를 한 번 비우고 새 좌표계에서 시작한다.
+    if(previous<23){ order.forEach(k=>s.gear[k]=false); }
+    // 자연스러운 손장비: 망원경과 태극기는 동시에 들지 않음.
+    if(s.gear.binoculars && s.gear.flag) s.gear.flag=false;
+    s.gearSystemVersion=23; return s;
   }
   function active(s){s=normalizeState(s);return order.filter(k=>!!s.gear[k]);}
-  function col(s,k,fallback){return (s.gearColors&&s.gearColors[k])||fallback;}
   function defs(){return `<defs>
-    <filter id="shadow" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#203448" flood-opacity=".28"/></filter>
-    <linearGradient id="khaki" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4d49a"/><stop offset="1" stop-color="#c99b55"/></linearGradient>
-    <linearGradient id="bag" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6f875a"/><stop offset="1" stop-color="#415b3d"/></linearGradient>
-    <linearGradient id="boot" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b5b38"/><stop offset="1" stop-color="#49301f"/></linearGradient>
+    <filter id="soft" x="-25%" y="-25%" width="150%" height="160%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#17324b" flood-opacity=".20"/></filter>
+    <linearGradient id="khaki23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f5deb4"/><stop offset="1" stop-color="#c59a60"/></linearGradient>
+    <linearGradient id="bag23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#738a5f"/><stop offset="1" stop-color="#40573c"/></linearGradient>
+    <linearGradient id="boot23" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8e603e"/><stop offset="1" stop-color="#3e2a1d"/></linearGradient>
   </defs>`;}
   function backSvg(s){
-    const g=s.gear||{}; if(!g.backpack)return '';
+    if(!s.gear.backpack) return '';
     return `<svg class="gear-svg gear-back" viewBox="0 0 1086 1448" aria-hidden="true">${defs()}
-      <g filter="url(#shadow)">
-        <path d="M250 720 Q185 750 190 925 Q195 1070 300 1110 L360 1035 L355 760Z" fill="url(#bag)" stroke="#263a2b" stroke-width="22"/>
-        <path d="M836 720 Q901 750 896 925 Q891 1070 786 1110 L726 1035 L731 760Z" fill="url(#bag)" stroke="#263a2b" stroke-width="22"/>
-        <rect x="205" y="850" width="112" height="120" rx="35" fill="#81956d" stroke="#344c37" stroke-width="16"/>
-        <rect x="769" y="850" width="112" height="120" rx="35" fill="#81956d" stroke="#344c37" stroke-width="16"/>
+      <g filter="url(#soft)" opacity=".98">
+        <path d="M225 720 Q168 760 180 920 Q185 1045 285 1090 L352 1028 L350 748Z" fill="url(#bag23)" stroke="#314334" stroke-width="18"/>
+        <path d="M861 720 Q918 760 906 920 Q901 1045 801 1090 L734 1028 L736 748Z" fill="url(#bag23)" stroke="#314334" stroke-width="18"/>
+        <rect x="200" y="848" width="100" height="108" rx="28" fill="#8a9f77" stroke="#40573c" stroke-width="13"/>
+        <rect x="786" y="848" width="100" height="108" rx="28" fill="#8a9f77" stroke="#40573c" stroke-width="13"/>
       </g></svg>`;
   }
   function frontSvg(id,s){
-    const g=s.gear||{}; const p=profiles[id]||profiles.f1; const scarf=col(s,'scarf','#e84646');
-    let x='';
-    if(g.vest) x+=`<g filter="url(#shadow)"><path d="M342 700 Q410 660 490 685 L543 770 L596 685 Q676 660 744 700 L718 1015 Q648 1055 584 1014 L543 950 L502 1014 Q438 1055 368 1015Z" fill="url(#khaki)" stroke="#65482a" stroke-width="20"/><path d="M543 765V1008" stroke="#765530" stroke-width="17"/><rect x="390" y="855" width="118" height="102" rx="22" fill="#f2d49d" stroke="#765530" stroke-width="15"/><rect x="578" y="855" width="118" height="102" rx="22" fill="#f2d49d" stroke="#765530" stroke-width="15"/><circle cx="543" cy="828" r="13" fill="#d39838"/><circle cx="543" cy="905" r="13" fill="#d39838"/></g>`;
-    if(g.backpack) x+=`<g opacity=".98"><path d="M370 720 Q330 825 370 1000" fill="none" stroke="#344c37" stroke-width="30" stroke-linecap="round"/><path d="M716 720 Q756 825 716 1000" fill="none" stroke="#344c37" stroke-width="30" stroke-linecap="round"/></g>`;
-    if(g.scarf) x+=`<g filter="url(#shadow)"><path d="M392 642 Q543 720 694 642 L636 790 L543 748 L450 790Z" fill="${scarf}" stroke="#862c2c" stroke-width="18"/><path d="M520 738 L558 738 L604 948 L540 905 L488 955Z" fill="${scarf}" stroke="#862c2c" stroke-width="15"/></g>`;
-    if(g.hat) x+=`<g filter="url(#shadow)"><path d="M190 325 Q543 70 896 325 Q846 385 760 410 Q543 465 326 410 Q240 385 190 325Z" fill="#ead099" stroke="#654b2d" stroke-width="22"/><path d="M330 306 Q362 105 543 92 Q724 105 756 306Z" fill="#f0d9a7" stroke="#654b2d" stroke-width="22"/><path d="M335 287 Q543 230 751 287" fill="none" stroke="#667451" stroke-width="30"/><circle cx="543" cy="285" r="42" fill="${p.accent}" stroke="#5a4229" stroke-width="15"/><path d="M543 260l13 27 30 4-22 21 5 30-26-14-26 14 5-30-22-21 30-4z" fill="#fff0a8"/></g>`;
-    if(g.shoes) x+=`<g filter="url(#shadow)"><path d="M322 1205 Q370 1168 455 1200 L477 1295 Q432 1378 305 1368 Q260 1320 285 1250Z" fill="url(#boot)" stroke="#39271d" stroke-width="22"/><path d="M631 1200 Q716 1168 764 1205 L801 1250 Q826 1320 781 1368 Q654 1378 609 1295Z" fill="url(#boot)" stroke="#39271d" stroke-width="22"/><path d="M304 1260H454M632 1260H782" stroke="#d5a66d" stroke-width="16"/></g>`;
-    if(g.camera) x+=`<g filter="url(#shadow)"><path d="M390 770 Q543 870 696 770" fill="none" stroke="#26384a" stroke-width="22"/><rect x="383" y="845" width="320" height="205" rx="45" fill="#34485b" stroke="#1b2936" stroke-width="22"/><rect x="430" y="805" width="100" height="65" rx="18" fill="#536a7c" stroke="#1b2936" stroke-width="18"/><circle cx="543" cy="948" r="87" fill="#173f58" stroke="#1b2936" stroke-width="22"/><circle cx="543" cy="948" r="59" fill="#47b7e7"/><circle cx="543" cy="948" r="30" fill="#a9e6ff"/><circle cx="653" cy="890" r="15" fill="#ffce52"/></g>`;
-    if(g.binoculars) x+=`<g filter="url(#shadow)"><path d="M390 748 Q543 850 696 748" fill="none" stroke="#2d3e4f" stroke-width="22"/><rect x="365" y="800" width="155" height="150" rx="50" fill="#214f73" stroke="#173349" stroke-width="22"/><rect x="566" y="800" width="155" height="150" rx="50" fill="#214f73" stroke="#173349" stroke-width="22"/><rect x="500" y="830" width="86" height="68" rx="20" fill="#345e7e"/><circle cx="445" cy="872" r="48" fill="#56bce5"/><circle cx="641" cy="872" r="48" fill="#56bce5"/><circle cx="445" cy="872" r="25" fill="#bcecff"/><circle cx="641" cy="872" r="25" fill="#bcecff"/></g>`;
-    if(g.compass) x+=`<g filter="url(#shadow)"><path d="M668 745 Q720 860 688 975" fill="none" stroke="#7f613c" stroke-width="18"/><circle cx="682" cy="994" r="72" fill="#f5e8be" stroke="#775631" stroke-width="20"/><circle cx="682" cy="994" r="49" fill="#d8f1f8" stroke="#8da7ad" stroke-width="10"/><path d="M682 950 L710 1003 L667 1040Z" fill="#df4d43"/><path d="M682 1038 L656 986 L697 952Z" fill="#3575b8"/><circle cx="682" cy="994" r="8" fill="#59452d"/></g>`;
-    if(g.badge) x+=`<g filter="url(#shadow)"><circle cx="696" cy="786" r="54" fill="#f4c84e" stroke="#8b5c1f" stroke-width="18"/><path d="M696 747l15 30 34 5-25 24 6 34-30-16-30 16 6-34-25-24 34-5z" fill="#fff2a4"/></g>`;
-    if(g.flag) x+=`<g filter="url(#shadow)"><rect x="820" y="640" width="22" height="560" rx="11" fill="#6e4a2d"/><path d="M842 655 H1035 V825 H842Z" fill="#fff" stroke="#c8d0d9" stroke-width="10"/><circle cx="938" cy="740" r="44" fill="#e44c4c"/><path d="M894 740 A44 44 0 0 0 982 740" fill="#2d66b2"/><path d="M868 690h34M974 690h34M868 790h34M974 790h34" stroke="#243039" stroke-width="12"/></g>`;
+    const g=s.gear||{}, p=profiles[id]||profiles.f1; let x='';
+    if(g.vest) x+=`<g filter="url(#soft)"><path d="M366 716 Q425 680 488 696 L543 757 L598 696 Q661 680 720 716 L701 995 Q638 1023 586 987 L543 931 L500 987 Q448 1023 385 995Z" fill="url(#khaki23)" stroke="#6c4c2f" stroke-width="16"/><path d="M543 758V986" stroke="#7a5735" stroke-width="13"/><rect x="402" y="842" width="100" height="82" rx="18" fill="#efd09e" stroke="#7a5735" stroke-width="11"/><rect x="584" y="842" width="100" height="82" rx="18" fill="#efd09e" stroke="#7a5735" stroke-width="11"/><circle cx="543" cy="822" r="10" fill="#d49a3a"/><circle cx="543" cy="888" r="10" fill="#d49a3a"/></g>`;
+    if(g.backpack) x+=`<g opacity=".95"><path d="M384 731 Q345 816 378 979" fill="none" stroke="#40573c" stroke-width="22" stroke-linecap="round"/><path d="M702 731 Q741 816 708 979" fill="none" stroke="#40573c" stroke-width="22" stroke-linecap="round"/></g>`;
+    if(g.scarf) x+=`<g filter="url(#soft)"><path d="M435 667 Q543 711 651 667 L617 744 Q543 771 469 744Z" fill="#e84b4b" stroke="#8f2f30" stroke-width="13"/><path d="M526 739 L561 739 L589 889 L546 855 L510 896Z" fill="#e84b4b" stroke="#8f2f30" stroke-width="11"/></g>`;
+    if(g.hat) x+=`<g filter="url(#soft)"><path d="M262 344 Q543 214 824 344 Q788 390 720 407 Q543 444 366 407 Q298 390 262 344Z" fill="#ead09a" stroke="#684c31" stroke-width="17"/><path d="M362 333 Q388 165 543 151 Q698 165 724 333Z" fill="#f0d9a7" stroke="#684c31" stroke-width="17"/><path d="M368 310 Q543 268 718 310" fill="none" stroke="#6e7e59" stroke-width="22"/><circle cx="543" cy="307" r="32" fill="#4d96c7" stroke="#5c432d" stroke-width="11"/><path d="M543 286l9 18 20 3-14 14 3 20-18-10-18 10 3-20-14-14 20-3z" fill="#fff0a8"/></g>`;
+    if(g.shoes) x+=`<g filter="url(#soft)"><path d="M323 1206 Q367 1175 438 1201 L456 1280 Q416 1340 310 1338 Q274 1302 292 1250Z" fill="url(#boot23)" stroke="#3d2a1d" stroke-width="17"/><path d="M648 1201 Q719 1175 763 1206 L794 1250 Q812 1302 776 1338 Q670 1340 630 1280Z" fill="url(#boot23)" stroke="#3d2a1d" stroke-width="17"/><path d="M308 1260H445M641 1260H778" stroke="#c99a65" stroke-width="11"/></g>`;
+    if(g.camera) x+=`<g filter="url(#soft)"><path d="M426 746 Q543 838 660 746" fill="none" stroke="#263a4a" stroke-width="16"/><rect x="438" y="900" width="210" height="132" rx="30" fill="#354b5e" stroke="#1b2a36" stroke-width="15"/><rect x="471" y="868" width="72" height="44" rx="12" fill="#5b7385" stroke="#1b2a36" stroke-width="12"/><circle cx="543" cy="966" r="55" fill="#173f58" stroke="#1b2a36" stroke-width="15"/><circle cx="543" cy="966" r="36" fill="#47b7e7"/><circle cx="543" cy="966" r="17" fill="#b9efff"/><circle cx="621" cy="927" r="9" fill="#ffcf52"/></g>`;
+    if(g.binoculars) x+=`<g filter="url(#soft)"><path d="M445 738 Q543 805 641 738" fill="none" stroke="#2c3c4c" stroke-width="14"/><rect x="407" y="790" width="105" height="92" rx="30" fill="#235477" stroke="#17394f" stroke-width="14"/><rect x="574" y="790" width="105" height="92" rx="30" fill="#235477" stroke="#17394f" stroke-width="14"/><rect x="500" y="812" width="86" height="42" rx="15" fill="#3d6784"/><circle cx="458" cy="835" r="31" fill="#62c3e8"/><circle cx="628" cy="835" r="31" fill="#62c3e8"/><circle cx="458" cy="835" r="14" fill="#d7f6ff"/><circle cx="628" cy="835" r="14" fill="#d7f6ff"/></g>`;
+    if(g.compass) x+=`<g filter="url(#soft)"><path d="M682 808 Q716 874 700 945" fill="none" stroke="#8a683e" stroke-width="12"/><circle cx="698" cy="960" r="48" fill="#f4e6bd" stroke="#775731" stroke-width="13"/><circle cx="698" cy="960" r="33" fill="#d9f2fa" stroke="#91aab1" stroke-width="7"/><path d="M698 932 L716 964 L687 987Z" fill="#dc4c42"/><path d="M698 988 L682 957 L709 933Z" fill="#3475b6"/><circle cx="698" cy="960" r="5" fill="#5a462d"/></g>`;
+    if(g.badge) x+=`<g filter="url(#soft)"><circle cx="683" cy="792" r="31" fill="#f3c84e" stroke="#8b5d21" stroke-width="11"/><path d="M683 773l8 16 18 3-13 12 3 18-16-9-16 9 3-18-13-12 18-3z" fill="#fff3ab"/></g>`;
+    if(g.flag) x+=`<g filter="url(#soft)"><rect x="842" y="666" width="15" height="445" rx="8" fill="#6f4a2d"/><path d="M857 681 H1010 V797 H857Z" fill="#fff" stroke="#cbd3da" stroke-width="7"/><circle cx="933" cy="739" r="31" fill="#e14c4c"/><path d="M902 739 A31 31 0 0 0 964 739" fill="#2d66b2"/><path d="M878 703h24M964 703h24M878 775h24M964 775h24" stroke="#253039" stroke-width="8"/></g>`;
     return `<svg class="gear-svg gear-front" viewBox="0 0 1086 1448" aria-hidden="true">${defs()}${x}</svg>`;
   }
   function renderStage(el,id,s,opts={}){
     s=normalizeState(s||{}); const p=profiles[id]||profiles.f1;
-    el.className='avatar-stage v22'+(opts.small?' small':'');
-    el.innerHTML=`<div class="avatar-stack-v22" style="--avatar-y:${p.y}px;--avatar-scale:${p.scale}">${backSvg(s)}<img class="avatar-photo-v22" src="assets/avatar-v22/${id}.png?v=220" alt="${p.name}">${frontSvg(id,s)}</div>`;
+    el.className='avatar-stage v23'+(opts.small?' small':'');
+    el.innerHTML=`<div class="avatar-stack-v23" style="--avatar-dy:${p.dy}px">${backSvg(s)}<img class="avatar-photo-v23" src="assets/avatar-v23/${id}.png?v=230" alt="${p.name}">${frontSvg(id,s)}</div>`;
   }
-  function renderChoice(el,id){const s=normalizeState({gear:{}}); el.innerHTML=`<div class="avatar-choice-v22"><img src="assets/avatar-v22/${id}.png?v=220" alt="${profiles[id].name}"></div>`;}
-  function toggleGear(s,k){s=normalizeState(s);s.gear[k]=!s.gear[k];return s;}
-  window.SJGear={gearMeta,colors,profiles,normalizeState,renderStage,renderChoice,toggleGear,active};
+  function renderChoice(el,id){el.innerHTML=`<div class="avatar-choice-v23"><img src="assets/avatar-v23/${id}.png?v=230" alt="${profiles[id].name}"></div>`;}
+  function toggleGear(s,k){
+    s=normalizeState(s); const next=!s.gear[k];
+    if(next && k==='binoculars') s.gear.flag=false;
+    if(next && k==='flag') s.gear.binoculars=false;
+    s.gear[k]=next; return s;
+  }
+  window.SJGear={gearMeta,profiles,normalizeState,renderStage,renderChoice,toggleGear,active};
 })();

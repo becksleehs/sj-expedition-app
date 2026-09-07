@@ -178,3 +178,21 @@ body{min-height:100vh}.app{width:min(100%,520px);min-height:100vh;margin:auto;ba
 .equip-stage-card .avatar-stage.v22{width:270px;height:360px}
 .badge{font-size:12px!important;background:#ffca28!important;color:#473200!important;border:2px solid #fff6c9;box-shadow:0 2px 0 rgba(79,54,0,.2);font-weight:950!important;letter-spacing:.2px}
 @media(max-width:390px){.avatar-stage.v22{width:230px;height:307px}.equip-stage-card .avatar-stage.v22{width:238px;height:317px}.arcade-characters .char-art{height:184px}.avatar-stage.v22.small{width:80px;height:107px}}
+
+/* ===== v2.3 SINGLE RENDERER FIX: exact PNG + refined gear ===== */
+.avatar-stage.v23{width:270px;height:360px;display:flex;align-items:center;justify-content:center;background:linear-gradient(180deg,#eefaff,#fff);border-radius:24px;overflow:hidden;box-shadow:inset 0 0 0 2px #cceafa}
+.avatar-stack-v23{position:relative;width:100%;height:100%;aspect-ratio:1086/1448;transform:translateY(var(--avatar-dy,0px));transform-origin:center center}
+.avatar-photo-v23,.avatar-stage.v23 .gear-svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.avatar-photo-v23{object-fit:contain;z-index:2;filter:drop-shadow(0 4px 5px rgba(31,65,87,.13))}
+.avatar-stage.v23 .gear-back{z-index:1;pointer-events:none}.avatar-stage.v23 .gear-front{z-index:3;pointer-events:none}
+.avatar-stage.v23.small{width:104px;height:139px;background:transparent;box-shadow:none;border-radius:12px;overflow:visible}
+.avatar-stage.v23.small .avatar-photo-v23{filter:none}
+.avatar-choice-v23{width:100%;height:100%;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.avatar-choice-v23 img{width:100%;height:100%;object-fit:contain;display:block;filter:drop-shadow(0 3px 3px rgba(44,79,102,.11))}
+.arcade-characters .char-art .avatar-choice-v23{height:100%}
+.equip-stage-card .avatar-stage.v23{width:286px;height:382px}
+.home-character-card #homeAvatar .avatar-stage.v23.small{width:72px;height:96px!important;border-radius:12px;background:transparent;box-shadow:none}
+.profile #avatarStage .avatar-stage.v23.small{width:112px;height:150px}
+.gear-item.on{background:linear-gradient(180deg,#fff7d8,#ffe8a4);border-color:#ffad1f;box-shadow:0 0 0 2px rgba(255,173,31,.18),0 5px 12px rgba(34,102,145,.09)}
+.gear-item.on strong{color:#8a5700}.gear-item.on small{color:#9b6b18}
+@media(max-width:390px){.avatar-stage.v23{width:238px;height:317px}.equip-stage-card .avatar-stage.v23{width:246px;height:328px}.avatar-stage.v23.small{width:86px;height:115px}.home-character-card #homeAvatar .avatar-stage.v23.small{width:66px;height:88px!important}.arcade-characters .char-art{height:188px}}
