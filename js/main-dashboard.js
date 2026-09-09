@@ -10,29 +10,33 @@
   const countdown=days>0?'D-'+days:(now<end?'원정 진행 중':'원정 완료');
   if($('#countdown')) $('#countdown').textContent=countdown;
   if($('#readyStat')) $('#readyStat').textContent=countdown;
-  if($('#readyProgress')) $('#readyProgress').style.width=days>0?Math.max(8,Math.min(92,100-(days/40*100)))+'%':'100%';
 
   const registered=SJ.isRegistered(), st=SJGear.normalizeState(SJ.load()), p=SJ.current(), embark=$('#embarkBtn');
   if(registered&&p){
-    $('#dashName').textContent=p.name;
-    $('#dashGrade').textContent=p.grade+'학년';
-    $('#passportName').textContent=p.name;
-    $('#passportGrade').textContent=p.grade+'학년';
-    $('#dashRole').textContent=SJGear.profiles[st.avatar]?.name?.split('·').slice(1).join('·').trim()||'승주 원정대 탐험가';
-    $('#embarkSub').textContent=p.name+' 원정대원, 계속 탐험해요!';
-    SJGear.renderStage($('#dashAvatar'),st.avatar,st,{small:true});
-    $('#profileEdit').onclick=()=>location.href='equipment.html';
-    $('#profileCard').onclick=e=>{if(!e.target.closest('button')) location.href='home.html'};
-    embark.onclick=()=>location.href='home.html';
+    if($('#dashName')) $('#dashName').textContent=p.name;
+    if($('#dashGrade')) $('#dashGrade').textContent=p.grade+'학년';
+    if($('#dashRole')) $('#dashRole').textContent=SJGear.profiles[st.avatar]?.name?.split('·').slice(1).join('·').trim()||'승주 원정대 탐험가';
+    if($('#embarkSub')) $('#embarkSub').textContent=p.name+' 원정대원, 계속 탐험해요!';
+    if($('#dashAvatar')) SJGear.renderStage($('#dashAvatar'),st.avatar,st,{small:true});
+    if($('#profileEdit')) $('#profileEdit').onclick=()=>location.href='equipment.html';
+    if($('#profileCard')) $('#profileCard').onclick=e=>{if(!e.target.closest('button')) location.href='home.html'};
+    if(embark) embark.onclick=()=>location.href='home.html';
   }else{
-    $('#profileEdit').onclick=()=>location.href='select-student.html';
-    $('#profileCard').onclick=()=>location.href='select-student.html';
-    $('#embarkSub').textContent='내 이름과 캐릭터를 먼저 선택해요!';
-    embark.onclick=()=>location.href='select-student.html';
+    if($('#profileEdit')) $('#profileEdit').onclick=()=>location.href='select-student.html';
+    if($('#profileCard')) $('#profileCard').onclick=()=>location.href='select-student.html';
+    if($('#embarkSub')) $('#embarkSub').textContent='내 이름과 캐릭터를 먼저 선택해요!';
+    if(embark) embark.onclick=()=>location.href='select-student.html';
   }
-  $('#teacherBtn').onclick=()=>location.href='teacher.html';
-  $('#noticeBtn').onclick=()=>location.href='notices.html';
-  $('#previewBtn').onclick=()=>location.href='home.html';
-  $('#missionBtn').onclick=()=>location.href='missions.html';
-  $('#badgeBtn').onclick=()=>location.href='badges.html';
+  if($('#previewBtn')) $('#previewBtn').onclick=()=>location.href='home.html';
+  if($('#missionBtn')) $('#missionBtn').onclick=()=>location.href='missions.html';
+
+  const settings=$('#settingsSheet'), drawer=$('#menuDrawer'), more=$('#moreTray');
+  const open=(el)=>{if(!el)return;el.hidden=false;document.documentElement.style.overflow='hidden'};
+  const close=(el)=>{if(!el)return;el.hidden=true;if((!settings||settings.hidden)&&(!drawer||drawer.hidden))document.documentElement.style.overflow=''};
+  if($('#settingsBtn')) $('#settingsBtn').onclick=()=>open(settings);
+  if($('#hamburgerBtn')) $('#hamburgerBtn').onclick=()=>open(drawer);
+  document.querySelectorAll('[data-close="settings"]').forEach(x=>x.onclick=()=>close(settings));
+  document.querySelectorAll('[data-close="menu"]').forEach(x=>x.onclick=()=>close(drawer));
+  if($('#moreBtn')) $('#moreBtn').onclick=()=>{if(!more)return;more.hidden=!more.hidden};
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'){close(settings);close(drawer);if(more)more.hidden=true}});
 })();
