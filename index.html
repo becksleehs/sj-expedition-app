@@ -3,112 +3,102 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-  <meta name="theme-color" content="#063d68">
+  <meta name="theme-color" content="#073b5e">
   <title>2026 승주 원정대</title>
-  <link rel="stylesheet" href="css/app.css?v=fresh260">
+  <link rel="stylesheet" href="css/app.css?v=fresh270">
 </head>
-<body class="dashboard-body-v26">
-<main class="app dashboard-v26">
-  <section class="dash-hero-v26">
-    <img class="dash-map-v26" src="assets/map/worldmap.jpg?v=fresh260" alt="부산 롯데월드, 울릉도, 독도 원정 지도">
-    <div class="dash-map-shade-v26"></div>
+<body class="dashboard-body-v27">
+<main class="app dashboard-v27">
+  <header class="main-header-v27">
+    <button id="noticeBtn" class="header-action-v27" type="button"><span>🔔</span><b>공지</b></button>
+    <div class="header-title-v27"><strong>원정대 홈</strong><small>2026 역사·문화·예술 체험학습</small></div>
+    <button id="teacherBtn" class="header-action-v27" type="button"><span>⚙️</span><b>교사</b></button>
+  </header>
 
-    <div class="dash-tools-v26">
-      <button class="dash-tool-v26" id="noticeBtn" type="button" aria-label="공지사항">🔔 <span>알림</span></button>
-      <button class="dash-tool-v26" id="teacherBtn" type="button" aria-label="교사 관리">⚙️ <span>교사</span></button>
-    </div>
+  <section class="dash-hero-v27">
+    <img class="dash-map-v27" src="assets/map/worldmap.jpg?v=fresh270" alt="부산 롯데월드, 울릉도, 독도 원정 지도">
+    <div class="dash-map-shade-v27"></div>
+    <div class="map-menu-cover-v27" aria-hidden="true"></div>
 
-    <aside class="map-progress-v26" aria-label="원정 진행률">
-      <div class="map-progress-icon-v26">🧭</div>
+    <span class="map-day-chip-v27 day-lotte-v27">DAY 1</span>
+    <span class="map-day-chip-v27 day-ulleung-v27">DAY 2·3</span>
+    <span class="map-day-chip-v27 day-dokdo-v27">DAY 2·3</span>
+
+    <aside class="map-progress-v27" aria-label="원정 진행률">
       <span>원정 진행률</span>
       <strong id="tripPercent">0%</strong>
-      <div class="map-progress-track-v26"><i id="tripProgress"></i></div>
-      <small>부산 → 울릉도·독도</small>
+      <div class="map-progress-track-v27"><i id="tripProgress"></i></div>
     </aside>
-
-    <div class="route-v26" aria-label="3일 원정 일정">
-      <div class="route-node-v26 day1"><b>DAY 1</b><strong>부산 롯데월드</strong><span>10월 14일</span></div>
-      <div class="route-line-v26"><i></i></div>
-      <div class="route-node-v26 day2"><b>DAY 2</b><strong>울릉도 · 독도</strong><span>10월 15일</span></div>
-      <div class="route-line-v26"><i></i></div>
-      <div class="route-node-v26 day3"><b>DAY 3</b><strong>울릉도 · 독도</strong><span>10월 16일</span></div>
-    </div>
   </section>
 
-  <section class="dash-content-v25">
-    <div class="dash-grid-v25 top-cards-v25">
-      <article class="game-card-v25 profile-card-v25" id="profileCard">
-        <div id="dashAvatar" class="dash-avatar-v25"><div class="avatar-placeholder-v25">🧭</div></div>
-        <div class="profile-copy-v25">
-          <div class="eyebrow-v25">MY EXPEDITION</div>
+  <section class="dash-content-v27">
+    <div class="dash-grid-v27 top-cards-v27">
+      <article class="game-card-v27 profile-card-v27" id="profileCard">
+        <div id="dashAvatar" class="dash-avatar-v27"><div class="avatar-placeholder-v27">🧭</div></div>
+        <div class="profile-copy-v27">
+          <div class="eyebrow-v27">MY EXPEDITION</div>
           <h2 id="dashName">원정대원을 선택하세요</h2>
-          <span class="grade-chip-v25" id="dashGrade">READY</span>
+          <span class="grade-chip-v27" id="dashGrade">READY</span>
           <p id="dashRole">승주 원정대 탐험가</p>
-          <div class="xp-row-v25"><b>EXP</b><div><i id="xpBar"></i></div><span id="xpText">0 / 100</span></div>
+          <div class="xp-row-v27"><b>EXP</b><div><i id="xpBar"></i></div><span id="xpText">0 / 100</span></div>
         </div>
-        <button id="profileEdit" class="round-edit-v25" type="button" aria-label="캐릭터 꾸미기">✎</button>
+        <button id="profileEdit" class="round-edit-v27" type="button" aria-label="캐릭터 꾸미기">✎</button>
       </article>
 
-      <article class="paper-card-v25 today-card-v25">
-        <div class="paper-title-v25"><span>⏱️ 오늘의 원정대</span><em id="countdown">출발 준비</em></div>
-        <div class="locked-orbit-v25">?</div>
-        <div class="today-copy-v25"><strong>원정대가 아직 공개되지 않았어요!</strong><span>선생님이 공개하면 오늘의 원정을 확인할 수 있어요.</span></div>
-        <button class="paper-action-v25" id="previewBtn" type="button">원정대 미리보기 ›</button>
+      <article class="paper-card-v27 today-card-v27">
+        <div class="paper-title-v27"><span>⏱️ 오늘의 원정대</span><em id="countdown">출발 준비</em></div>
+        <div class="locked-orbit-v27">?</div>
+        <div class="today-copy-v27"><strong>원정대가 아직 공개되지 않았어요!</strong><span>선생님이 공개하면 오늘의 원정을 확인할 수 있어요.</span></div>
+        <button class="paper-action-v27" id="previewBtn" type="button">원정대 미리보기 ›</button>
       </article>
     </div>
 
-    <div class="dash-grid-v25 middle-cards-v25">
-      <article class="passport-v25">
-        <div class="passport-head-v25"><strong>EXPEDITION PASSPORT</strong><span>2026 SJ</span></div>
-        <div class="passport-body-v25">
-          <div class="passport-photo-v25" id="passportAvatar"><span>🧭</span></div>
-          <dl>
-            <div><dt>이름</dt><dd id="passportName">미등록</dd></div>
-            <div><dt>학년</dt><dd id="passportGrade">-</dd></div>
-            <div><dt>소속</dt><dd>승주중학교</dd></div>
-          </dl>
+    <div class="dash-grid-v27 middle-cards-v27">
+      <article class="passport-v27">
+        <div class="passport-head-v27"><strong>EXPEDITION PASSPORT</strong><span>2026 SJ</span></div>
+        <div class="passport-info-v27">
+          <div><small>이름</small><strong id="passportName">미등록</strong></div>
+          <div><small>학년</small><strong id="passportGrade">-</strong></div>
+          <div><small>소속</small><strong>승주중학교</strong></div>
         </div>
-        <div class="passport-stats-v25"><span>누적 XP <b id="passportXp">0</b></span><span>획득 배지 <b id="passportBadges">0개</b></span></div>
+        <div class="passport-stats-v27"><span>누적 XP <b id="passportXp">0</b></span><span>획득 배지 <b id="passportBadges">0개</b></span></div>
         <button id="badgeBtn" type="button">배지 컬렉션 보기 ›</button>
       </article>
 
-      <div class="stack-v25">
-        <article class="paper-card-v25 mission-card-v25">
-          <div class="paper-title-v25"><span>🎯 오늘의 미션</span></div>
-          <div class="mission-lock-v25">🔒</div>
+      <div class="stack-v27">
+        <article class="paper-card-v27 mission-card-v27">
+          <div class="paper-title-v27"><span>🎯 오늘의 미션</span></div>
+          <div class="mission-lock-v27">🔒</div>
           <strong>미션이 잠겨있어요!</strong>
           <p>원정대 공개 후 확인할 수 있어요.</p>
-          <button class="blue-action-v25" id="missionBtn" type="button">미션 힌트 보기 ›</button>
+          <button class="blue-action-v27" id="missionBtn" type="button">미션 힌트 보기 ›</button>
         </article>
-        <button class="embark-v25" id="embarkBtn" type="button">
-          <span class="ship-v25">🚢</span><span><b>승선하기</b><small id="embarkSub">새로운 원정을 시작해요!</small></span><i>⚓</i>
+        <button class="embark-v27" id="embarkBtn" type="button">
+          <span class="ship-v27">🚢</span><span><b>승선하기</b><small id="embarkSub">새로운 원정을 시작해요!</small></span><i>⚓</i>
         </button>
       </div>
     </div>
 
-    <section class="stat-strip-v25">
+    <section class="stat-strip-v27">
       <div><span>🎯</span><b>오늘의 도전</b><strong id="missionStat">0 / 5</strong><i><em style="width:0%"></em></i></div>
       <div><span>📸</span><b>사진 업로드</b><strong>0 / 30</strong><i><em style="width:0%"></em></i></div>
       <div><span>🏅</span><b>획득 배지</b><strong id="badgeStat">0개</strong><i><em style="width:0%"></em></i></div>
       <div><span>🔥</span><b>원정 준비</b><strong id="readyStat">D-DAY</strong><i><em id="readyProgress"></em></i></div>
     </section>
-
-    <button class="notice-bar-v25" id="noticeBar" type="button">
-      <span>📣</span><b>공지사항</b><em>10월 14일 출발! 준비물을 꼭 확인하세요.</em><i>›</i>
-    </button>
   </section>
 
-  <nav class="bottom-nav-v25" aria-label="주요 메뉴">
+  <nav class="bottom-nav-v27" aria-label="주요 메뉴">
     <a href="index.html" class="active"><span>🏝️</span><b>홈</b></a>
-    <a href="#schedule"><span>📅</span><b>일정</b></a>
+    <a href="schedule.html"><span>📅</span><b>일정</b></a>
     <a href="missions.html"><span>🎯</span><b>미션</b></a>
-    <a href="#badges"><span>🏅</span><b>배지</b></a>
-    <a href="#album"><span>🖼️</span><b>앨범</b></a>
-    <a href="home.html"><span>☰</span><b>더보기</b></a>
+    <a href="chat.html"><span>💬</span><b>채팅</b></a>
+    <a href="notices.html"><span>📣</span><b>공지</b></a>
+    <a href="badges.html"><span>🏅</span><b>배지</b></a>
+    <a href="album.html"><span>🖼️</span><b>앨범</b></a>
   </nav>
 </main>
-<script src="js/app.js?v=fresh260"></script>
-<script src="js/avatar-gear.js?v=fresh260"></script>
-<script src="js/main-dashboard.js?v=fresh260"></script>
+<script src="js/app.js?v=fresh270"></script>
+<script src="js/avatar-gear.js?v=fresh270"></script>
+<script src="js/main-dashboard.js?v=fresh270"></script>
 </body>
 </html>
