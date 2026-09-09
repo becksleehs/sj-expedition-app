@@ -15,4 +15,4 @@ function remainingAvatarChanges(){const s=load();return Math.max(0,1-(Number(s.a
 function resetCurrent(){localStorage.removeItem(KEY)}
 window.SJ={KEY,TEACHER_PIN,students,chars,load,save,current,isRegistered,entryUrl,remainingAvatarChanges,resetCurrent};
 // Fresh reset: retire old service workers/caches once on this build.
-if(!sessionStorage.getItem('sj2026_sw_cleaned_v24')){sessionStorage.setItem('sj2026_sw_cleaned_v24','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
+if(!sessionStorage.getItem('sj2026_sw_cleaned_v25')){sessionStorage.setItem('sj2026_sw_cleaned_v25','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
