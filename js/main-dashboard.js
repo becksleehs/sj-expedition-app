@@ -9,8 +9,8 @@
   if(now>=start&&now<d2) percent=33;
   else if(now>=d2&&now<d3) percent=66;
   else if(now>=d3) percent=100;
-  $('#tripPercent').textContent=percent+'%';
-  $('#tripProgress').style.width=percent+'%';
+  if($('#tripPercent')) $('#tripPercent').textContent=percent+'%';
+  if($('#tripProgress')) $('#tripProgress').style.width=percent+'%';
   const days=Math.ceil((start-now)/(24*60*60*1000));
   const countdown=days>0?'D-'+days:(now<end?'원정 진행 중':'원정 완료');
   $('#countdown').textContent=countdown;

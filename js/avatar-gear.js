@@ -28,7 +28,7 @@
   function asset(id,state){
     const safe=profiles[id]?id:'f1';
     const p=order.includes(state)?state:'base';
-    return `assets/avatar-v24/${safe}-${p}.png?v=240`;
+    return `assets/avatar-v24/${safe}-${p}.png?v=260`;
   }
   function renderStage(el,id,s,opts={}){
     s=normalizeState(s||{});
