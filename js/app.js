@@ -25,4 +25,7 @@ function clearRole(){localStorage.removeItem(ROLE_KEY)}
 function entryUrl(){const role=getRole();if(role==='guest')return 'index.html';return isRegistered()?'index.html':'select-student.html'}
 window.SJ={KEY,ROLE_KEY,students,chars,load,save,current,isRegistered,entryUrl,remainingAvatarChanges,resetCurrent,getRole,setRole,clearRole};
 // Retire old service workers/caches once on this build.
-if(!sessionStorage.getItem('sj2026_sw_cleaned_v31')){sessionStorage.setItem('sj2026_sw_cleaned_v31','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
+if(!sessionStorage.getItem('sj2026_sw_cleaned_v34')){sessionStorage.setItem('sj2026_sw_cleaned_v34','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
+
+// v3.4: notification-only service worker; no fetch/cache handler.
+if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}
