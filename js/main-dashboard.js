@@ -1,49 +1,33 @@
-(function(){
-  const $=s=>document.querySelector(s);
-  const start=new Date(2026,9,14,0,0,0), end=new Date(2026,9,17,0,0,0), now=new Date();
-  const days=Math.ceil((start-now)/86400000);
-  const countdown=days>0?'D-'+days:(now<end?'원정 진행 중':'원정 완료');
-  if($('#countdown')) $('#countdown').textContent=countdown;
-
-  const registered=SJ.isRegistered(), st=SJGear.normalizeState(SJ.load()), p=SJ.current();
-  if(registered&&p){
-    if($('#dashName')) $('#dashName').textContent=p.name;
-    if($('#dashGrade')) $('#dashGrade').textContent=p.grade+'학년';
-    if($('#dashRole')) $('#dashRole').textContent=SJGear.profiles[st.avatar]?.name?.split('·').slice(1).join('·').trim()||'승주 원정대 탐험가';
-    if($('#dashAvatar')) SJGear.renderStage($('#dashAvatar'),st.avatar,st,{small:false});
-    if($('#profileEdit')) $('#profileEdit').onclick=e=>{e.stopPropagation();location.href='equipment.html'};
-  }else{
-    if($('#profileEdit')) $('#profileEdit').onclick=e=>{e.stopPropagation();location.href='select-student.html'};
-    if($('#profileCard')) $('#profileCard').onclick=()=>location.href='select-student.html';
+(async function(){
+  const $=s=>document.querySelector(s), st=SJGear.normalizeState(SJ.load()), p=SJ.current();
+  if(!p||!st.avatar){location.replace('select-student.html');return}
+  async function setupPassword(){
+    const modal=$('#securityModal'), text=$('#securityText'), pw=$('#securityPw'), pw2=$('#securityPw2'), btn=$('#securitySave');
+    modal.hidden=false;text.textContent=`${p.name} 학생의 숫자 4자리 비밀번호를 처음 설정합니다.`;
+    return new Promise(resolve=>{btn.onclick=async()=>{const a=pw.value.trim(),b=pw2.value.trim();if(!/^\d{4}$/.test(a)){alert('숫자 4자리로 입력해주세요.');return}if(a!==b){alert('두 비밀번호가 다릅니다.');return}btn.disabled=true;btn.textContent='저장 중…';try{const r=await SJAuth.register(p.id,a);st.authToken=r.token;SJ.save(st);modal.hidden=true;resolve(true)}catch(e){alert(e.message);btn.disabled=false;btn.textContent='비밀번호 저장'}}});
   }
-  if($('#missionBtn')) $('#missionBtn').onclick=()=>location.href='missions.html';
+  try{
+    const reg=await SJAuth.status(p.id);
+    if(reg.registered){
+      const valid=st.authToken?await SJAuth.verify(p.id,st.authToken):false;
+      if(!valid){location.replace(`select-student.html?force=1&student=${encodeURIComponent(p.id)}`);return}
+    }else{
+      await setupPassword();
+    }
+  }catch(e){alert('학생 비밀번호 보안 서버에 연결하지 못했습니다. 인터넷 연결 후 다시 열어주세요.');return}
 
-  const settings=$('#settingsSheet'), drawer=$('#menuDrawer'), more=$('#moreTray'), settingsBtn=$('#settingsBtn');
-  const open=(el)=>{if(!el)return;el.hidden=false;document.documentElement.style.overflow='hidden'};
-  const close=(el)=>{if(!el)return;el.hidden=true;if((!settings||settings.hidden)&&(!drawer||drawer.hidden))document.documentElement.style.overflow=''};
+  $('#mainApp').hidden=false;
+  $('#dashName').textContent=p.name;$('#dashGrade').textContent=p.grade+'학년';
+  $('#dashRole').textContent=SJGear.profiles[st.avatar]?.name?.split('·').slice(1).join('·').trim()||'승주 원정대 탐험가';
+  SJGear.renderStage($('#dashAvatar'),st.avatar,st,{small:false});
+  $('#profileEdit').onclick=()=>location.href='equipment.html'; $('#missionBtn').onclick=()=>location.href='missions.html';
+  $('#membersBtn').onclick=()=>alert('오늘의 원정대원은 교사가 공개하면 표시됩니다.');
 
-  // 일반 학생: 짧게 누르면 꾸미기만 보임.
-  // 교사 관리자: 설정 아이콘을 3초간 길게 누르면 PIN 보호된 관리자 화면으로 진입.
-  let adminTimer=null, adminOpened=false;
-  if(settingsBtn){
-    settingsBtn.addEventListener('pointerdown',()=>{
-      adminOpened=false;
-      clearTimeout(adminTimer);
-      adminTimer=setTimeout(()=>{adminOpened=true;location.href='teacher.html'},3000);
-    });
-    const cancelAdmin=()=>{clearTimeout(adminTimer);adminTimer=null};
-    settingsBtn.addEventListener('pointerup',()=>{
-      if(adminOpened){cancelAdmin();return;}
-      cancelAdmin();open(settings);
-    });
-    settingsBtn.addEventListener('pointercancel',cancelAdmin);
-    settingsBtn.addEventListener('pointerleave',e=>{if(e.buttons)cancelAdmin()});
-    settingsBtn.addEventListener('contextmenu',e=>e.preventDefault());
-  }
-
-  if($('#hamburgerBtn')) $('#hamburgerBtn').onclick=()=>open(drawer);
-  document.querySelectorAll('[data-close="settings"]').forEach(x=>x.onclick=()=>close(settings));
-  document.querySelectorAll('[data-close="menu"]').forEach(x=>x.onclick=()=>close(drawer));
-  if($('#moreBtn')) $('#moreBtn').onclick=()=>{if(!more)return;more.hidden=!more.hidden};
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'){close(settings);close(drawer);if(more)more.hidden=true}});
+  const settings=$('#settingsSheet'), drawer=$('#menuDrawer'), settingsBtn=$('#settingsBtn');
+  const open=el=>{el.hidden=false;document.documentElement.style.overflow='hidden'}, close=el=>{el.hidden=true;document.documentElement.style.overflow=''};
+  let timer=null,longOpened=false;
+  settingsBtn.addEventListener('pointerdown',()=>{longOpened=false;clearTimeout(timer);timer=setTimeout(()=>{longOpened=true;location.href='teacher.html'},3000)});
+  settingsBtn.addEventListener('pointerup',()=>{clearTimeout(timer);if(!longOpened)open(settings)});settingsBtn.addEventListener('pointercancel',()=>clearTimeout(timer));settingsBtn.addEventListener('contextmenu',e=>e.preventDefault());
+  $('#hamburgerBtn').onclick=()=>open(drawer);
+  document.querySelectorAll('[data-close="settings"]').forEach(x=>x.onclick=()=>close(settings));document.querySelectorAll('[data-close="menu"]').forEach(x=>x.onclick=()=>close(drawer));
 })();
