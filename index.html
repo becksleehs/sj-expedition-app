@@ -5,54 +5,53 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#073b5e">
   <title>2026 승주 원정대</title>
-  <link rel="stylesheet" href="css/app.css?v=fresh300">
+  <link rel="stylesheet" href="css/app.css?v=fresh310">
 </head>
-<body class="dashboard-body-v30">
-<main class="app dashboard-v30" id="mainApp" hidden>
-  <section class="hero-v30" aria-label="부산 롯데월드, 울릉도, 독도 원정 지도">
-    <img src="assets/map/main-hero-v30.png?v=fresh300" alt="부산 롯데월드 DAY 1, 울릉도와 독도 DAY 2·3 원정 지도">
-    <button id="settingsBtn" class="gear-hotspot-v30" type="button" aria-label="설정"></button>
-    <button id="hamburgerBtn" class="hamburger-v30" type="button" aria-label="메뉴 열기"><span></span><span></span><span></span></button>
+<body class="dashboard-body-v31">
+<main class="app dashboard-v31" id="mainApp">
+  <section class="hero-v31" aria-label="부산 롯데월드, 울릉도, 독도 원정 지도">
+    <img src="assets/map/main-hero-v31.png?v=fresh310" alt="배 위에서 원정대원들이 바라보는 부산 롯데월드, 울릉도, 독도 원정 지도">
+    <!-- 그림 속 버튼과 정확히 같은 위치에 투명 터치 영역만 둡니다. -->
+    <button id="settingsBtn" class="gear-hotspot-v31" type="button" aria-label="설정"></button>
+    <button id="hamburgerBtn" class="hamburger-hotspot-v31" type="button" aria-label="메뉴 열기"></button>
   </section>
 
-  <section class="dashboard-content-v30">
-    <div class="status-grid-v30">
-      <article class="profile-card-v30">
-        <div id="dashAvatar" class="profile-avatar-v30"></div>
-        <div class="profile-meta-v30"><strong id="dashName">원정대원</strong><span id="dashGrade">-</span></div>
-        <p id="dashRole">승주 원정대 탐험가</p>
-        <button id="profileEdit" class="profile-edit-v30" type="button">✎ 꾸미기</button>
+  <section class="dashboard-content-v31">
+    <div class="status-grid-v31">
+      <article class="profile-card-v31" id="profileCard">
+        <div id="dashAvatar" class="profile-avatar-v31"><div class="guest-avatar-v31">🧭</div></div>
+        <div class="profile-copy-v31">
+          <div class="profile-meta-v31"><strong id="dashName">승주 원정대</strong><span id="dashGrade">방문자</span></div>
+          <p id="dashRole">역사·문화·예술 체험학습</p>
+          <button id="profileEdit" class="profile-edit-v31" type="button">학생으로 시작하기</button>
+        </div>
       </article>
 
-      <div class="status-stack-v30">
-        <button class="info-card-v30 members-v30" type="button" id="membersBtn">
-          <div class="info-title-v30"><span>👥 오늘의 원정대원</span><b>›</b></div>
-          <div class="info-body-v30"><strong>아직 공개되지 않았어요!</strong><small>선생님이 공개하면 여기에서 확인할 수 있어요.</small></div>
+      <div class="status-stack-v31">
+        <button class="info-card-v31 members-v31" type="button" id="membersBtn">
+          <div class="info-title-v31"><span>👥 오늘의 원정대원</span><b>›</b></div>
+          <div class="info-body-v31"><strong>아직 공개되지 않았어요!</strong><small>선생님이 공개하면 여기에서 확인할 수 있어요.</small></div>
         </button>
-        <button class="info-card-v30 mission-v30" type="button" id="missionBtn">
-          <div class="info-title-v30"><span>🎯 오늘의 미션</span><b>›</b></div>
-          <div class="info-body-v30"><strong>아직 공개되지 않았어요!</strong><small>선생님이 미션을 열어주면 바로 시작할 수 있어요.</small></div>
+        <button class="info-card-v31 mission-v31" type="button" id="missionBtn">
+          <div class="info-title-v31"><span>🎯 오늘의 미션</span><b>›</b></div>
+          <div class="info-body-v31"><strong>아직 공개되지 않았어요!</strong><small>선생님이 미션을 열어주면 바로 시작할 수 있어요.</small></div>
         </button>
       </div>
     </div>
-
-    <section class="journey-card-v30">
-      <div class="journey-title-v30">🗺️ 우리의 여정</div>
-      <div class="journey-grid-v30">
-        <a href="schedule.html"><img src="assets/map/journey-lotte-v30.jpg" alt="부산 롯데월드"><b>DAY 1</b><span>부산 롯데월드</span></a>
-        <a href="schedule.html"><img src="assets/map/journey-ulleung-v30.jpg" alt="울릉도"><b>DAY 2·3</b><span>울릉도</span></a>
-        <a href="schedule.html"><img src="assets/map/journey-dokdo-v30.jpg" alt="독도"><b>DAY 2·3</b><span>독도</span></a>
-      </div>
-    </section>
   </section>
 
-  <div id="settingsSheet" class="overlay-v30" hidden>
-    <button class="overlay-bg-v30" type="button" data-close="settings" aria-label="닫기"></button>
-    <section class="settings-sheet-v30"><div class="sheet-head-v30"><strong>⚙️ 설정</strong><button type="button" data-close="settings">×</button></div><a href="equipment.html"><span>🎒</span><b>내 캐릭터 꾸미기</b><i>›</i></a></section>
+  <div id="settingsSheet" class="overlay-v31" hidden>
+    <button class="overlay-bg-v31" type="button" data-close="settings" aria-label="닫기"></button>
+    <section class="settings-sheet-v31">
+      <div class="sheet-head-v31"><strong>⚙️ 설정</strong><button type="button" data-close="settings">×</button></div>
+      <a id="settingsPrimary" href="select-student.html?force=1"><span>👤</span><b>학생으로 시작하기</b><i>›</i></a>
+    </section>
   </div>
-  <div id="menuDrawer" class="drawer-wrap-v30" hidden>
-    <button class="drawer-bg-v30" type="button" data-close="menu" aria-label="닫기"></button>
-    <aside class="side-drawer-v30"><div class="drawer-head-v30"><strong>원정대 메뉴</strong><button type="button" data-close="menu">×</button></div>
+
+  <div id="menuDrawer" class="drawer-wrap-v31" hidden>
+    <button class="drawer-bg-v31" type="button" data-close="menu" aria-label="닫기"></button>
+    <aside class="side-drawer-v31">
+      <div class="drawer-head-v31"><strong>원정대 메뉴</strong><button type="button" data-close="menu">×</button></div>
       <a href="notices.html"><span>📣</span><b>공지사항</b><i>›</i></a>
       <a href="schedule.html"><span>📅</span><b>일정</b><i>›</i></a>
       <a href="missions.html"><span>🎯</span><b>미션</b><i>›</i></a>
@@ -62,22 +61,37 @@
     </aside>
   </div>
 
-  <nav class="bottom-nav-v30" aria-label="주요 메뉴">
+  <nav class="bottom-nav-v31" aria-label="주요 메뉴">
     <a href="index.html" class="active"><span>🏝️</span><b>홈</b></a>
     <a href="schedule.html"><span>📅</span><b>일정</b></a>
     <a href="missions.html"><span>🎯</span><b>미션</b></a>
     <a href="chat.html"><span>💬</span><b>채팅</b></a>
-    <a href="notices.html"><span>📣</span><b>공지사항</b></a>
+    <a href="notices.html"><span>📣</span><b>공지</b></a>
     <a href="badges.html"><span>🏅</span><b>배지</b></a>
     <a href="album.html"><span>🖼️</span><b>앨범</b></a>
   </nav>
 </main>
 
-<div id="securityModal" class="security-modal-v30" hidden>
-  <div class="security-card-v30"><h2>🔐 학생 비밀번호 설정</h2><p id="securityText">처음 한 번 사용할 숫자 4자리 비밀번호를 만들어주세요.</p><input id="securityPw" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="숫자 4자리"><input id="securityPw2" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="한 번 더 입력"><button id="securitySave" type="button">비밀번호 저장</button><small>다른 학생이 내 캐릭터로 들어오는 것을 막기 위한 비밀번호입니다.</small></div>
+<!-- 첫 방문에만 메인 화면 위에 보이는 역할 선택 팝업 -->
+<div id="roleModal" class="role-modal-v31" hidden>
+  <div class="role-card-v31">
+    <div class="role-icon-v31">🧭</div>
+    <h2>학생인가요?</h2>
+    <p>학생은 자신의 이름과 캐릭터를 선택한 뒤<br>숫자 4자리 비밀번호를 설정합니다.</p>
+    <div class="role-actions-v31">
+      <button id="roleStudent" type="button" class="role-yes-v31">예, 학생입니다</button>
+      <button id="roleGuest" type="button" class="role-no-v31">아니오</button>
+    </div>
+    <small>이 선택은 이 기기에 저장되어 다음 접속부터는 다시 묻지 않습니다.</small>
+  </div>
 </div>
-<script src="js/app.js?v=fresh300"></script>
-<script src="js/auth.js?v=fresh300"></script>
-<script src="js/avatar-gear.js?v=fresh300"></script>
-<script src="js/main-dashboard.js?v=fresh300"></script>
+
+<!-- 관리자에서 비밀번호를 초기화한 학생이 다시 접속했을 때만 사용 -->
+<div id="securityModal" class="security-modal-v30" hidden>
+  <div class="security-card-v30"><h2>🔐 새 비밀번호 설정</h2><p id="securityText">숫자 4자리 비밀번호를 다시 설정해주세요.</p><input id="securityPw" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="숫자 4자리"><input id="securityPw2" type="password" inputmode="numeric" maxlength="4" pattern="[0-9]*" placeholder="한 번 더 입력"><button id="securitySave" type="button">비밀번호 저장</button><small>교사가 비밀번호를 초기화한 경우 새 비밀번호를 다시 만들 수 있습니다.</small></div>
+</div>
+<script src="js/app.js?v=fresh310"></script>
+<script src="js/auth.js?v=fresh310"></script>
+<script src="js/avatar-gear.js?v=fresh310"></script>
+<script src="js/main-dashboard.js?v=fresh310"></script>
 </body></html>

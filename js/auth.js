@@ -14,8 +14,9 @@
   async function register(studentId,password){return req({action:'register',studentId,password})}
   async function login(studentId,password){return req({action:'login',studentId,password})}
   async function verify(studentId,token){try{return (await req({action:'verify',studentId,token})).ok}catch{return false}}
+  async function teacherCheck(teacherPin){return req({action:'teacher-check',teacherPin})}
   async function reset(studentId,teacherPin){return req({action:'reset',studentId,teacherPin})}
   function setToken(token){const s=SJ.load();s.authToken=token||null;SJ.save(s)}
   function clearToken(){const s=SJ.load();delete s.authToken;SJ.save(s)}
-  window.SJAuth={status,register,login,verify,reset,setToken,clearToken};
+  window.SJAuth={status,register,login,verify,teacherCheck,reset,setToken,clearToken};
 })();

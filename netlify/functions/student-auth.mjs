@@ -7,6 +7,14 @@ const clean=v=>String(v??'').trim();
 const validPin=v=>/^\d{4}$/.test(clean(v));
 const hashPassword=(pw,salt)=>scryptSync(pw,salt,32).toString('hex');
 const tokenKey=t=>createHash('sha256').update(t).digest('hex');
+const FALLBACK_TEACHER_PIN_SHA256='df4865fca1f159162557359ef967f9502087f57527b0e030e139933e54f3061e';
+function validTeacherPin(pin){
+  const entered=clean(pin);
+  if(!validPin(entered)) return false;
+  const configured=clean(process.env.TEACHER_PIN);
+  if(configured) return entered===configured;
+  return createHash('sha256').update(entered).digest('hex')===FALLBACK_TEACHER_PIN_SHA256;
+}
 
 export default async (req) => {
   const store=getStore({name:'sj-expedition-auth',consistency:'strong'});
@@ -18,7 +26,14 @@ export default async (req) => {
   }
   if(req.method!=='POST') return new Response(JSON.stringify({error:'method'}),{status:405,headers});
   let body={}; try{body=await req.json();}catch{}
-  const action=clean(body.action), studentId=clean(body.studentId);
+  const action=clean(body.action);
+
+  if(action==='teacher-check'){
+    if(!validTeacherPin(body.teacherPin)) return new Response(JSON.stringify({error:'교사 PIN이 맞지 않습니다.'}),{status:403,headers});
+    return new Response(JSON.stringify({ok:true}),{headers});
+  }
+
+  const studentId=clean(body.studentId);
   if(!STUDENTS.has(studentId)) return new Response(JSON.stringify({error:'학생 정보가 올바르지 않습니다.'}),{status:400,headers});
 
   if(action==='register'){
@@ -54,8 +69,7 @@ export default async (req) => {
   }
 
   if(action==='reset'){
-    const teacherPin=clean(body.teacherPin), expected=process.env.TEACHER_PIN||'1014';
-    if(teacherPin!==expected) return new Response(JSON.stringify({error:'교사 PIN이 맞지 않습니다.'}),{status:403,headers});
+    if(!validTeacherPin(body.teacherPin)) return new Response(JSON.stringify({error:'교사 PIN이 맞지 않습니다.'}),{status:403,headers});
     await store.delete(`student/${studentId}`);
     return new Response(JSON.stringify({ok:true}),{headers});
   }
