@@ -37,8 +37,9 @@
     el.innerHTML=`<img class="exact-avatar-v24" src="${asset(id,state)}" alt="${profiles[id]?.name||'승주 원정대 캐릭터'}"><div class="exact-preset-pill">${presetMeta[state].label}</div>`;
   }
   function renderChoice(el,id){
-    el.className='char-art exact-choice-v24';
-    el.innerHTML=`<img src="${asset(id,'base')}" alt="${profiles[id]?.name||'승주 원정대 캐릭터'}">`;
+    const safe=profiles[id]?id:'f1';
+    el.className='char-art exact-choice-v33';
+    el.innerHTML=`<img src="assets/avatar-v33/${safe}.png?v=fresh330" alt="${profiles[id]?.name||'승주 원정대 캐릭터'}">`;
   }
   function setPreset(s,key){
     s=normalizeState(s);
