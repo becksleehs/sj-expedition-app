@@ -1,7 +1,10 @@
 (function(){
   const p=SJ.current();if(!SJ.isRegistered()||!p){location.replace('select-student.html');return;}
-  const list=document.getElementById('chatList'),form=document.getElementById('chatForm'),input=document.getElementById('chatInput'),status=document.getElementById('chatStatus'),newBtn=document.getElementById('newMsgBtn');
+  const list=document.getElementById('chatList'),form=document.getElementById('chatForm'),input=document.getElementById('chatInput'),status=document.getElementById('chatStatus'),newBtn=document.getElementById('newMsgBtn'),emojiBtn=document.getElementById('emojiBtn'),emojiPanel=document.getElementById('emojiPanel');
   let lastSig='',firstLoad=true;
+  const EMOJIS=['😀','😂','🥰','😍','😎','🥳','🤩','👍','👏','🙌','❤️','🔥','🎉','✨','📸','🚢','🏝️','🌊','🐬','🇰🇷','🎯','🏅','✅','💙'];
+  if(emojiPanel){emojiPanel.innerHTML=EMOJIS.map(e=>`<button type="button">${e}</button>`).join('');emojiPanel.querySelectorAll('button').forEach(b=>b.onclick=()=>{const start=input.selectionStart??input.value.length,end=input.selectionEnd??input.value.length;input.value=input.value.slice(0,start)+b.textContent+input.value.slice(end);input.focus();const pos=start+b.textContent.length;input.setSelectionRange(pos,pos)});emojiBtn.onclick=()=>{emojiPanel.hidden=!emojiPanel.hidden;if(!emojiPanel.hidden)requestAnimationFrame(()=>emojiPanel.scrollIntoView({block:'nearest'}))};document.addEventListener('click',e=>{if(!e.target.closest('#emojiPanel')&&!e.target.closest('#emojiBtn'))emojiPanel.hidden=true});}
+
   const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const nearBottom=()=>list.scrollHeight-list.scrollTop-list.clientHeight<90;
   const goBottom=()=>requestAnimationFrame(()=>{list.scrollTop=list.scrollHeight;newBtn.hidden=true});

@@ -10,7 +10,8 @@
     nav.innerHTML=items.map(([href,icon,label])=>`<a href="${href}" class="${path===href||(path===''&&href==='index.html')?'active':''}"><span>${icon}</span><b>${label}</b></a>`).join('');
     document.body.appendChild(nav);
   }
+  if(window.SJGrowth){setTimeout(()=>window.SJGrowth.checkUpgradePrompt?.(),250)}else if(window.SJ&&!document.getElementById('sjGrowthScript')){const g=document.createElement('script');g.id='sjGrowthScript';g.src='js/growth.js?v=fresh350';g.onload=()=>setTimeout(()=>window.SJGrowth?.checkUpgradePrompt?.(),250);document.body.appendChild(g);}
   if(!window.SJSpecial&&!document.getElementById('sjSpecialScript')&&!excluded.includes(path)){
-    const s=document.createElement('script');s.id='sjSpecialScript';s.src='js/special-mission.js?v=fresh340';document.body.appendChild(s);
+    const s=document.createElement('script');s.id='sjSpecialScript';s.src='js/special-mission.js?v=fresh350';document.body.appendChild(s);
   }
 })();

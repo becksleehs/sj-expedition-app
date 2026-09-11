@@ -1,44 +1,14 @@
 (async function(){
-  const $=s=>document.querySelector(s);
-  const preview=new URLSearchParams(location.search).get('preview')==='1';
-  let st=SJGear.normalizeState(SJ.load());
-  let role=preview?'student':SJ.getRole();
-  let p=preview?{id:'s09',grade:3,name:'위지현',gender:'F'}:SJ.current();
-  const settings=$('#settingsSheet'), drawer=$('#menuDrawer'), settingsBtn=$('#settingsBtn');
-  const open=el=>{el.hidden=false;document.documentElement.style.overflow='hidden'};
-  const close=el=>{el.hidden=true;document.documentElement.style.overflow=''};
-
-  function setNotifyButton(){
-    const b=$('#notifySettingBtn'); if(!b)return;
-    const perm=('Notification'in window)?Notification.permission:'unsupported';
-    b.querySelector('b').textContent=perm==='granted'?'스페셜 미션 알림 켜짐':'스페셜 미션 알림 켜기';
-    b.onclick=async()=>{if(!('Notification'in window)){alert('이 브라우저에서는 알림을 지원하지 않습니다.');return;}const r=await Notification.requestPermission();setNotifyButton();if(r==='granted'){try{const reg=await navigator.serviceWorker.ready;await reg.showNotification('승주 원정대 알림 준비 완료',{body:'스페셜 미션이 오면 알려드릴게요!',tag:'sj-notify-ready'});}catch{} }else alert('휴대폰 브라우저 설정에서 알림 권한을 허용해주세요.');};
-  }
-  function renderGuest(){
-    $('#dashAvatar').innerHTML='<div class="guest-avatar-v33">🧭</div>';
-    $('#dashName').textContent='승주 원정대';$('#dashGrade').textContent='방문자';$('#dashRole').textContent='부산 · 울릉도 · 독도 대모험';
-    $('#profileEdit').textContent='학생으로 시작하기';$('#profileEdit').onclick=()=>{SJ.setRole('student');location.href='select-student.html?force=1'};
-    const primary=$('#settingsPrimary');primary.href='select-student.html?force=1';primary.querySelector('b').textContent='학생으로 시작하기';primary.onclick=()=>SJ.setRole('student');
-  }
-  function renderStudent(){
-    if(!preview){p=SJ.current();st=SJGear.normalizeState(SJ.load())}else st={...st,studentId:p.id,avatar:st.avatar||'f1'};
-    if(!p||!st.avatar){location.replace('select-student.html?force=1');return false}
-    $('#dashName').textContent=p.name;$('#dashGrade').textContent=p.grade+'학년';$('#dashRole').textContent=SJGear.profiles[st.avatar]?.name?.split('·').slice(1).join('·').trim()||'승주 원정대 탐험가';
-    SJGear.renderStage($('#dashAvatar'),st.avatar,st,{small:true});
-    $('#profileEdit').textContent='👕 꾸미기';$('#profileEdit').onclick=()=>location.href='equipment.html';
-    const primary=$('#settingsPrimary');primary.href='equipment.html';primary.querySelector('b').textContent='내 캐릭터 꾸미기';primary.onclick=null;return true;
-  }
-  async function setupPassword(){
-    const modal=$('#securityModal'),text=$('#securityText'),pw=$('#securityPw'),pw2=$('#securityPw2'),btn=$('#securitySave');modal.hidden=false;text.textContent=`${p.name} 학생의 새 숫자 4자리 비밀번호를 설정합니다.`;
-    return new Promise(resolve=>{btn.onclick=async()=>{const a=pw.value.trim(),b=pw2.value.trim();if(!/^\d{4}$/.test(a)){alert('숫자 4자리로 입력해주세요.');return}if(a!==b){alert('두 비밀번호가 다릅니다.');return}btn.disabled=true;btn.textContent='저장 중…';try{const r=await SJAuth.register(p.id,a);st.authToken=r.token;SJ.save(st);modal.hidden=true;resolve(true)}catch(e){alert(e.message);btn.disabled=false;btn.textContent='비밀번호 저장'}}});
-  }
-  if(preview){renderStudent();}
-  else if(!role){$('#roleModal').hidden=false;$('#roleStudent').onclick=async()=>{SJ.setRole('student');try{if('Notification'in window&&Notification.permission==='default')await Notification.requestPermission()}catch{}location.href='select-student.html?onboarding=1'};$('#roleGuest').onclick=()=>{SJ.setRole('guest');$('#roleModal').hidden=true;role='guest';renderGuest()};renderGuest();}
-  else if(role==='guest')renderGuest();
-  else{if(!renderStudent())return;try{const reg=await SJAuth.status(p.id);if(reg.registered){const valid=st.authToken?await SJAuth.verify(p.id,st.authToken):false;if(!valid){location.replace(`select-student.html?force=1&student=${encodeURIComponent(p.id)}`);return}}else await setupPassword();}catch(e){alert('학생 비밀번호 보안 서버에 연결하지 못했습니다. 인터넷 연결 후 다시 열어주세요.');return}}
-  $('#missionBtn').onclick=()=>{if(window.SJSpecial)window.SJSpecial.openCurrent();else location.href='missions.html'};
-  $('#membersBtn').onclick=()=>alert('오늘의 원정대 조편성은 교사가 공개하면 이곳에 표시됩니다.');
-  $('#profileCard').onclick=e=>{if(e.target.closest('button'))return;if(role==='student')location.href='equipment.html'};
-  let timer=null,longOpened=false;settingsBtn.addEventListener('pointerdown',()=>{longOpened=false;clearTimeout(timer);timer=setTimeout(()=>{longOpened=true;location.href='teacher.html'},3000)});settingsBtn.addEventListener('pointerup',()=>{clearTimeout(timer);if(!longOpened)open(settings)});settingsBtn.addEventListener('pointercancel',()=>clearTimeout(timer));settingsBtn.addEventListener('contextmenu',e=>e.preventDefault());
-  $('#hamburgerBtn').onclick=()=>open(drawer);document.querySelectorAll('[data-close="settings"]').forEach(x=>x.onclick=()=>close(settings));document.querySelectorAll('[data-close="menu"]').forEach(x=>x.onclick=()=>close(drawer));setNotifyButton();
+  const $=s=>document.querySelector(s), preview=new URLSearchParams(location.search).get('preview')==='1';
+  let st=SJGrowth.normalizeState(SJ.load()), role=preview?'student':SJ.getRole(), p=preview?{id:'s09',grade:3,name:'위지현',gender:'F'}:SJ.current();
+  const settings=$('#settingsSheet'),drawer=$('#menuDrawer'),settingsBtn=$('#settingsBtn');
+  const open=el=>{el.hidden=false;document.documentElement.style.overflow='hidden'},close=el=>{el.hidden=true;document.documentElement.style.overflow=''};
+  function setNotifyButton(){const b=$('#notifySettingBtn');if(!b)return;const perm=('Notification'in window)?Notification.permission:'unsupported';b.querySelector('b').textContent=perm==='granted'?'스페셜 미션 알림 켜짐':'스페셜 미션 알림 켜기';b.onclick=async()=>{if(!('Notification'in window)){alert('이 브라우저에서는 알림을 지원하지 않습니다.');return}const r=await Notification.requestPermission();setNotifyButton();if(r==='granted'){try{const reg=await navigator.serviceWorker.ready;await reg.showNotification('승주 원정대 알림 준비 완료',{body:'스페셜 미션이 오면 알려드릴게요!',tag:'sj-notify-ready'})}catch{}}};}
+  function renderGuest(){$('#dashAvatar').innerHTML='<div class="guest-avatar-v33">🧭</div>';$('#dashName').textContent='승주 원정대';$('#dashGrade').textContent='방문자';$('#dashRole').textContent='부산 · 울릉도 · 독도 대모험';$('#profileEdit').textContent='학생으로 시작하기';$('#profileEdit').onclick=()=>{SJ.setRole('student');location.href='select-student.html?force=1'};const primary=$('#settingsPrimary');primary.href='select-student.html?force=1';primary.querySelector('b').textContent='학생으로 시작하기';primary.onclick=()=>SJ.setRole('student')}
+  function renderStudent(){p=preview?p:SJ.current();st=SJGrowth.normalizeState(SJ.load());if(preview){st={...st,studentId:p.id,avatar:p.id,growthLevel:3,xp:420}}if(!p){location.replace('select-student.html?force=1');return false}st.avatar=p.id;if(!preview)SJ.save(st);$('#dashName').textContent=p.name;$('#dashGrade').textContent=p.grade+'학년';const li=SJGrowth.info(st.growthLevel);$('#dashRole').textContent=`Lv.${st.growthLevel} ${li.name} · ${st.xp} XP`;SJGrowth.render($('#dashAvatar'),p.id,st.growthLevel,{small:true});$('#profileEdit').textContent='🌱 나의 성장';$('#profileEdit').onclick=()=>location.href='equipment.html';const primary=$('#settingsPrimary');primary.href='equipment.html';primary.querySelector('b').textContent='나의 성장';primary.onclick=null;return true}
+  async function setupPassword(){const modal=$('#securityModal'),text=$('#securityText'),pw=$('#securityPw'),pw2=$('#securityPw2'),btn=$('#securitySave');modal.hidden=false;text.textContent=`${p.name} 학생의 새 숫자 4자리 비밀번호를 설정합니다.`;return new Promise(resolve=>{btn.onclick=async()=>{const a=pw.value.trim(),b=pw2.value.trim();if(!/^\d{4}$/.test(a)){alert('숫자 4자리로 입력해주세요.');return}if(a!==b){alert('두 비밀번호가 다릅니다.');return}btn.disabled=true;btn.textContent='저장 중…';try{const r=await SJAuth.register(p.id,a);st.authToken=r.token;st.avatar=p.id;SJ.save(st);await SJGrowth.push(st);modal.hidden=true;resolve(true)}catch(e){alert(e.message);btn.disabled=false;btn.textContent='비밀번호 저장'}}})}
+  if(preview)renderStudent();else if(!role){$('#roleModal').hidden=false;$('#roleStudent').onclick=()=>{SJ.setRole('student');location.href='select-student.html?onboarding=1'};$('#roleGuest').onclick=()=>{SJ.setRole('guest');$('#roleModal').hidden=true;role='guest';renderGuest()};renderGuest()}else if(role==='guest')renderGuest();else{if(!renderStudent())return;try{const reg=await SJAuth.status(p.id);if(reg.registered){const valid=st.authToken?await SJAuth.verify(p.id,st.authToken):false;if(!valid){location.replace(`select-student.html?force=1&student=${encodeURIComponent(p.id)}`);return}}else await setupPassword();st=await SJGrowth.pull();renderStudent();setTimeout(()=>SJGrowth.checkUpgradePrompt(),350)}catch(e){alert('학생 보안 서버에 연결하지 못했습니다. 인터넷 연결 후 다시 열어주세요.');return}}
+  if(!preview&&role==='student'){setInterval(async()=>{const before=Number(SJ.load().xp)||0;const latest=await SJGrowth.pull();if((Number(latest.xp)||0)!==before){renderStudent();SJGrowth.checkUpgradePrompt()}},10000)}
+  $('#missionBtn').onclick=()=>{if(window.SJSpecial)window.SJSpecial.openCurrent();else location.href='missions.html'};$('#membersBtn').onclick=()=>alert('오늘의 원정대 조편성은 교사가 공개하면 이곳에 표시됩니다.');$('#profileCard').onclick=e=>{if(e.target.closest('button'))return;if(role==='student')location.href='equipment.html'};
+  let timer=null,longOpened=false;settingsBtn.addEventListener('pointerdown',()=>{longOpened=false;clearTimeout(timer);timer=setTimeout(()=>{longOpened=true;location.href='teacher.html'},3000)});settingsBtn.addEventListener('pointerup',()=>{clearTimeout(timer);if(!longOpened)open(settings)});settingsBtn.addEventListener('pointercancel',()=>clearTimeout(timer));settingsBtn.addEventListener('contextmenu',e=>e.preventDefault());$('#hamburgerBtn').onclick=()=>open(drawer);document.querySelectorAll('[data-close="settings"]').forEach(x=>x.onclick=()=>close(settings));document.querySelectorAll('[data-close="menu"]').forEach(x=>x.onclick=()=>close(drawer));setNotifyButton();
 })();
