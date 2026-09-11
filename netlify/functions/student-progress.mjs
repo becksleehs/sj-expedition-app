@@ -27,7 +27,9 @@ export default async(req)=>{
     const u=new URL(req.url),studentId=clean(u.searchParams.get('studentId')),token=clean(u.searchParams.get('token'));
     if(!await validSession(studentId,token))return new Response(JSON.stringify({error:'인증이 필요합니다.'}),{status:401,headers});
     const progress=normalized(await store.get(`progress/${studentId}`,{type:'json',consistency:'strong'}));
-    return new Response(JSON.stringify({ok:true,progress}),{headers});
+    const {blobs}=await store.list({prefix:`reward/${studentId}/`});
+    const rewards=blobs.map(b=>b.key.split('/').pop());
+    return new Response(JSON.stringify({ok:true,progress,rewards}),{headers});
   }
   if(req.method!=='POST')return new Response(JSON.stringify({error:'method'}),{status:405,headers});
   let body={};try{body=await req.json()}catch{}

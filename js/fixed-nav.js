@@ -11,8 +11,12 @@
     nav.innerHTML=items.map(([href,icon,label])=>`<a href="${href}" class="${activePath===href||(activePath===''&&href==='index.html')?'active':''}"><span>${icon}</span><b>${label}</b></a>`).join('');
     document.body.appendChild(nav);
   }
-  if(window.SJGrowth){setTimeout(()=>window.SJGrowth.checkUpgradePrompt?.(),250)}else if(window.SJ&&!document.getElementById('sjGrowthScript')){const g=document.createElement('script');g.id='sjGrowthScript';g.src='js/growth.js?v=fresh370';g.onload=()=>setTimeout(()=>window.SJGrowth?.checkUpgradePrompt?.(),250);document.body.appendChild(g);}
+  if(window.SJGrowth){setTimeout(()=>window.SJGrowth.checkUpgradePrompt?.(),250)}else if(window.SJ&&!document.getElementById('sjGrowthScript')){const g=document.createElement('script');g.id='sjGrowthScript';g.src='js/growth.js?v=fresh380';g.onload=()=>setTimeout(()=>window.SJGrowth?.checkUpgradePrompt?.(),250);document.body.appendChild(g);}
   if(!window.SJSpecial&&!document.getElementById('sjSpecialScript')&&!excluded.includes(path)){
-    const s=document.createElement('script');s.id='sjSpecialScript';s.src='js/special-mission.js?v=fresh370';document.body.appendChild(s);
+    const s=document.createElement('script');s.id='sjSpecialScript';s.src='js/special-mission.js?v=fresh380';document.body.appendChild(s);
+  }
+
+  if(!window.SJLiveAlertsLoaded&&!document.getElementById('sjLiveAlertsScript')&&!excluded.includes(path)){
+    window.SJLiveAlertsLoaded=true;const a=document.createElement('script');a.id='sjLiveAlertsScript';a.src='js/live-alerts.js?v=fresh380';document.body.appendChild(a);
   }
 })();

@@ -15,7 +15,7 @@
     return s;
   }
   function info(level){return levels[clamp(Number(level)||1,1,5)-1]}
-  function asset(studentId,level){return `assets/growth-v35/${studentId}/lv${clamp(Number(level)||1,1,5)}.png?v=fresh370`}
+  function asset(studentId,level){return `assets/growth-v35/${studentId}/lv${clamp(Number(level)||1,1,5)}.png?v=fresh380`}
   function render(el,studentId,level,opts={}){if(!el)return;el.innerHTML=`<img class="growth-avatar-v35 ${opts.small?'small':''}" src="${asset(studentId,level)}" alt="${SJ.students.find(s=>s.id===studentId)?.name||''} ${info(level).name}">`;}
   function nextInfo(s){s=normalizeState(s);return s.growthLevel>=5?null:levels[s.growthLevel]}
   function canUpgrade(s){const n=nextInfo(s);return !!(n&&s.xp>=n.minXP)}
