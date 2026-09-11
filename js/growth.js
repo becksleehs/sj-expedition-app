@@ -5,7 +5,7 @@
     {level:2,name:'새싹 탐험가',minXP:100,desc:'탐험복 획득'},
     {level:3,name:'길잡이 탐험가',minXP:300,desc:'탐험모자 + 스카프'},
     {level:4,name:'기록 탐험가',minXP:600,desc:'가방 + 카메라'},
-    {level:5,name:'독도 수호 탐험가',minXP:1000,desc:'망원경 + 태극기 배지'}
+    {level:5,name:'독도 수호 탐험가',minXP:1000,desc:'망원경 + 태극기'}
   ];
   const clamp=(n,a,b)=>Math.max(a,Math.min(b,n));
   function normalizeState(s){
@@ -15,7 +15,7 @@
     return s;
   }
   function info(level){return levels[clamp(Number(level)||1,1,5)-1]}
-  function asset(studentId,level){return `assets/growth-v35/${studentId}/lv${clamp(Number(level)||1,1,5)}.png?v=fresh350`}
+  function asset(studentId,level){return `assets/growth-v35/${studentId}/lv${clamp(Number(level)||1,1,5)}.png?v=fresh360`}
   function render(el,studentId,level,opts={}){if(!el)return;el.innerHTML=`<img class="growth-avatar-v35 ${opts.small?'small':''}" src="${asset(studentId,level)}" alt="${SJ.students.find(s=>s.id===studentId)?.name||''} ${info(level).name}">`;}
   function nextInfo(s){s=normalizeState(s);return s.growthLevel>=5?null:levels[s.growthLevel]}
   function canUpgrade(s){const n=nextInfo(s);return !!(n&&s.xp>=n.minXP)}
