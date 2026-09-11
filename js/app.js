@@ -15,5 +15,5 @@ function setRole(role){if(role==='student'||role==='guest')localStorage.setItem(
 function clearRole(){localStorage.removeItem(ROLE_KEY)}
 function entryUrl(){const role=getRole();if(role==='guest')return 'index.html';return isRegistered()?'index.html':'select-student.html'}
 window.SJ={KEY,ROLE_KEY,students,load,save,current,isRegistered,entryUrl,resetCurrent,getRole,setRole,clearRole};
-if(!sessionStorage.getItem('sj2026_sw_cleaned_v35')){sessionStorage.setItem('sj2026_sw_cleaned_v35','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
+if(!sessionStorage.getItem('sj2026_sw_cleaned_v37')){sessionStorage.setItem('sj2026_sw_cleaned_v37','1');if('serviceWorker'in navigator)navigator.serviceWorker.getRegistrations().then(rs=>rs.forEach(r=>r.unregister()));if(window.caches)caches.keys().then(ks=>ks.forEach(k=>{if(/^sj-|expedition/i.test(k))caches.delete(k)}));}
 if('serviceWorker'in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}));}

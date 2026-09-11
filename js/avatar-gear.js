@@ -32,7 +32,7 @@
     }
     return s;
   }
-  function baseAsset(id){const safe=profiles[id]?id:'f1';return `assets/avatar-v33/${safe}.png?v=fresh360`;}
+  function baseAsset(id){const safe=profiles[id]?id:'f1';return `assets/avatar-v33/${safe}.png?v=fresh370`;}
   function svgLayer(kind){
     const common='viewBox="0 0 720 900" preserveAspectRatio="xMidYMid meet"';
     const s={
