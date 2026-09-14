@@ -623,3 +623,20 @@ body:not(.dashboard-body-v33):not(.chat-page-v34){padding-bottom:84px!important}
 .badge-intro-v38{margin:10px;padding:13px;border-radius:18px;background:linear-gradient(135deg,#fff7d9,#fff);border:2px solid #f0d995}.badge-intro-v38 h2{font-size:16px;color:#654617;margin:0}.badge-intro-v38 p{font-size:10px;line-height:1.5;color:#7d6a49;margin:5px 0 0}.badge-grid-v38{padding:0 10px 90px;display:grid;grid-template-columns:repeat(2,1fr);gap:9px}.badge-card-v38{background:#fff;border:2px solid #dce9ee;border-radius:18px;padding:14px;text-align:center}.badge-card-v38>div{font-size:38px}.badge-card-v38 b{display:block;font-size:12px;color:#1d4259;margin-top:4px}.badge-card-v38 small{display:block;font-size:8px;color:#80919a;margin:3px 0 8px}.badge-card-v38 span{display:inline-block;border-radius:999px;padding:4px 7px;font-size:8px;font-weight:950}.badge-card-v38.earned{border-color:#f0c856;background:linear-gradient(#fffdf3,#fff)}.badge-card-v38.earned span{background:#fff0ad;color:#77530f}.badge-card-v38.locked{filter:grayscale(.5);opacity:.7}.badge-card-v38.locked span{background:#edf1f3;color:#74838b}
 
 @media(max-width:360px){.history-title-copy-v38 strong{font-size:16px}.history-detail-v38>p:first-child{font-size:13px}.admin-group-preview-v38{grid-template-columns:1fr}.album-grid-v38{gap:6px}.profile-meta-v33 strong{font-size:14px!important}.profile-card-v33 p{font-size:9px!important}}
+
+/* ===== FRESH v3.9 mobile-first release =====
+   Student phones are the canonical layout. Wider screens show the same
+   phone-sized experience without a separate desktop composition. */
+html{background:#073a59}
+body{padding:0!important;background:#073a59}
+.app{width:100%;max-width:430px;min-height:100dvh;margin:0 auto;border-radius:0!important}
+.topbar{max-width:430px;margin:0 auto}
+.hero-v33>img{width:100%;height:49dvh;max-height:none;object-fit:cover;object-position:center top}
+.dashboard-content-v33{padding:5px}
+.status-grid-v33{gap:5px!important}
+.profile-card-v33,.info-card-v33{border-radius:15px;padding:5px}
+.sj-fixed-nav-v33{width:100%;max-width:430px}
+@media(min-width:431px){
+  body{padding:0!important}
+  .app{min-height:100dvh;box-shadow:0 0 45px rgba(0,27,48,.38)}
+}
