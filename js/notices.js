@@ -5,6 +5,7 @@
   const known=new Map();let busy=false;
   async function refresh(){if(busy)return;busy=true;try{
     const r=await fetch('/.netlify/functions/notices',{cache:'no-store'});if(!r.ok)throw Error();const d=await r.json();
+    const ids=new Set((d.notices||[]).map(n=>n.id||`${n.time}-${n.title}`));for(const [id,item] of known){if(!ids.has(id)){item.el.remove();known.delete(id)}}
     for(const n of d.notices||[]){const id=n.id||`${n.time}-${n.title}`;if(known.has(id))continue;
       const el=document.createElement('article');el.className='subpage-card-v27 notice-item';el.innerHTML=`<time>${n.system?'원정대 소식':'선생님 공지'} · ${new Date(n.time).toLocaleString('ko-KR')}</time><h2>${esc(n.title)}</h2><p>${esc(n.body)}</p>`;known.set(id,{el,time:Number(n.time)});}
     [...known.values()].sort((a,b)=>b.time-a.time).forEach((n,i)=>{if(box.children[i]!==n.el)box.insertBefore(n.el,box.children[i]||null)});

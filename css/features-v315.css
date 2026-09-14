@@ -1,0 +1,6 @@
+.schedule-now{outline:3px solid #f19413!important;border-radius:8px;background:#fff0c4!important}
+.schedule-now:after{content:'지금 진행 중';display:block;font-weight:bold;color:#9b4a00;font-size:12px}
+.chat-pinned{position:sticky;top:0;z-index:22;background:#fff2b6;color:#69480e;padding:10px;white-space:pre-wrap;overflow-wrap:anywhere;font-size:13px}
+.manage-row{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #ccc}.manage-row span{flex:1;overflow-wrap:anywhere}.manage-row img{width:65px;height:65px;object-fit:contain}
+.reflection-form{padding:16px}.reflection-form textarea{width:100%;font-size:16px;min-height:110px;padding:12px}.reflection-form button{min-height:44px;padding:10px 20px}.reflection-record{white-space:pre-wrap;background:white;margin:10px 0;padding:12px;border-radius:12px}
+.chat-pinned{flex:0 0 auto;max-height:100px;overflow-y:auto}.chat-pinned[hidden]{display:none}

@@ -8,6 +8,7 @@ const HISTORY_REWARDS=new Set(['history_u1','history_u2','history_u3','history_u
 const QUIZ_REWARDS=new Set(['quiz_u1','quiz_u2','quiz_u3','quiz_u4','quiz_d1','quiz_d2','quiz_d3','quiz_d4']);
 const ALL_QUIZ_IDS=[...QUIZ_REWARDS];
 function rewardAmount(id){if(HISTORY_REWARDS.has(id))return 5;if(QUIZ_REWARDS.has(id))return 10;if(id==='quiz_all_bonus')return 20;return 0;}
+const journalDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const clean=v=>String(v??'').trim();
 const tokenKey=t=>createHash('sha256').update(t).digest('hex');
 const FALLBACK_TEACHER_PIN_SHA256='df4865fca1f159162557359ef967f9502087f57527b0e030e139933e54f3061e';
@@ -29,16 +30,30 @@ export default async(req)=>{
     const progress=normalized(await store.get(`progress/${studentId}`,{type:'json',consistency:'strong'}));
     const {blobs}=await store.list({prefix:`reward/${studentId}/`});
     const rewards=blobs.map(b=>b.key.split('/').pop());
-    return new Response(JSON.stringify({ok:true,progress,rewards}),{headers});
+    const entries=await store.list({prefix:`journal/${studentId}/`});const journals=[];
+    for(const b of entries.blobs){const v=await store.get(b.key,{type:'json'});if(v)journals.push(v)}
+    journals.sort((a,b)=>b.date.localeCompare(a.date));
+    return new Response(JSON.stringify({ok:true,progress,rewards,journals}),{headers});
   }
   if(req.method!=='POST')return new Response(JSON.stringify({error:'method'}),{status:405,headers});
   let body={};try{body=await req.json()}catch{}
   const action=clean(body.action),studentId=clean(body.studentId);
   if(!STUDENTS.has(studentId))return new Response(JSON.stringify({error:'학생 정보가 올바르지 않습니다.'}),{status:400,headers});
 
+  if(action==='journal-save'){
+    if(!await validSession(studentId,clean(body.token)))return new Response(JSON.stringify({error:'인증이 필요합니다.'}),{status:401,headers});
+    const text=clean(body.text),date=journalDate(),lines=text.split(/\r?\n/).filter(x=>x.trim());
+    if(lines.length<2||lines.length>3||text.length>600)return new Response(JSON.stringify({error:'소감을 2~3줄, 600자 이내로 작성해주세요.'}),{status:400,headers});
+    await store.setJSON(`journal/${studentId}/${date}`,{date,text,updatedAt:Date.now()});
+    return new Response(JSON.stringify({ok:true,rewardId:`journal_${date}`}),{headers});
+  }
   if(action==='claim-reward'){
     const token=clean(body.token);if(!await validSession(studentId,token))return new Response(JSON.stringify({error:'인증이 필요합니다.'}),{status:401,headers});
-    const rewardId=clean(body.rewardId),amount=rewardAmount(rewardId);
+    const rewardId=clean(body.rewardId);let amount=rewardAmount(rewardId);
+    if(/^journal_\d{4}-\d{2}-\d{2}$/.test(rewardId)){
+      const date=rewardId.slice(8),entry=await store.get(`journal/${studentId}/${date}`,{type:'json'});
+      if(entry&&date<=journalDate())amount=10;
+    }
     if(!amount)return new Response(JSON.stringify({error:'보상 정보가 올바르지 않습니다.'}),{status:400,headers});
     if(rewardId==='quiz_all_bonus'){
       for(const qid of ALL_QUIZ_IDS){const ok=await store.get(`reward/${studentId}/${qid}`,{type:'json',consistency:'strong'});if(!ok)return new Response(JSON.stringify({error:'모든 퀴즈를 먼저 맞혀야 합니다.'}),{status:400,headers});}

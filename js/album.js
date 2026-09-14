@@ -2,7 +2,7 @@
   const grid=document.getElementById('albumGrid'),fileInput=document.getElementById('albumFile'),pick=document.getElementById('albumPick'),upload=document.getElementById('albumUpload'),caption=document.getElementById('albumCaption'),preview=document.getElementById('albumPreview');
   const p=SJ.current(),st=SJ.load();let prepared=null,filename='';
   const esc=s=>String(s||'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const studentName=id=>SJ.students.find(s=>s.id===id)?.name||'학생';
+  const studentName=id=>id==='teacher'?'선생님':SJ.students.find(s=>s.id===id)?.name||'학생';
   function fmt(ts){const d=new Date(ts);return d.toLocaleString('ko-KR',{month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
   function resize(file){return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{let w=img.naturalWidth,h=img.naturalHeight;const max=1280;if(Math.max(w,h)>max){const r=max/Math.max(w,h);w=Math.round(w*r);h=Math.round(h*r)}const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d');ctx.drawImage(img,0,0,w,h);URL.revokeObjectURL(url);resolve(c.toDataURL('image/jpeg',.78))};img.onerror=reject;img.src=url})}
   pick.onclick=()=>{if(!p||!st.authToken){alert('학생으로 로그인한 뒤 사진을 올릴 수 있어요.');return}fileInput.click()};

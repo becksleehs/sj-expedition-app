@@ -11,7 +11,8 @@ export default async (req) => {
     const keys=blobs.map(b=>b.key).sort().slice(-100);
     const messages=[];
     for(const key of keys){ const v=await store.get(key,{type:'json',consistency:'strong'}); if(v) messages.push(v); }
-    return new Response(JSON.stringify({messages}),{headers});
+    const pinned=await store.get('pinned',{type:'json'});
+    return new Response(JSON.stringify({messages,pinned:pinned?.text||''}),{headers});
   }
   if(req.method==='POST'){
     let body={}; try{body=await req.json();}catch{}
