@@ -640,3 +640,32 @@ body{padding:0!important;background:#073a59}
   body{padding:0!important}
   .app{min-height:100dvh;box-shadow:0 0 45px rgba(0,27,48,.38)}
 }
+
+/* ===== FRESH v3.10 larger map + compact dashboard cards ===== */
+.dashboard-v33{height:100dvh;padding-bottom:72px}
+.hero-v33{flex:0 0 61dvh;min-height:0}
+.hero-v33>img{height:100%;max-height:none;object-fit:cover;object-position:center top}
+.dashboard-content-v33{flex:1 1 auto;min-height:0;padding:4px}
+.status-grid-v33{height:100%;gap:4px!important}
+.profile-card-v33{flex-basis:38%;width:38%;padding:4px;border-radius:13px}
+.status-stack-v33{gap:4px!important}
+.info-card-v33{padding:4px;border-radius:13px}
+.card-title-v33{height:23px;font-size:10px;padding:0 2px}
+.card-title-v33>span{gap:2px}.card-title-v33>b{font-size:17px}.title-icon-v33{font-size:14px}
+.profile-avatar-v33{flex:1;min-height:0;max-height:105px;margin:2px 0;border-radius:10px}
+.profile-avatar-v33 .growth-avatar-v35{width:86%!important;height:100%!important;max-width:86%!important;max-height:100%!important}
+.profile-meta-v33{min-height:19px;gap:3px}.profile-meta-v33 strong{font-size:12px!important}.profile-meta-v33 span{font-size:7px!important;padding:2px 4px}
+.profile-card-v33 p{font-size:7.5px!important;margin:0 0 2px!important}
+.profile-edit-v33{height:23px;font-size:9px;border-radius:8px;box-shadow:0 1px 0 #51230b}
+.status-stack-v33 .members-v33{height:45%!important}
+.status-stack-v33 .mission-v33{height:53%!important}
+.members-body-v33{padding:1px 1px 0;gap:1px}
+.member-avatars-v33{min-height:31px}.member-avatars-v33 span,.member-avatars-v33 i{width:29px;height:29px;border-width:2px;font-size:9px}
+.members-body-v33 small{font-size:7px}
+.mission-paper-v33{margin-top:2px;padding:2px 4px;border-radius:9px}
+.mission-paper-v33 strong{font-size:20px}.mission-paper-v33 span{font-size:7.8px}.mission-paper-v33 small{font-size:5.8px}
+.sj-fixed-nav-v33{height:72px}
+@media(max-height:760px){
+  .hero-v33{flex-basis:58dvh}
+  .profile-avatar-v33{max-height:88px}
+}
