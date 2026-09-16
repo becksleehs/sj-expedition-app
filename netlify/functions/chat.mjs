@@ -1,3 +1,4 @@
+import {student as validStudent} from './lib/mission-auth.mjs';
 import { getStore } from '@netlify/blobs';
 
 const headers={'content-type':'application/json; charset=utf-8','cache-control':'no-store'};
@@ -16,7 +17,8 @@ export default async (req) => {
   }
   if(req.method==='POST'){
     let body={}; try{body=await req.json();}catch{}
-    const student=clean(body.student).slice(0,20), text=clean(body.text).slice(0,120), grade=clean(body.grade).slice(0,4);
+    if(!await validStudent(body.studentId,body.token))return new Response(JSON.stringify({error:'학생 로그인이 필요합니다.'}),{status:401,headers});
+ const index=Number(body.studentId.slice(1))-1,student=[...STUDENTS][index],text=clean(body.text).slice(0,120),grade=index<2?'1':index<7?'2':'3';
     if(!student||!text||!STUDENTS.has(student)) return new Response(JSON.stringify({error:'invalid student or message'}),{status:400,headers});
     const time=Date.now(), id=crypto.randomUUID();
     const msg={id,student,grade,text,time};

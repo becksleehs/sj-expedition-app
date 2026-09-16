@@ -7,8 +7,8 @@ const students=[
 function defaultState(){return {studentId:null,avatar:null,avatarChangesUsed:0,authToken:null,xp:0,growthLevel:1,lastUpgradePromptLevel:1}}
 function load(){try{return Object.assign(defaultState(),JSON.parse(localStorage.getItem(KEY))||{})}catch{return defaultState()}}
 function save(s){localStorage.setItem(KEY,JSON.stringify(s))}
-function current(){const s=load();return students.find(x=>x.id===s.studentId)}
-function isRegistered(){const s=load();return !!(s.studentId&&students.some(x=>x.id===s.studentId)&&(s.avatar||s.growthLevel))}
+function current(){if(getRole()==='guest')return null;const s=load();return students.find(x=>x.id===s.studentId)}
+function isRegistered(){if(getRole()==='guest')return false;const s=load();return !!(s.studentId&&students.some(x=>x.id===s.studentId)&&(s.avatar||s.growthLevel))}
 function resetCurrent(){localStorage.removeItem(KEY)}
 function getRole(){let role=localStorage.getItem(ROLE_KEY);if(role==='student'||role==='guest')return role;const s=load();if(s.studentId&&s.authToken){localStorage.setItem(ROLE_KEY,'student');return 'student'}return null}
 function setRole(role){if(role==='student'||role==='guest')localStorage.setItem(ROLE_KEY,role);else localStorage.removeItem(ROLE_KEY)}

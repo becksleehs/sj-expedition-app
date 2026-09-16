@@ -1,0 +1,3 @@
+import {getStore} from '@netlify/blobs';import {createHash} from 'node:crypto';
+export function teacher(pin){pin=String(pin||'');return /^\d{4}$/.test(pin)&&(process.env.TEACHER_PIN?pin===process.env.TEACHER_PIN:createHash('sha256').update(pin).digest('hex')==='df4865fca1f159162557359ef967f9502087f57527b0e030e139933e54f3061e')}
+export async function student(id,token){if(!/^s(0[1-9]|1[0-3])$/.test(id||'')||!token)return false;const store=getStore({name:'sj-expedition-auth',consistency:'strong'}),key=createHash('sha256').update(String(token)).digest('hex'),s=await store.get('session/'+key,{type:'json'}),c=await store.get('student/'+id,{type:'json'});return !!(s&&c&&s.studentId===id&&s.credVersion===c.credVersion&&s.expiresAt>Date.now())}

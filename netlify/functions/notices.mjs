@@ -4,6 +4,8 @@ const headers={'content-type':'application/json; charset=utf-8','cache-control':
 export default async (req)=>{
   const store=getStore({name:'sj-expedition-notices',consistency:'strong'});
   if(req.method==='GET'){
+ if(!await store.get('seeded-v318')){const initial=await store.list({prefix:'notice/'});if(!initial.blobs.length)await store.setJSON('notice/default',{title:'승주 원정대에 오신 것을 환영합니다!',body:'집합 시간과 준비물은 선생님의 안내를 확인하세요. 안전하게 함께 이동하고 친구를 배려하며 즐거운 추억을 만들어 봅시다.',time:Date.now(),system:false},{onlyIfNew:true});await store.set('seeded-v318','1');}
+
     const {blobs}=await store.list({prefix:'notice/'}); const keys=blobs.map(b=>b.key); const notices=[];
     for(const key of keys){const v=await store.get(key,{type:'json',consistency:'strong'});if(v)notices.push({...v,id:key})}
     notices.sort((a,b)=>Number(b.time)-Number(a.time));
