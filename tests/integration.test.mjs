@@ -2,7 +2,7 @@ import {test,beforeEach} from 'node:test';import assert from 'node:assert/strict
 const mockUrl=new URL('./mock-blobs.mjs',import.meta.url).href;
 registerHooks({resolve(s,c,next){return s==='@netlify/blobs'?{url:mockUrl,shortCircuit:true}:next(s,c);}});
 const {getStore,reset}=await import('./mock-blobs.mjs');
-const names=['field-missions','student-progress','media','album','room-admin','notices','chat','groups'];const api={};for(const name of names)api[name]=(await import(`../netlify/functions/${name}.mjs`)).default;
+const names=['quiz','feature-gates','field-missions','student-progress','media','album','room-admin','notices','chat','groups'];const api={};for(const name of names)api[name]=(await import(`../netlify/functions/${name}.mjs`)).default;
 process.env.TEACHER_PIN='1234';const pin={teacherPin:'1234'},auth=id=>({studentId:id,token:'token-'+id}),students=Array.from({length:13},(_,i)=>'s'+String(i+1).padStart(2,'0'));
 const groups=[{name:'1조',members:['s01','s03','s09','s12']},{name:'2조',members:['s02','s04','s08','s10']},{name:'3조',members:['s05','s06','s07','s11','s13']}];
 async function call(name,body,method='POST',query=''){const r=await api[name](new Request('https://example.test/.netlify/functions/'+name+query,{method,...(method==='POST'?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})}));let data;try{data=await r.json()}catch{}return {status:r.status,data};}
@@ -23,8 +23,9 @@ test('Waiting missions stay private; only administrator starts; batch preflight 
 });
 test('Concurrent team submissions, retry, and a parallel quiz give each member XP exactly once',async()=>{
  await publish();await start(['lotte-group']);
+ await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
  const b={...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'};
- const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'quiz_u1'})]);assert(results.every(r=>r.status===200));
+ const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_u1',choice:1})]);assert(results.every(r=>r.status===200));
  assert.equal(await xp('s01'),30);for(const id of ['s03','s09','s12'])assert.equal(await xp(id),20);assert.equal(await xp('s02'),0);
  assert.equal((await store('field-missions').list({prefix:'submission/'})).blobs.length,1);
  await call('field-missions',b);assert.equal(await xp('s01'),30);
@@ -105,4 +106,53 @@ test('Schedule highlights Korean-time active slots including overnight crossings
  const clock={},document={createElement:()=>clock,querySelector:s=>s==='.schedule-head-v35'?{append(){}}:{click(){}},querySelectorAll:()=>[{querySelectorAll:()=>rows}]};
  class FixedDate extends Date{static now(){return Date.parse('2026-10-15T01:00:00+09:00')}}
  const ctx={document,Date:FixedDate,setInterval:()=>{}};vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/schedule-live.js',import.meta.url),'utf8'),ctx);assert(rows[0].classes.has('schedule-now'));assert(!rows[1].classes.has('schedule-now'));assert(clock.textContent.includes('한국 시간'));
+});
+test('Island gates are independent; five questions hide keys and first wrong answer survives retries',async()=>{
+ const a=auth('s01');
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:1})).status,403);
+ assert.equal((await call('feature-gates',{feature:'quiz_ulleung',open:true})).status,403);
+ await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
+ assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_d1',choice:0})).status,403);
+ const get=()=>call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'ulleung'}));
+ const first=(await get()).data;assert.equal(first.items.length,5);assert(!('answer' in first.items[0]));assert(!('why' in first.items[0]));
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:0})).data.attempt.correct,false);
+ const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
+ assert.equal((await get()).data.items[0].attempt.correct,false);
+ assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_u1'})).status,400);
+ assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_all_bonus'})).status,400);
+ await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_u2',choice:0})));assert.equal(await xp('s01'),10);
+ await call('feature-gates',{...pin,feature:'quiz_ulleung',open:false});assert.equal((await get()).status,403);
+ await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});assert.equal((await get()).data.items[0].attempt.choice,0);
+ await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal((await call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'dokdo'}))).data.items.length,5);
+});
+test('Story gates, simultaneous teacher changes and prior quiz awards migrate without duplicate XP',async()=>{
+ await Promise.all(['history_ulleung','quiz_dokdo'].map(feature=>call('feature-gates',{...pin,feature,open:true})));
+ const gates=(await call('feature-gates',null,'GET')).data.state;assert(gates.history_ulleung.open&&gates.quiz_dokdo.open);assert(!gates.quiz_ulleung.open&&!gates.history_dokdo.open);
+ assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_u5'})).data.amount,5);
+ assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_d5'})).status,403);
+ await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_d1',{amount:10});
+ const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
+});
+test('Choosing an unlocked appearance preserves earned level and XP and persists through sync',async()=>{
+ const a=auth('s01');await call('student-progress',{...pin,studentId:'s01',action:'teacher-add-xp',amount:300});
+ await call('student-progress',{...a,action:'save',growthLevel:3});
+ const picked=await call('student-progress',{...a,action:'select-avatar',avatarLevel:1});assert.equal(picked.data.progress.avatarLevel,1);assert.equal(picked.data.progress.growthLevel,3);assert.equal(picked.data.progress.xp,300);
+ assert.equal((await call('student-progress',{...a,action:'select-avatar',avatarLevel:4})).status,403);
+ const fetched=await call('student-progress',null,'GET','?'+new URLSearchParams(a));assert.equal(fetched.data.progress.avatarLevel,1);
+});
+test('Automatic upgrade prompts cannot appear on quiz, album or character pages',async()=>{
+ const source=await readFile(new URL('../js/growth.js',import.meta.url),'utf8');
+ for(const pathname of ['/quiz.html','/album.html','/equipment.html','/missions.html']){
+  const context={location:{pathname},window:{},SJ:{load(){throw Error('Non-home prompt must stop before state or DOM access');}},document:{}};vm.createContext(context);vm.runInContext(source,context);assert.equal(await context.window.SJGrowth.checkUpgradePrompt(true),false);
+ }
+});
+test('Friends and gull surprise mission gives no XP on submit, retry or progress sync',async()=>{
+ await publish();await start(['dokdo-friends-gull']);
+ const list=(await call('field-missions',{...auth('s01'),action:'list'})).data.missions;
+ const m=list.find(m=>m.id==='dokdo-friends-gull');assert.equal(m.place,'돌발 미션');assert.equal(m.xp,0);
+ const b={...auth('s01'),action:'submit',id:m.id,image:'data:image/jpeg;base64,/9j/'};
+ assert.equal((await call('field-missions',b)).status,200);
+ assert.equal((await call('field-missions',b)).status,200);
+ assert.equal(await xp('s01'),0);assert.equal(await xp('s01'),0);
+ assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'field_'+m.id})).status,400);
 });

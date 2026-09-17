@@ -3,7 +3,7 @@ import {student,teacher} from './lib/mission-auth.mjs';
 import {award,changeProgress,syncMissions,publicProgress} from './lib/progress-store.mjs';
 const reply=(d,status=200)=>new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const ids=['u1','u2','u3','u4','d1','d2','d3','d4'],quiz=ids.map(x=>'quiz_'+x),history=ids.map(x=>'history_'+x);
+const ids=['u1','u2','u3','u4','u5','d1','d2','d3','d4','d5'],quiz=ids.map(x=>'quiz_'+x),history=ids.map(x=>'history_'+x);
 export default async req=>{try{
  const b=req.method==='GET'?Object.fromEntries(new URL(req.url).searchParams):req.method==='POST'?await req.json():null;if(!b)return reply({},405);
  const id=b.studentId,store=getStore({name:'sj-expedition-progress',consistency:'strong'});
@@ -23,14 +23,19 @@ export default async req=>{try{
   await store.setJSON(`journal/${id}/${date}`,{date,text,updatedAt:Date.now()});return reply({ok:true,rewardId:'journal_'+date});
  }
  if(b.action==='claim-reward'){
-  const key=String(b.rewardId||'');let amount=history.includes(key)?5:quiz.includes(key)?10:0;
+  const key=String(b.rewardId||'');let amount=history.includes(key)?5:0;
   if(/^journal_\d{4}-\d{2}-\d{2}$/.test(key)&&key.slice(8)<=today()&&await store.get(`journal/${id}/${key.slice(8)}`))amount=10;
   if(key.startsWith('field_')){const {progress}=await syncMissions(id);if(!progress.rewardIds.includes(key))return reply({error:'제출 기록이 없습니다.'},400);return reply({ok:true,alreadyClaimed:true,amount:0,progress:publicProgress(progress)});}
-  if(key==='quiz_all_bonus'){const {progress}=await changeProgress(id,()=>{});if(!quiz.every(x=>progress.rewardIds.includes(x)))return reply({error:'모든 퀴즈를 먼저 맞혀주세요.'},400);amount=20;}
+
+  if(history.includes(key)){const gates=await getStore({name:'sj-expedition-gates',consistency:'strong'}).get('state',{type:'json'});if(!gates?.['history_'+(key[8]==='u'?'ulleung':'dokdo')]?.open)return reply({error:'아직 열리지 않은 이야기입니다.'},403);}
   if(!amount)return reply({error:'보상 정보 오류'},400);const {progress,result}=await award(id,key,amount);return reply({ok:true,alreadyClaimed:!result,amount:result?amount:0,progress:publicProgress(progress)});
  }
+ if(b.action==='select-avatar'){
+  const n=Number(b.avatarLevel);if(!Number.isInteger(n)||n<1||n>5)return reply({error:'단계 정보 오류'},400);
+  const {progress,result}=await changeProgress(id,p=>{if(n>p.growthLevel)return false;p.avatarLevel=n;return true;});return result?reply({ok:true,progress:publicProgress(progress)}):reply({error:'아직 달성하지 않은 단계입니다.'},403);
+ }
  if(b.action==='save'){
-  const {progress}=await changeProgress(id,p=>{const n=Math.max(1,Math.min(5,Math.floor(Number(b.growthLevel)||1)));if(n>p.growthLevel&&p.xp>=[0,100,300,600,1000][n-1])p.growthLevel=n;});return reply({ok:true,progress:publicProgress(progress)});
+  const {progress}=await changeProgress(id,p=>{const n=Math.max(1,Math.min(5,Math.floor(Number(b.growthLevel)||1)));if(n>p.growthLevel&&p.xp>=[0,100,300,600,1000][n-1]){p.growthLevel=n;p.avatarLevel=n;}});return reply({ok:true,progress:publicProgress(progress)});
  }
  return reply({error:'요청 오류'},400);
 }catch(e){console.error(e.message);return reply({error:'기록을 처리하지 못했습니다. 다시 시도해주세요.'},503)}};
