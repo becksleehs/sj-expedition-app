@@ -156,3 +156,12 @@ test('Friends and gull surprise mission gives no XP on submit, retry or progress
  assert.equal(await xp('s01'),0);assert.equal(await xp('s01'),0);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'field_'+m.id})).status,400);
 });
+test('Home card independently follows teacher start and close and shows connection errors',async()=>{
+ const text={textContent:''},sub={textContent:''};let tick,fail=false;const events={};
+ const context={document:{hidden:false,getElementById:id=>id==='specialMissionCardText'?text:sub,addEventListener:(name,fn)=>events[name]=fn},setInterval:fn=>{tick=fn;},fetch:async()=>{if(fail)return {ok:false};const r=await api['field-missions'](new Request('https://example.test/.netlify/functions/field-missions?action=list'));return r;}};
+ vm.createContext(context);vm.runInContext(await readFile(new URL('../js/home-missions.js',import.meta.url),'utf8'),context);await new Promise(r=>setImmediate(r));assert.match(text.textContent,/아직 열린/);
+ await publish();await start(['lotte-group']);tick();await new Promise(r=>setImmediate(r));assert.match(text.textContent,/1개/);
+ const studentList=await call('field-missions',{...auth('s01'),action:'list'});assert(studentList.data.missions[0].eligible);
+ await call('field-missions',{...pin,action:'close',ids:['lotte-group']});events.visibilitychange();await new Promise(r=>setImmediate(r));assert.match(text.textContent,/아직 열린/);
+ fail=true;tick();await new Promise(r=>setImmediate(r));assert.match(text.textContent,/확인하지 못/);
+});
