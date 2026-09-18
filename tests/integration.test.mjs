@@ -25,7 +25,7 @@ test('Concurrent team submissions, retry, and a parallel quiz give each member X
  await publish();await start(['lotte-group']);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
  const b={...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'};
- const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_u1',choice:1})]);assert(results.every(r=>r.status===200));
+ const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v322_u1',choice:1})]);assert(results.every(r=>r.status===200));
  assert.equal(await xp('s01'),30);for(const id of ['s03','s09','s12'])assert.equal(await xp(id),20);assert.equal(await xp('s02'),0);
  assert.equal((await store('field-missions').list({prefix:'submission/'})).blobs.length,1);
  await call('field-missions',b);assert.equal(await xp('s01'),30);
@@ -107,31 +107,31 @@ test('Schedule highlights Korean-time active slots including overnight crossings
  class FixedDate extends Date{static now(){return Date.parse('2026-10-15T01:00:00+09:00')}}
  const ctx={document,Date:FixedDate,setInterval:()=>{}};vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/schedule-live.js',import.meta.url),'utf8'),ctx);assert(rows[0].classes.has('schedule-now'));assert(!rows[1].classes.has('schedule-now'));assert(clock.textContent.includes('한국 시간'));
 });
-test('Island gates are independent; five questions hide keys and first wrong answer survives retries',async()=>{
+test('Island gates are independent; ten questions hide keys and first wrong answer survives retries',async()=>{
  const a=auth('s01');
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:1})).status,403);
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1})).status,403);
  assert.equal((await call('feature-gates',{feature:'quiz_ulleung',open:true})).status,403);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
- assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_d1',choice:0})).status,403);
+ assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_v322_d1',choice:0})).status,403);
  const get=()=>call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'ulleung'}));
- const first=(await get()).data;assert.equal(first.items.length,5);assert(!('answer' in first.items[0]));assert(!('why' in first.items[0]));
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:0})).data.attempt.correct,false);
- const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
+ const first=(await get()).data;assert.equal(first.items.length,10);assert(!('answer' in first.items[0]));assert(!('why' in first.items[0]));
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:0})).data.attempt.correct,false);
+ const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
  assert.equal((await get()).data.items[0].attempt.correct,false);
- assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_u1'})).status,400);
+ assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_v322_u1'})).status,400);
  assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_all_bonus'})).status,400);
- await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_u2',choice:0})));assert.equal(await xp('s01'),10);
+ await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_v322_u2',choice:1})));assert.equal(await xp('s01'),10);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:false});assert.equal((await get()).status,403);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});assert.equal((await get()).data.items[0].attempt.choice,0);
- await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal((await call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'dokdo'}))).data.items.length,5);
+ await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal((await call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'dokdo'}))).data.items.length,10);
 });
 test('Story gates, simultaneous teacher changes and prior quiz awards migrate without duplicate XP',async()=>{
  await Promise.all(['history_ulleung','quiz_dokdo'].map(feature=>call('feature-gates',{...pin,feature,open:true})));
  const gates=(await call('feature-gates',null,'GET')).data.state;assert(gates.history_ulleung.open&&gates.quiz_dokdo.open);assert(!gates.quiz_ulleung.open&&!gates.history_dokdo.open);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_u5'})).data.amount,5);
- assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_d5'})).status,403);
- await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_d1',{amount:10});
- const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
+ assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_d6'})).status,403);
+ await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_v322_d1',{amount:10});
+ const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_v322_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
 });
 test('Choosing an unlocked appearance preserves earned level and XP and persists through sync',async()=>{
  const a=auth('s01');await call('student-progress',{...pin,studentId:'s01',action:'teacher-add-xp',amount:300});
@@ -164,4 +164,29 @@ test('Home card independently follows teacher start and close and shows connecti
  const studentList=await call('field-missions',{...auth('s01'),action:'list'});assert(studentList.data.missions[0].eligible);
  await call('field-missions',{...pin,action:'close',ids:['lotte-group']});events.visibilitychange();await new Promise(r=>setImmediate(r));assert.match(text.textContent,/아직 열린/);
  fail=true;tick();await new Promise(r=>setImmediate(r));assert.match(text.textContent,/확인하지 못/);
+});
+test('Replacement bank preserves old XP without attaching old answers; all twenty questions reward exactly once',async()=>{
+ const {questions}=await import('../netlify/functions/lib/quiz-data.mjs');
+ await store('progress').setJSON('progress/s01',{xp:40,growthLevel:1,quizAnswers:{quiz_u1:{choice:0,correct:false}},rewardIds:['quiz_d1']});
+ const expected={ulleung:[1,1,1,1,0,1,3,1,0,1],dokdo:[1,1,2,1,1,1,0,1,1,0]};
+ for(const island of ['ulleung','dokdo']){
+  await call('feature-gates',{...pin,feature:'quiz_'+island,open:true});
+  const initial=(await call('quiz',null,'GET','?'+new URLSearchParams({...auth('s01'),island}))).data.items;
+  assert.equal(initial.length,10);assert(initial.every(q=>q.attempt===null&&!('answer'in q)&&!('why'in q)));
+  assert.deepEqual(questions[island].map(q=>q.answer),expected[island]);
+  for(const q of questions[island]){assert.equal(q.choices.length,4);const b={...auth('s01'),island,id:q.id,choice:q.answer};assert.equal((await call('quiz',b)).data.amount,10);assert.equal((await call('quiz',b)).data.amount,0);}
+ }
+ assert.equal(await xp('s01'),240);
+ assert.equal((await call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_u1',choice:1})).status,400);
+});
+test('Ten-question student navigation reaches final question and wraps with correct totals',async()=>{
+ const elements={};const el=id=>elements[id]||(elements[id]={hidden:false,textContent:'',innerHTML:'',querySelectorAll:()=>[],querySelector:()=>el('heading')});
+ const tabs=['ulleung','dokdo'].map(tab=>({dataset:{tab},classList:{toggle(){}}}));
+ const document={getElementById:el,querySelector:s=>el(s),querySelectorAll:()=>tabs};
+ const items=Array.from({length:10},(_,i)=>({id:'q'+i,q:'Question '+(i+1),choices:['A','B','C','D'],attempt:i===0?{correct:true,choice:0,answer:0,why:'explanation'}:null}));
+ const ctx={document,location:{search:''},URLSearchParams,SJ:{load:()=>auth('s01')},fetch:async()=>({ok:true,json:async()=>({items})})};vm.createContext(ctx);
+ vm.runInContext(await readFile(new URL('../js/quiz-history.js',import.meta.url),'utf8'),ctx);await new Promise(resolve=>setImmediate(resolve));
+ assert.equal(el('quizSolved').textContent,'1 / 10 제출');assert.equal(el('quizXp').textContent,'10 / 100 XP');
+ for(let n=1;n<10;n++)el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 10'));assert(el('quizStage').innerHTML.includes('처음으로'));
+ el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 1</h2>'));
 });

@@ -18,7 +18,7 @@
   function asset(studentId,level){
     const id=SJ.students.some(s=>s.id===studentId)?studentId:'s01';
     const stage=clamp(Math.floor(Number(level)||1),1,5);
-    return `assets/growth-v317/${id}.svg?v=fresh317#lv${stage}`;
+    return `assets/growth-v321/${id}.svg?v=fresh322#lv${stage}`;
   }
   function render(el,studentId,level,opts={}){if(!el)return;el.innerHTML=`<img class="growth-avatar-v35 ${opts.small?'small':''}" src="${asset(studentId,level)}" alt="${SJ.students.find(s=>s.id===studentId)?.name||''} ${info(level).name}">`;}
   function nextInfo(s){s=normalizeState(s);return s.growthLevel>=5?null:levels[s.growthLevel]}

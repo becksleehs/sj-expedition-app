@@ -1,20 +1,70 @@
 (function(){
   const stories={
-    ulleung:[
-      {id:'history_u1',year:'512년',title:'우산국과 이사부',icon:'🦁',body:'신라 지증왕 13년, 하슬라주의 군주 이사부가 우산국을 신라에 복속시켰다는 기록이 『삼국사기』에 전합니다. 우산국은 오늘날 울릉도 일대를 중심으로 한 세력으로 설명됩니다.',fact:'기억하기: 이사부 · 우산국 · 512년',source:'국사편찬위원회 「신라의 우산국 정복」',url:'https://contents.history.go.kr/front/hm/view.do?levelId=hm_011_0030'},
-      {id:'history_u2',year:'1454년',title:'세종실록 속 무릉과 우산',icon:'📜',body:'『세종실록』 「지리지」에는 우산과 무릉 두 섬이 울진현 동쪽 바다에 있다고 기록되어 있습니다. 무릉은 울릉도를 가리키는 옛 이름으로 사용되었습니다.',fact:'기억하기: 무릉 = 울릉도와 연결된 옛 지명',source:'외교부 독도 「세종실록 지리지」',url:'https://dokdo.mofa.go.kr/kor/pds/part06_view02.jsp'},
-      {id:'history_u3',year:'1693~1696년',title:'안용복과 울릉도',icon:'⛵',body:'조선 숙종 때 안용복은 울릉도에서 일본 어민과 마주친 뒤 일본으로 건너간 일로 기록에 남았습니다. 1696년 『숙종실록』에는 안용복 일행이 울릉도에 갔다가 일본으로 건너가 일본인과 다툰 뒤 돌아온 내용이 실려 있습니다.',fact:'기억하기: 안용복 · 숙종 · 울릉도',source:'조선왕조실록, 숙종 22년 8월 29일',url:'https://sillok.history.go.kr/id/ksa_12208029_003'},
-      {id:'history_u4',year:'1900년',title:'울도군이 된 울릉도',icon:'🏛️',body:'대한제국은 칙령 제41호로 울릉도를 ‘울도’로 고치고 도감을 군수로 바꾸어 행정 체계를 강화했습니다. 울도군의 관할 구역도 함께 규정했습니다.',fact:'기억하기: 대한제국 · 칙령 제41호 · 울도군',source:'국사편찬위원회 「대한제국 칙령 제41호」',url:'https://contents.history.go.kr/front/hm/view.do?levelId=hm_122_0020'}
-    ],
-    dokdo:[
-      {id:'history_d1',year:'1454년',title:'옛 기록 속 우산도',icon:'🗺️',body:'『세종실록』 「지리지」는 우산과 무릉 두 섬을 함께 기록합니다. 한국의 공공 사료에서는 이 우산을 독도와 연결하여 설명하고 있습니다.',fact:'기억하기: 우산 · 무릉 · 세종실록 지리지',source:'외교부 독도 「세종실록 지리지」',url:'https://dokdo.mofa.go.kr/kor/pds/part06_view02.jsp'},
-      {id:'history_d2',year:'1696년',title:'안용복의 두 번째 도일',icon:'🧭',body:'『숙종실록』에는 안용복이 울릉도에서 일본 어민을 만난 뒤 일본으로 건너가 울릉도와 자산도에 관한 주장을 했다고 진술한 기록이 있습니다. 외교부 자료는 자산도를 독도와 연결해 설명합니다.',fact:'기억하기: 안용복 · 자산도 · 1696년',source:'외교부 독도 「안용복의 활동」',url:'https://dokdo.mofa.go.kr/m/kor/dokdo/faq05.jsp'},
-      {id:'history_d3',year:'1900년',title:'칙령 제41호와 석도',icon:'📕',body:'대한제국 칙령 제41호 제2조는 울도군의 관할 구역을 울릉도 전체와 죽도, 석도로 규정했습니다. 한국의 역사 자료에서는 이 석도를 독도로 설명합니다.',fact:'기억하기: 울도군 · 죽도 · 석도',source:'외교부 독도 「칙령 제41호」',url:'https://dokdo.mofa.go.kr/kor/pds/part02_view02.jsp'},
-      {id:'history_d4',year:'오늘',title:'오늘날의 독도',icon:'🇰🇷',body:'대한민국은 독도를 경상북도 울릉군에 두고 실효적으로 관리하고 있습니다. 한편 일본 정부도 독도에 대한 영유권을 주장하고 있어, 관련 역사와 사료를 정확히 살펴보는 태도가 중요합니다.',fact:'생각하기: 주장보다 사료와 근거를 확인하기',source:'대한민국 외교부 독도',url:'https://dokdo.mofa.go.kr/kor/'}
-    ]
-  };
-  stories.ulleung.push({id:'history_u5',year:'1882년',title:'울릉도를 조사한 이규원',icon:'🔎',body:'1882년 검찰사 이규원은 울릉도에 파견되어 섬을 상세히 조사했습니다. 현장을 살펴보고 남긴 기록은 당시 울릉도의 모습과 사람들의 생활을 이해하는 자료가 됩니다.',fact:'기억하기: 1882년 · 검찰사 이규원 · 울릉도 조사',source:'동북아역사재단 『울릉도 1882, 검찰사 이규원의 시간 여행』',url:'https://www.nahf.or.kr/'});
-  stories.dokdo.push({id:'history_d5',year:'1877년',title:'태정관 지령을 살펴봐요',icon:'📜',body:'1877년 일본의 최고 행정기구였던 태정관은 내무성에 지령을 내렸습니다. 대한민국 외교부는 이 문서를 울릉도와 독도가 일본령이 아님을 확인한 자료로 소개합니다. 문서의 작성 시기와 작성 기관을 함께 확인해 보세요.',fact:'기억하기: 1877년 · 일본 태정관 · 역사 문서',source:'대한민국 외교부 독도 「태정관 지령」',url:'https://dokdo.mofa.go.kr/'});
+  "ulleung": [
+    {
+      "id": "history_u1",
+      "year": "512년",
+      "title": "이사부 장군과 우산국의 복속",
+      "icon": "🦁",
+      "body": "신라 지증왕 13년, 이사부 장군은 울릉도를 중심으로 한 우산국을 신라에 복속시켰습니다. 『삼국사기』에는 나무로 만든 사자상을 배에 싣고 가 항복하지 않으면 사자를 풀어놓겠다고 위협했다는 이야기가 전합니다. 후대의 『동국문헌비고』는 울릉도와 우산도(독도)를 우산국의 땅으로 설명합니다.",
+      "fact": "기억하기: 512년 · 이사부 · 우산국 · 나무 사자",
+      "url": "https://contents.history.go.kr/front/hm/view.do?levelId=hm_011_0030",
+      "source": "국사편찬위원회 「신라의 우산국 정복」"
+    },
+    {
+      "id": "history_u3",
+      "year": "1693년·1696년",
+      "title": "울릉도와 독도를 지킨 어부 안용복",
+      "icon": "⛵",
+      "body": "조선 숙종 때 어부 안용복은 울릉도에서 일본 어민과 마주쳤습니다. 1693년에는 일본으로 끌려갔고, 1696년에는 다시 일본에 건너가 울릉도와 독도가 조선 땅임을 주장했습니다. 한편 조선과 일본의 교섭 과정에서 일본 막부는 1696년 1월 울릉도 도해금지령을 내렸습니다. 안용복의 활동과 정부 간 교섭을 함께 살펴보면 두 섬을 지키려는 노력을 알 수 있습니다.",
+      "fact": "기억하기: 안용복의 활동과 막부의 도해금지령은 구분해 살펴보기",
+      "url": "https://dokdo.mofa.go.kr/kor/dokdo/reason.jsp",
+      "source": "대한민국 외교부 독도"
+    },
+    {
+      "id": "history_u5",
+      "year": "1882년",
+      "title": "울릉도 개척과 이규원 검찰사",
+      "icon": "🔎",
+      "body": "조선 정부는 주민을 육지로 옮겨 살게 하는 정책을 펼쳤습니다. 이를 흔히 공도 정책이라고 부르지만, 섬의 영유권을 포기한 것은 아니었습니다. 1882년 고종의 명을 받은 이규원 검찰사가 울릉도를 조사했습니다. 이후 정부는 개척을 추진하여 육지 주민들이 이주해 마을을 이루게 했습니다. 당시 고종은 조선의 왕이었고 황제에 오른 것은 1897년입니다.",
+      "fact": "기억하기: 1882년 · 이규원 · 울릉도 조사와 개척",
+      "url": "https://contents.history.go.kr/front/hm/view.do?levelId=hm_122_0020",
+      "source": "국사편찬위원회 「대한제국 칙령 제41호」 해설"
+    }
+  ],
+  "dokdo": [
+    {
+      "id": "history_d1",
+      "year": "1454년",
+      "title": "세종실록지리지에 기록된 두 섬",
+      "icon": "📜",
+      "body": "조선의 『세종실록』 「지리지」 강원도 울진현 조에는 우산과 무릉 두 섬이 울진현 동쪽 바다에 있고 서로 멀지 않아 맑은 날 바라볼 수 있다고 기록되어 있습니다. 대한민국 외교부는 우산을 독도, 무릉을 울릉도로 설명합니다. 이는 두 섬의 관계를 알려주는 중요한 역사 자료입니다.",
+      "fact": "기억하기: 세종실록지리지 · 우산(독도) · 무릉(울릉도)",
+      "url": "https://dokdo.mofa.go.kr/kor/dokdo/reason.jsp",
+      "source": "대한민국 외교부 독도"
+    },
+    {
+      "id": "history_d3",
+      "year": "1900년 10월 25일",
+      "title": "대한제국 칙령 제41호와 독도의 날",
+      "icon": "🏛️",
+      "body": "고종 황제는 1900년 10월 25일 칙령 제41호를 제정했습니다. 울릉도를 울도로 바꾸고 도감을 군수로 고쳤으며, 관할 구역에 울릉도 전체와 죽도, 석도를 명시했습니다. 대한민국의 공식 역사 자료는 석도를 독도로 설명합니다. 이 칙령은 10월 27일 관보에 실렸습니다. 오늘날 10월 25일을 독도의 날로 기념하는 배경이 되는 문서입니다.",
+      "fact": "기억하기: 칙령 제41호 · 울도군 · 석도 · 10월 25일",
+      "url": "https://contents.history.go.kr/front/hm/view.do?levelId=hm_122_0020",
+      "source": "국사편찬위원회 「대한제국 칙령 제41호」"
+    },
+    {
+      "id": "history_d6",
+      "year": "1950년대·1965년",
+      "title": "독도의용수비대와 최초의 주민 최종덕",
+      "icon": "🇰🇷",
+      "body": "1950년대 홍순칠 대장을 비롯한 울릉도 청년들은 독도의용수비대를 조직하여 독도를 지켰습니다. 최종덕은 1965년부터 독도에 거주하며 생활의 터전을 마련했습니다. 섬을 지키려는 노력과 그곳에서 살아온 사람들의 이야기를 함께 기억해 봅시다.",
+      "fact": "기억하기: 홍순칠 · 독도의용수비대 · 최종덕 · 1965년",
+      "url": "https://dokdo.mofa.go.kr/kor/introduce/residence.jsp",
+      "source": "외교부 독도 「주민 및 입도관련」 및 교사 제공 학습 자료"
+    }
+  ]
+};
   const list=document.getElementById('historyList'),lock=document.getElementById('historyLock');let tab=new URLSearchParams(location.search).get('island')==='dokdo'?'dokdo':'ulleung',opened=null,gateSequence=0;
   const esc=s=>String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
   const current=()=>SJ.current();const doneKey=id=>`sj2026_history_done_${current()?.id||'guest'}_${id}`;const srcKey=id=>`sj2026_history_source_${current()?.id||'guest'}_${id}`;

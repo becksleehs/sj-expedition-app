@@ -3,7 +3,7 @@ import {student,teacher} from './lib/mission-auth.mjs';
 import {award,changeProgress,syncMissions,publicProgress} from './lib/progress-store.mjs';
 const reply=(d,status=200)=>new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Seoul',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
-const ids=['u1','u2','u3','u4','u5','d1','d2','d3','d4','d5'],quiz=ids.map(x=>'quiz_'+x),history=ids.map(x=>'history_'+x);
+const history=['history_u1','history_u3','history_u5','history_d1','history_d3','history_d6'];
 export default async req=>{try{
  const b=req.method==='GET'?Object.fromEntries(new URL(req.url).searchParams):req.method==='POST'?await req.json():null;if(!b)return reply({},405);
  const id=b.studentId,store=getStore({name:'sj-expedition-progress',consistency:'strong'});
