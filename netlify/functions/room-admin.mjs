@@ -2,11 +2,23 @@ import {deleteMedia} from './lib/media-store.mjs';
 import {getStore} from '@netlify/blobs';
 import {createHash} from 'node:crypto';
 const reply=(d,status=200)=>new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const expeditionStores=['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'];
+async function clearStore(name){
+ const store=getStore({name:'sj-expedition-'+name,consistency:'strong'});
+ // Netlify Blobs automatically retrieves every page when paginate is omitted.
+ const {blobs}=await store.list();
+ for(let i=0;i<blobs.length;i+=40)await Promise.all(blobs.slice(i,i+40).map(({key})=>store.delete(key)));
+}
 export default async req=>{
  if(req.method!=='POST')return reply({error:'method'},405);
  let b;try{b=await req.json()}catch{return reply({error:'입력 오류'},400)}
  const pin=String(b.teacherPin||''),configured=process.env.TEACHER_PIN;
  if(!/^\d{4}$/.test(pin)||!(configured?pin===configured:createHash('sha256').update(pin).digest('hex')==='df4865fca1f159162557359ef967f9502087f57527b0e030e139933e54f3061e'))return reply({error:'교사 인증이 필요합니다.'},403);
+ if(b.action==='full-reset'){
+   if(b.confirmation!=='전체 초기화')return reply({error:'확인 문구가 맞지 않습니다.'},400);
+   try{for(const name of expeditionStores)await clearStore(name);return reply({ok:true});}
+   catch(e){console.error('full reset failed',e);return reply({error:'일부 기록을 지우지 못했습니다. 전체 초기화를 다시 눌러 남은 기록을 지워주세요.'},503);}
+ }
  const names={notices:'sj-expedition-notices',chat:'sj-expedition-chat',album:'sj-expedition-album'};
  if(!names[b.area])return reply({error:'대상 오류'},400);
  const store=getStore({name:names[b.area],consistency:'strong'});

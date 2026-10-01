@@ -1,0 +1,27 @@
+{
+  "id": "./",
+  "name": "승주 원정대",
+  "short_name": "승주 원정대",
+  "lang": "ko",
+  "description": "울릉도·독도 역사·문화·예술 체험학습",
+  "start_url": "/index.html",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#073963",
+  "theme_color": "#073963",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "assets/pwa/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "assets/pwa/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}
