@@ -15,12 +15,7 @@ export default async(req)=>{
   if(req.method!=='POST')return new Response(JSON.stringify({error:'method'}),{status:405,headers});
   let body={};try{body=await req.json()}catch{}
   if(!validTeacherPin(body.teacherPin))return new Response(JSON.stringify({error:'교사 PIN이 맞지 않습니다.'}),{status:403,headers});
-  if(clean(body.action)==='reset'){
-    await store.delete('current');
-    const notices=getStore({name:'sj-expedition-notices',consistency:'strong'}),{blobs}=await notices.list({prefix:'notice/'});
-    for(const item of blobs)if(item.key.endsWith('-groups'))await notices.delete(item.key);
-    return new Response(JSON.stringify({ok:true,current:null}),{headers});
-  }
+  if(clean(body.action)==='reset'){await store.delete('current');return new Response(JSON.stringify({ok:true,current:null}),{headers});}
   if(clean(body.action)!=='publish')return new Response(JSON.stringify({error:'action'}),{status:400,headers});
   const groups=Array.isArray(body.groups)?body.groups:[];if(groups.length!==3)return new Response(JSON.stringify({error:'3개 조가 필요합니다.'}),{status:400,headers});
   const seen=new Set();for(const g of groups){if(!Array.isArray(g.members))return new Response(JSON.stringify({error:'조 정보 오류'}),{status:400,headers});for(const id of g.members){if(!STUDENTS.has(id)||seen.has(id))return new Response(JSON.stringify({error:'학생 중복 또는 정보 오류'}),{status:400,headers});seen.add(id)}}

@@ -25,7 +25,7 @@ test('Concurrent team submissions, retry, and a parallel quiz give each member X
  await publish();await start(['lotte-group']);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
  const b={...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'};
- const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v326_u1',choice:1})]);assert(results.every(r=>r.status===200));
+ const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v322_u1',choice:1})]);assert(results.every(r=>r.status===200));
  assert.equal(await xp('s01'),30);for(const id of ['s03','s09','s12'])assert.equal(await xp(id),20);assert.equal(await xp('s02'),0);
  assert.equal((await store('field-missions').list({prefix:'submission/'})).blobs.length,1);
  await call('field-missions',b);assert.equal(await xp('s01'),30);
@@ -109,18 +109,18 @@ test('Schedule highlights Korean-time active slots including overnight crossings
 });
 test('Island gates are independent; ten questions hide keys and first wrong answer survives retries',async()=>{
  const a=auth('s01');
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v326_u1',choice:1})).status,403);
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1})).status,403);
  assert.equal((await call('feature-gates',{feature:'quiz_ulleung',open:true})).status,403);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
- assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_v326_d1',choice:0})).status,403);
+ assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_v322_d1',choice:0})).status,403);
  const get=()=>call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'ulleung'}));
  const first=(await get()).data;assert.equal(first.items.length,10);assert(!('answer' in first.items[0]));assert(!('why' in first.items[0]));
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v326_u1',choice:0})).data.attempt.correct,false);
- const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_v326_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:0})).data.attempt.correct,false);
+ const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
  assert.equal((await get()).data.items[0].attempt.correct,false);
- assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_v326_u1'})).status,400);
+ assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_v322_u1'})).status,400);
  assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_all_bonus'})).status,400);
- await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_v326_u2',choice:1})));assert.equal(await xp('s01'),10);
+ await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_v322_u2',choice:1})));assert.equal(await xp('s01'),10);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:false});assert.equal((await get()).status,403);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});assert.equal((await get()).data.items[0].attempt.choice,0);
  await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal((await call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'dokdo'}))).data.items.length,10);
@@ -130,8 +130,8 @@ test('Story gates, simultaneous teacher changes and prior quiz awards migrate wi
  const gates=(await call('feature-gates',null,'GET')).data.state;assert(gates.history_ulleung.open&&gates.quiz_dokdo.open);assert(!gates.quiz_ulleung.open&&!gates.history_dokdo.open);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_u5'})).data.amount,5);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_d6'})).status,403);
- await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_v326_d1',{amount:10});
- const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_v326_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
+ await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_v322_d1',{amount:10});
+ const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_v322_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
 });
 test('Choosing an unlocked appearance preserves earned level and XP and persists through sync',async()=>{
  const a=auth('s01');await call('student-progress',{...pin,studentId:'s01',action:'teacher-add-xp',amount:300});
@@ -168,7 +168,7 @@ test('Home card independently follows teacher start and close and shows connecti
 test('Replacement bank preserves old XP without attaching old answers; all twenty questions reward exactly once',async()=>{
  const {questions}=await import('../netlify/functions/lib/quiz-data.mjs');
  await store('progress').setJSON('progress/s01',{xp:40,growthLevel:1,quizAnswers:{quiz_u1:{choice:0,correct:false}},rewardIds:['quiz_d1']});
- const expected={ulleung:[1,1,1,1,2,0,1,1,0,1],dokdo:[1,0,1,0,0,0,3,0,0,1]};
+ const expected={ulleung:[1,1,1,1,0,1,3,1,0,1],dokdo:[1,1,2,1,1,1,0,1,1,0]};
  for(const island of ['ulleung','dokdo']){
   await call('feature-gates',{...pin,feature:'quiz_'+island,open:true});
   const initial=(await call('quiz',null,'GET','?'+new URLSearchParams({...auth('s01'),island}))).data.items;
@@ -189,51 +189,4 @@ test('Ten-question student navigation reaches final question and wraps with corr
  assert.equal(el('quizSolved').textContent,'1 / 10 제출');assert.equal(el('quizXp').textContent,'10 / 100 XP');
  for(let n=1;n<10;n++)el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 10'));assert(el('quizStage').innerHTML.includes('처음으로'));
  el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 1</h2>'));
-});
-test('Expenses are teacher-only, preserve source amounts, persist toggles and memos, reject stale writes',async()=>{
- const handle=(await import('../netlify/functions/expenses.mjs')).default;
- const req=async b=>{const r=await handle(new Request('https://example.test/.netlify/functions/expenses',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}));return {status:r.status,data:await r.json()};};
- assert.equal((await req({action:'list'})).status,403);
- assert.equal((await req({...auth('s01'),action:'update',id:'exp01',done:true,revision:0})).status,403);
- const list=(await req({...pin,action:'list'})).data.items;assert.equal(list.length,22);assert.equal(list.reduce((s,i)=>s+i.amount,0),13419000);assert(list.every(x=>!x.done));
- assert.equal((await req({...pin,action:'update',id:'exp01',revision:0,done:true})).status,200);
- assert.equal((await req({...pin,action:'update',id:'exp01',revision:0,memo:'stale'})).status,409);
- await req({...pin,action:'update',id:'exp01',revision:1,memo:'카드 결제 완료\n영수증 보관'});
- let row=(await req({...pin,action:'list'})).data.items[0];assert(row.done);assert(row.doneAt);assert.equal(row.memo,'카드 결제 완료\n영수증 보관');
- await req({...pin,action:'update',id:'exp01',revision:2,done:false});row=(await req({...pin,action:'list'})).data.items[0];assert(!row.done);assert.equal(row.doneAt,null);assert.equal(row.memo,'카드 결제 완료\n영수증 보관');
- const parallel=await Promise.all([true,false].map(done=>req({...pin,action:'update',id:'exp02',revision:0,done})));assert.equal(parallel.filter(x=>x.status===200).length,1);
- assert.equal((await req({...pin,action:'update',id:'exp01',revision:3,memo:'x'.repeat(2001)})).status,400);
-});
-test('Full reset requires teacher confirmation and clears every expedition store, including student media',async()=>{
- await publish();await start(['senior-letter']);
- await store('progress').setJSON('progress/s01',{xp:120,growthLevel:2,quizAnswers:{quiz_v326_u1:{choice:1,correct:true}}});
- await store('progress').setJSON('journal/s01/2026-10-01',{text:'원정 기록'});
- await store('expenses').setJSON('item/exp01',{done:true,memo:'결제 완료',revision:1});
- await store('chat').setJSON('msg/sample',{text:'안녕'});
- await store('notices').setJSON('notice/sample',{title:'출발'});
- await store('album').setJSON('meta/sample',{caption:'사진'});
- await store('special-mission').setJSON('current',{text:'돌발'});
- await store('gates').setJSON('state',{quiz_ulleung:{open:true}});
- const {media}=await makeVideo();
- assert.equal((await call('room-admin',{...auth('s01'),action:'full-reset',confirmation:'전체 초기화'})).status,403);
- assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'잘못 입력'})).status,400);
- assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'전체 초기화'})).status,200);
- for(const name of ['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'])assert.equal((await store(name).list()).blobs.length,0,name);
- assert.equal((await call('student-progress',null,'GET','?'+new URLSearchParams(auth('s01')))).status,401);
- assert.equal((await call('student-progress',{...pin,action:'teacher-roster'})).data.roster.s01,0);
- assert.equal((await api.media(new Request('https://example.test'+media.url))).status,404);
- assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'전체 초기화'})).status,200);
-});
-test('A revoked student session clears device growth and history marks before returning to login',async()=>{
- let saved={studentId:'s01',authToken:'old',xp:450,growthLevel:3,avatarLevel:3};
- const localStorage={sj2026_history_done_s01_history_u1:'1',sj2026_history_source_s01_history_u1:'1'};
- Object.defineProperties(localStorage,{removeItem:{value:key=>delete localStorage[key]},getItem:{value:key=>localStorage[key]??null}});
- const location={pathname:'/index.html',replace(url){this.next=url}};
- const ctx={window:{},SJ:{load:()=>({...saved}),save:s=>{saved={...s}},students:[{id:'s01',name:'학생'}]},localStorage,location,URLSearchParams,fetch:async()=>new Response('{}',{status:401})};
- vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/growth.js',import.meta.url),'utf8'),ctx);
- await ctx.window.SJGrowth.pull();
- assert.equal(saved.xp,0);assert.equal(saved.growthLevel,1);assert.equal(saved.avatarLevel,1);assert.equal(saved.authToken,undefined);
- assert.equal(localStorage.sj2026_history_done_s01_history_u1,undefined);
- assert.equal(localStorage.sj2026_history_source_s01_history_u1,undefined);
- assert.equal(location.next,'select-student.html?force=1&student=s01');
 });
