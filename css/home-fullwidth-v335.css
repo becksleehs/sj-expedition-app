@@ -1,0 +1,31 @@
+/* Fit the entire artwork and all three cards into one phone viewport. */
+body.dashboard-body-v33{overflow:hidden!important}
+.dashboard-v33{
+  display:grid!important;
+  grid-template-rows:minmax(0,1fr) var(--home-card-height);
+  height:100dvh!important;
+  min-height:0!important;
+  overflow:hidden!important;
+  padding-bottom:calc(var(--home-nav-height) + env(safe-area-inset-bottom))!important;
+}
+.hero-v33{
+  display:block!important;
+  width:100%!important;
+  height:100%!important;
+  min-height:0!important;
+  max-height:none!important;
+  overflow:hidden!important;
+  line-height:0;
+}
+.hero-v33>img{
+  display:block;
+  width:100%!important;
+  height:100%!important;
+  max-height:none!important;
+  object-fit:fill!important;
+}
+.dashboard-content-v33{height:var(--home-card-height)!important}
+@media(max-width:600px){
+  .dashboard-v33{width:100%!important;max-width:none!important;margin:0!important;box-shadow:none!important}
+  .sj-fixed-nav-v34{width:100%!important;max-width:none!important}
+}

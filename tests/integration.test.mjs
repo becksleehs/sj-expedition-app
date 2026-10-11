@@ -48,6 +48,17 @@ test('Group reset preserves mission participant snapshot and rewards',async()=>{
  await publish();await start(['lotte-group']);await call('groups',{...pin,action:'reset'});assert.equal(await store('groups').get('current'),null);
  await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'});assert.equal(await xp('s12'),20);
 });
+test('Teacher can publish a custom three-group assignment and reset the student view',async()=>{
+ const custom=[{name:'임의 명칭',members:['s01','s13']},{name:'2조',members:['s02','s03']},{name:'3조',members:['s04','s05','s06']}];
+ assert.equal((await call('groups',{...auth('s01'),action:'publish',groups:custom})).status,403);
+ assert.equal((await call('groups',{...pin,action:'publish',groups:[custom[0],custom[1],{name:'3조',members:[]}]})).status,400);
+ assert.equal((await call('groups',{...pin,action:'publish',groups:[custom[0],custom[1],{name:'3조',members:['s01']}]})).status,400);
+ const published=await call('groups',{...pin,action:'publish',groups:custom});assert.equal(published.status,200);
+ assert.deepEqual(published.data.current.groups.map(g=>g.name),['1조','2조','3조']);
+ assert.deepEqual((await call('groups',null,'GET')).data.current.groups[2].members,['s04','s05','s06']);
+ assert.equal((await call('groups',{...pin,action:'reset'})).status,200);
+ assert.equal((await call('groups',null,'GET')).data.current,null);
+});
 async function makeVideo(purpose='album'){
  const size=1024*1024+33;const init=await call('media',{...auth('s01'),action:'init',size,mime:'video/mp4',duration:179,purpose,caption:'원정 영상'});assert.equal(init.status,200);const id=init.data.id;
  assert.equal((await call('media',{...auth('s01'),action:'complete',id})).status,409);

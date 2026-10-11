@@ -23,9 +23,9 @@ export default async(req)=>{
   }
   if(clean(body.action)!=='publish')return new Response(JSON.stringify({error:'action'}),{status:400,headers});
   const groups=Array.isArray(body.groups)?body.groups:[];if(groups.length!==3)return new Response(JSON.stringify({error:'3개 조가 필요합니다.'}),{status:400,headers});
-  const seen=new Set();for(const g of groups){if(!Array.isArray(g.members))return new Response(JSON.stringify({error:'조 정보 오류'}),{status:400,headers});for(const id of g.members){if(!STUDENTS.has(id)||seen.has(id))return new Response(JSON.stringify({error:'학생 중복 또는 정보 오류'}),{status:400,headers});seen.add(id)}}
+  const seen=new Set();for(const g of groups){if(!g||!Array.isArray(g.members)||!g.members.length)return new Response(JSON.stringify({error:'각 조에 한 명 이상 배정해주세요.'}),{status:400,headers});for(const id of g.members){if(!STUDENTS.has(id)||seen.has(id))return new Response(JSON.stringify({error:'학생 중복 또는 정보 오류'}),{status:400,headers});seen.add(id)}}
   const prev=await store.get('current',{type:'json',consistency:'strong'});const now=Date.now();
-  const current={version:Math.max(now,(Number(prev?.version)||0)+1),publishedAt:now,groups:groups.map((g,i)=>({name:g.name||`${i+1}조`,members:g.members}))};
+  const current={version:Math.max(now,(Number(prev?.version)||0)+1),publishedAt:now,groups:groups.map((g,i)=>({name:`${i+1}조`,members:[...g.members]}))};
   await store.setJSON('current',current);await addNotice();
   return new Response(JSON.stringify({ok:true,current}),{headers});
 };
