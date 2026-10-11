@@ -7,10 +7,16 @@ const history=['history_u1','history_u3','history_u5','history_d1','history_d3',
 export default async req=>{try{
  const b=req.method==='GET'?Object.fromEntries(new URL(req.url).searchParams):req.method==='POST'?await req.json():null;if(!b)return reply({},405);
  const id=b.studentId,store=getStore({name:'sj-expedition-progress',consistency:'strong'});
+ if(b.action==='teacher-roster'&&req.method==='POST'){
+  if(!teacher(b.teacherPin))return reply({error:'교사 인증 필요'},403);
+  const roster={};for(let i=1;i<=13;i++){const studentId=`s${String(i).padStart(2,'0')}`,p=await store.get('progress/'+studentId,{type:'json'});roster[studentId]=Math.max(0,Number(p?.xp)||0);}
+  return reply({ok:true,roster});
+ }
  if(!/^s(0[1-9]|1[0-3])$/.test(id||''))return reply({error:'학생 정보 오류'},400);
  if(b.action==='teacher-add-xp'){
   if(!teacher(b.teacherPin))return reply({error:'교사 인증 필요'},403);
-  const amount=Math.max(-10000,Math.min(10000,Math.round(Number(b.amount)||0)));
+  const amount=Number(b.amount);
+  if(!Number.isInteger(amount)||amount===0||Math.abs(amount)>1000||amount%10!==0)return reply({error:'XP는 10점 단위로 최대 1000점까지 조정할 수 있습니다.'},400);
   const {progress}=await changeProgress(id,p=>{const key=b.requestId?'teacher_'+String(b.requestId).slice(0,60):null;if(key&&p.rewardIds.includes(key))return;if(key)p.rewardIds.push(key);p.xp=Math.max(0,p.xp+amount);});return reply({ok:true,progress:publicProgress(progress)});
  }
  if(!await student(id,b.token))return reply({error:'학생 로그인이 필요합니다.'},401);

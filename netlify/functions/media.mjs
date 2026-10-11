@@ -29,8 +29,9 @@ export default async req=>{try{
  if(b.action==='init'){
   const size=Number(b.size),mime=String(b.mime||''),kind=mime.startsWith('video/')?'video':'photo',duration=Number(b.duration||0);
   if(!types.includes(mime)||!Number.isSafeInteger(size)||size<1||size>(kind==='video'?MAX_VIDEO:MAX_IMAGE))return reply({error:'사진 4MB, 동영상 150MB 이하로 선택해주세요.'},400);
+  if(b.purpose==='chat'&&(kind!=='photo'||admin))return reply({error:'채팅에는 학생 사진만 첨부할 수 있습니다.'},400);
   if(kind==='video'&&(!Number.isFinite(duration)||duration<=0||duration>180.5))return reply({error:'동영상은 3분 이내로 올려주세요.'},400);
-  const id=randomUUID(),m={id,owner,kind,mime,size,duration,purpose:b.purpose==='mission'?'mission':'album',chunks:Math.ceil(size/CHUNK),originalName:String(b.originalName||'').slice(0,120),caption:String(b.caption||'').trim().slice(0,120),createdAt:Date.now(),expiresAt:Date.now()+86400000,readKey:randomBytes(24).toString('hex')};await store.setJSON('upload/'+id,m,{onlyIfNew:true});return reply({ok:true,id,chunkSize:CHUNK,chunks:m.chunks});
+  const id=randomUUID(),m={id,owner,kind,mime,size,duration,purpose:['mission','chat'].includes(b.purpose)?b.purpose:'album',chunks:Math.ceil(size/CHUNK),originalName:String(b.originalName||'').slice(0,120),caption:String(b.caption||'').trim().slice(0,120),createdAt:Date.now(),expiresAt:Date.now()+86400000,readKey:randomBytes(24).toString('hex')};await store.setJSON('upload/'+id,m,{onlyIfNew:true});return reply({ok:true,id,chunkSize:CHUNK,chunks:m.chunks});
  }
  const m=validId(b.id)?await store.get('upload/'+b.id,{type:'json'}):null;if(!m||(!admin&&m.owner!==owner))return reply({error:'업로드 파일 없음'},404);
  if(b.action==='cancel'){if(!await mediaFor(m.id))await deleteMedia(m.id);return reply({ok:true});}

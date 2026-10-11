@@ -2,16 +2,29 @@ import {deleteMedia} from './lib/media-store.mjs';
 import {getStore} from '@netlify/blobs';
 import {createHash} from 'node:crypto';
 const reply=(d,status=200)=>new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
+const expeditionStores=['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'];
+async function clearStore(name){
+ const store=getStore({name:'sj-expedition-'+name,consistency:'strong'});
+ // Netlify Blobs automatically retrieves every page when paginate is omitted.
+ const {blobs}=await store.list();
+ for(let i=0;i<blobs.length;i+=40)await Promise.all(blobs.slice(i,i+40).map(({key})=>store.delete(key)));
+}
 export default async req=>{
  if(req.method!=='POST')return reply({error:'method'},405);
  let b;try{b=await req.json()}catch{return reply({error:'입력 오류'},400)}
  const pin=String(b.teacherPin||''),configured=process.env.TEACHER_PIN;
  if(!/^\d{4}$/.test(pin)||!(configured?pin===configured:createHash('sha256').update(pin).digest('hex')==='df4865fca1f159162557359ef967f9502087f57527b0e030e139933e54f3061e'))return reply({error:'교사 인증이 필요합니다.'},403);
+ if(b.action==='full-reset'){
+   if(b.confirmation!=='전체 초기화')return reply({error:'확인 문구가 맞지 않습니다.'},400);
+   try{for(const name of expeditionStores)await clearStore(name);return reply({ok:true});}
+   catch(e){console.error('full reset failed',e);return reply({error:'일부 기록을 지우지 못했습니다. 전체 초기화를 다시 눌러 남은 기록을 지워주세요.'},503);}
+ }
  const names={notices:'sj-expedition-notices',chat:'sj-expedition-chat',album:'sj-expedition-album'};
  if(!names[b.area])return reply({error:'대상 오류'},400);
  const store=getStore({name:names[b.area],consistency:'strong'});
  if(b.action==='reset'){
    if(b.area==='album'){const {blobs}=await store.list({prefix:'meta/'});for(const x of blobs){const m=await store.get(x.key,{type:'json'});if(m?.mediaId)await deleteMedia(m.mediaId);}}
+   if(b.area==='chat'){const {blobs}=await store.list({prefix:'msg/'});for(const x of blobs){const m=await store.get(x.key,{type:'json'});if(m?.mediaId)await deleteMedia(m.mediaId);}}
    const prefixes={notices:['notice/'],chat:['msg/'],album:['meta/','image/']}[b.area];
    for(const prefix of prefixes){const {blobs}=await store.list({prefix});for(const x of blobs)await store.delete(x.key)}
    if(b.area==='notices')await store.setJSON('notice/default',{title:'승주 원정대에 오신 것을 환영합니다!',body:'집합 시간과 준비물은 선생님의 안내를 확인하세요. 안전하게 함께 이동하고 친구를 배려하며 즐거운 추억을 만들어 봅시다.',time:Date.now(),system:false});

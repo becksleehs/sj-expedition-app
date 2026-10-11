@@ -25,7 +25,7 @@ test('Concurrent team submissions, retry, and a parallel quiz give each member X
  await publish();await start(['lotte-group']);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
  const b={...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'};
- const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v322_u1',choice:1})]);assert(results.every(r=>r.status===200));
+ const results=await Promise.all([...Array.from({length:5},()=>call('field-missions',b)),call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v327_u1',choice:0})]);assert(results.every(r=>r.status===200));
  assert.equal(await xp('s01'),30);for(const id of ['s03','s09','s12'])assert.equal(await xp(id),20);assert.equal(await xp('s02'),0);
  assert.equal((await store('field-missions').list({prefix:'submission/'})).blobs.length,1);
  await call('field-missions',b);assert.equal(await xp('s01'),30);
@@ -70,6 +70,16 @@ test('Mission media is separate from album, only its owner can submit it, grade 
  assert.equal((await call('field-missions',{...auth('s02'),action:'submit',id:'lotte-grade',mediaId:id})).status,403);
  assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-grade',mediaId:id})).status,200);assert.equal(await xp('s01'),20);assert.equal(await xp('s02'),20);assert.equal(await xp('s03'),0);
 });
+test('A converted JPEG can be uploaded in chunks and submitted to a photo mission',async()=>{
+ await publish();await start(['lotte-group']);const bytes=Buffer.from([255,216,255,217]);
+ const init=await call('media',{...auth('s01'),action:'init',size:bytes.length,mime:'image/jpeg',purpose:'mission'});assert.equal(init.status,200);
+ const id=init.data.id;
+ const chunk=await api.media(new Request(`https://example.test/.netlify/functions/media?action=chunk&id=${id}&index=0`,{method:'PUT',headers:{'x-student-id':'s01','x-student-token':'token-s01'},body:bytes}));assert.equal(chunk.status,200);
+ assert.equal((await call('media',{...auth('s01'),action:'complete',id})).status,200);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',mediaId:id})).status,200);
+ const submissions=(await call('field-missions',{...pin,action:'submissions'})).data.items;assert.equal(submissions.length,1);assert.equal(submissions[0].media.kind,'photo');
+ assert.equal((await call('album',null,'GET')).data.items.length,0);assert.equal(await xp('s01'),20);
+});
 test('Notices seed once, retain posts, allow admin deletion; chat authenticates and cleaning keeps pinned text',async()=>{
  let notices=await call('notices',null,'GET');assert.equal(notices.data.notices.length,1);
  await call('room-admin',{...pin,area:'notices',action:'delete',id:'notice/default'});assert.equal((await call('notices',null,'GET')).data.notices.length,0);
@@ -78,6 +88,22 @@ test('Notices seed once, retain posts, allow admin deletion; chat authenticates 
  assert.equal((await call('chat',{...auth('s01'),text:'안녕'})).status,200);
  await call('room-admin',{...pin,area:'chat',action:'pin',text:'10시 집합'});await call('room-admin',{...pin,area:'chat',action:'reset'});
  const chat=await call('chat',null,'GET');assert.equal(chat.data.messages.length,0);assert.equal(chat.data.pinned,'10시 집합');
+});
+test('Students share converted photos in chat; ownership and chat reset govern attached media',async()=>{
+ const bytes=Buffer.from([255,216,255,217]);
+ assert.equal((await call('media',{...auth('s01'),action:'init',size:bytes.length,mime:'video/mp4',duration:2,purpose:'chat'})).status,400);
+ const init=await call('media',{...auth('s01'),action:'init',size:bytes.length,mime:'image/jpeg',purpose:'chat'});assert.equal(init.status,200);
+ const id=init.data.id;
+ const chunk=await api.media(new Request(`https://example.test/.netlify/functions/media?action=chunk&id=${id}&index=0`,{method:'PUT',headers:{'x-student-id':'s01','x-student-token':'token-s01'},body:bytes}));assert.equal(chunk.status,200);
+ const completed=await call('media',{...auth('s01'),action:'complete',id});assert.equal(completed.status,200);
+ assert.equal((await call('album',null,'GET')).data.items.length,0);
+ assert.equal((await call('chat',{...auth('s02'),mediaId:id})).status,403);
+ assert.equal((await call('chat',{...auth('s01'),text:'',mediaId:id})).status,200);
+ const messages=(await call('chat',null,'GET')).data.messages;assert.equal(messages.length,1);assert.equal(messages[0].mediaId,id);assert.equal(messages[0].media.kind,'photo');
+ const image=await api.media(new Request('https://example.test'+messages[0].media.url));assert.deepEqual(Buffer.from(await image.arrayBuffer()),bytes);
+ await call('room-admin',{...pin,area:'chat',action:'reset'});
+ assert.equal((await call('chat',null,'GET')).data.messages.length,0);
+ assert.equal((await api.media(new Request('https://example.test'+completed.data.media.url))).status,404);
 });
 test('Reflection rewards once daily and growth upgrades cannot overwrite newer XP',async()=>{
  const r=await call('student-progress',{...auth('s01'),action:'journal-save',text:'좋은 하루\n친구와 함께 배웠다'});assert.equal(r.status,200);
@@ -100,6 +126,65 @@ test('Browser uploader retries from last completed chunk without creating a seco
  const job={prepared:{blob:new Blob(['abcdefgh']),mime:'video/mp4',duration:1,kind:'video',name:'test.mp4'},id:null,next:0,ready:null};
  await assert.rejects(()=>ctx.window.SJMedia.upload(job));assert.equal(job.next,1);fail=false;await ctx.window.SJMedia.upload(job);assert.equal(inits,1);assert.equal(counts.get('0'),1);assert.equal(counts.get('1'),4);assert.equal(job.ready.id,'upload-test');
 });
+test('Oversize videos are prepared before upload, while the three-minute limit remains enforced',async()=>{
+ let compressed=0,revoked=0;
+ const createVideo=()=>({duration:120,videoWidth:3840,videoHeight:2160,load(){},removeAttribute(){},set src(value){if(value)setTimeout(()=>this.onloadedmetadata?.(),0)}});
+ const ctx={window:{SJVideoCompression:{compress:async(file,{duration,onProgress})=>{compressed++;assert.equal(duration,120);onProgress('영상 자동 압축 중');return {blob:new Blob(['compressed'],{type:'video/mp4'}),mime:'video/mp4'};}}},SJ:{},document:{createElement:tag=>{assert.equal(tag,'video');return createVideo();}},URL:{createObjectURL:()=> 'blob:test',revokeObjectURL:()=>revoked++},setTimeout,clearTimeout,Blob};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-upload.js',import.meta.url),'utf8'),ctx);
+ const messages=[],file={size:170*1024*1024,type:'video/mp4',name:'phone.mp4'};
+ const job=await ctx.window.SJMedia.createJob(file,{onProgress:s=>messages.push(s)});
+ assert.equal(compressed,1);assert.equal(job.prepared.mime,'video/mp4');assert.equal(job.prepared.duration,120);assert.equal(job.prepared.blob.size,10);assert(messages.includes('영상 자동 압축 중'));assert.equal(revoked,1);
+ ctx.document.createElement=()=>{const v=createVideo();v.duration=181;return v;};
+ await assert.rejects(()=>ctx.window.SJMedia.createJob(file),/3분 이내/);assert.equal(compressed,1);
+});
+test('Every mission-sized video is compressed before upload when the browser can do it',async()=>{
+ let calls=0;const order=[];const session={audio:{state:'running',async close(){order.push('close');this.state='closed';}}};
+ const video=()=>({duration:18,load(){},removeAttribute(){},set src(value){if(value){order.push('metadata requested');queueMicrotask(()=>this.onloadedmetadata?.());}}});
+ const ctx={window:{SJVideoCompression:{prime(){order.push('prime');return session;},compress:async(file,{duration,onProgress,session:used})=>{calls++;assert.equal(used,session);assert.equal(duration,18);onProgress('영상 자동 압축 중');return {blob:new Blob(['smaller'],{type:'video/mp4'}),mime:'video/mp4'};}}},SJ:{},document:{createElement:()=>video()},URL:{createObjectURL:()=> 'blob:clip',revokeObjectURL(){}},setTimeout,clearTimeout,Blob};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-upload.js',import.meta.url),'utf8'),ctx);
+ const messages=[],original={size:45*1024*1024,type:'video/mp4',name:'mission.mp4'};
+ const job=await ctx.window.SJMedia.createJob(original,{onProgress:s=>messages.push(s)});
+ assert.equal(calls,1);assert.equal(job.prepared.blob.size,7);assert.equal(job.prepared.mime,'video/mp4');assert(messages.includes('영상 자동 압축 중'));assert.deepEqual(order,['prime','metadata requested','close']);
+});
+test('A small uncompressible video still uploads; an oversize one needs real reduction',async()=>{
+ let calls=0,chunks=0;
+ const video=()=>({duration:70,load(){},removeAttribute(){},set src(value){if(value)queueMicrotask(()=>this.onloadedmetadata?.());}});
+ const fetch=async(url,options)=>{if(options.method==='PUT'){chunks++;return Response.json({ok:true});}const body=JSON.parse(options.body);return body.action==='init'?Response.json({id:'fallback',chunks:2,chunkSize:1024*1024}):Response.json({media:{id:'fallback',kind:'video'}});};
+ const ctx={window:{SJVideoCompression:{compress:async()=>{calls++;throw Error('지원하지 않는 브라우저');}}},SJ:{load:()=>({studentId:'s01',authToken:'token-s01'}),getRole:()=> 'student'},fetch,document:{createElement:()=>video()},URL:{createObjectURL:()=> 'blob:clip',revokeObjectURL(){}},setTimeout,clearTimeout};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-upload.js',import.meta.url),'utf8'),ctx);
+ const updates=[],small=new Blob([Buffer.alloc(2*1024*1024)],{type:'video/mp4'});small.name='a.mp4';
+ const job=await ctx.window.SJMedia.createJob(small,{onProgress:s=>updates.push(s)});
+ assert.equal(job.prepared.blob,small);assert(updates.some(s=>s.includes('원본으로 제출')));
+ assert.equal((await ctx.window.SJMedia.upload(job,{purpose:'mission'})).id,'fallback');assert.equal(chunks,2);
+ await assert.rejects(()=>ctx.window.SJMedia.createJob({size:180*1024*1024,type:'video/mp4',name:'oversize.mp4'}),/지원 형식·크기로 줄이지 못했습니다/);
+ assert.equal(calls,2);
+});
+test('Large photos are retried at smaller dimensions and saved as JPEG',async()=>{
+ const sizes=[5*1024*1024,1*1024*1024],dimensions=[];
+ class Picture{naturalWidth=4000;naturalHeight=3000;async decode(){}}
+ const canvas={width:0,height:0,getContext(){return {set fillStyle(v){},fillRect(){},drawImage(){dimensions.push([canvas.width,canvas.height]);}}},toBlob(fn){fn({size:sizes.shift()});}};
+ const ctx={window:{},SJ:{},document:{createElement:tag=>{assert.equal(tag,'canvas');return canvas;}},URL:{createObjectURL:()=> 'blob:photo',revokeObjectURL:()=>{}},Image:Picture};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-upload.js',import.meta.url),'utf8'),ctx);
+ const job=await ctx.window.SJMedia.createJob({size:12*1024*1024,type:'image/heic',name:'photo.heic'});
+ assert.equal(job.prepared.mime,'image/jpeg');assert.equal(job.prepared.blob.size,1024*1024);assert.deepEqual(dimensions,[[1600,1200],[1280,960]]);
+});
+test('Unsupported browser stops automatic video conversion with a useful fallback',async()=>{
+ const ctx={window:{},HTMLCanvasElement:class Canvas{}};vm.createContext(ctx);
+ vm.runInContext(await readFile(new URL('../js/media-compression.js',import.meta.url),'utf8'),ctx);
+ await assert.rejects(()=>ctx.window.SJVideoCompression.compress({size:160*1024*1024},{duration:120}),/갤러리에서 필요한 부분만 자르거나/);
+});
+test('Video preparation retains an audio track, checks the output format, and cleans up',async()=>{
+ const tracks=[{stop(){this.stopped=true;}},{stop(){this.stopped=true;}}],updates=[];let includedAudio=false,removed=false;
+ const video={videoWidth:1920,videoHeight:1080,currentTime:0,readyState:2,ended:false,style:{},listeners:{},set src(value){if(value)queueMicrotask(()=>this.onloadedmetadata?.());},addEventListener(name,fn){this.listeners[name]=fn;},removeEventListener(name){delete this.listeners[name];},async play(){this.currentTime=2;this.ended=true;queueMicrotask(()=>this.listeners.ended?.());},pause(){},removeAttribute(){},load(){},remove(){removed=true;}};
+ class Canvas{width=0;height=0;getContext(){return {drawImage(){}};}captureStream(){return {getVideoTracks:()=>[tracks[0]]};}}
+ class Stream{constructor(all){this.all=all;}getVideoTracks(){return this.all.filter(x=>x===tracks[0]);}getAudioTracks(){return this.all.filter(x=>x===tracks[1]);}getTracks(){return this.all;}}
+ class Audio{state='running';createMediaElementSource(){return {connect(){}};}createMediaStreamDestination(){return {stream:{getAudioTracks:()=>[tracks[1]]}};}async resume(){}async close(){}}
+ class Recorder{static isTypeSupported(t){return t.startsWith('video/mp4');}constructor(stream){includedAudio=stream.getAudioTracks().length===1;this.state='inactive';this.mimeType='video/mp4';}start(){this.state='recording';}stop(){this.state='inactive';queueMicrotask(()=>{this.ondataavailable({data:new Blob([Buffer.from([0,0,0,12,102,116,121,112,0,0,0,0])])});this.onstop();});}}
+ const ctx={window:{AudioContext:Audio},HTMLCanvasElement:Canvas,MediaStream:Stream,MediaRecorder:Recorder,Blob,Uint8Array,String,URL:{createObjectURL:()=> 'blob:video',revokeObjectURL(){}},document:{body:{append(){}},addEventListener(){},removeEventListener(){},createElement:tag=>tag==='canvas'?new Canvas():video,hidden:false},navigator:{},setTimeout,clearTimeout,setInterval,clearInterval,requestAnimationFrame:()=>1,cancelAnimationFrame(){}};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-compression.js',import.meta.url),'utf8'),ctx);
+ const result=await ctx.window.SJVideoCompression.compress({size:170*1024*1024},{duration:2,onProgress:s=>updates.push(s)});
+ assert.equal(result.mime,'video/mp4');assert(includedAudio);assert(tracks.every(x=>x.stopped));assert(removed);assert(updates.some(x=>x.includes('압축 완료')));
+});
 test('Schedule highlights Korean-time active slots including overnight crossings',async()=>{
  const rows=[{raw:'23:00~06:00',classes:new Set(),querySelector(){return {textContent:this.raw}},classList:{toggle(){}},setAttribute(){},removeAttribute(){}},{raw:'12:00~17:00',classes:new Set(),querySelector(){return {textContent:this.raw}},classList:{toggle(){}},setAttribute(){},removeAttribute(){}}];
  for(const r of rows)r.classList={toggle:(key,on)=>on?r.classes.add(key):r.classes.delete(key)};
@@ -109,20 +194,20 @@ test('Schedule highlights Korean-time active slots including overnight crossings
 });
 test('Island gates are independent; ten questions hide keys and first wrong answer survives retries',async()=>{
  const a=auth('s01');
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1})).status,403);
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v327_u1',choice:1})).status,403);
  assert.equal((await call('feature-gates',{feature:'quiz_ulleung',open:true})).status,403);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});
- assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_v322_d1',choice:0})).status,403);
+ assert.equal((await call('quiz',{...a,island:'dokdo',id:'quiz_v327_d1',choice:0})).status,403);
  const get=()=>call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'ulleung'}));
  const first=(await get()).data;assert.equal(first.items.length,10);assert(!('answer' in first.items[0]));assert(!('why' in first.items[0]));
- assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:0})).data.attempt.correct,false);
- const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_v322_u1',choice:1});assert.equal(retry.data.attempt.choice,0);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
+ assert.equal((await call('quiz',{...a,island:'ulleung',id:'quiz_v327_u1',choice:1})).data.attempt.correct,false);
+ const retry=await call('quiz',{...a,island:'ulleung',id:'quiz_v327_u1',choice:0});assert.equal(retry.data.attempt.choice,1);assert.equal(retry.data.amount,0);assert.equal(await xp('s01'),0);
  assert.equal((await get()).data.items[0].attempt.correct,false);
- assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_v322_u1'})).status,400);
+ assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_v327_u1'})).status,400);
  assert.equal((await call('student-progress',{...a,action:'claim-reward',rewardId:'quiz_all_bonus'})).status,400);
- await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_v322_u2',choice:1})));assert.equal(await xp('s01'),10);
+ await Promise.all(Array.from({length:6},()=>call('quiz',{...a,island:'ulleung',id:'quiz_v327_u2',choice:2})));assert.equal(await xp('s01'),10);
  await call('feature-gates',{...pin,feature:'quiz_ulleung',open:false});assert.equal((await get()).status,403);
- await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});assert.equal((await get()).data.items[0].attempt.choice,0);
+ await call('feature-gates',{...pin,feature:'quiz_ulleung',open:true});assert.equal((await get()).data.items[0].attempt.choice,1);
  await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal((await call('quiz',null,'GET','?'+new URLSearchParams({...a,island:'dokdo'}))).data.items.length,10);
 });
 test('Story gates, simultaneous teacher changes and prior quiz awards migrate without duplicate XP',async()=>{
@@ -130,8 +215,8 @@ test('Story gates, simultaneous teacher changes and prior quiz awards migrate wi
  const gates=(await call('feature-gates',null,'GET')).data.state;assert(gates.history_ulleung.open&&gates.quiz_dokdo.open);assert(!gates.quiz_ulleung.open&&!gates.history_dokdo.open);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_u5'})).data.amount,5);
  assert.equal((await call('student-progress',{...auth('s01'),action:'claim-reward',rewardId:'history_d6'})).status,403);
- await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_v322_d1',{amount:10});
- const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_v322_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
+ await store('progress').setJSON('progress/s02',{xp:10,growthLevel:1});await store('progress').setJSON('reward/s02/quiz_v327_d1',{amount:10});
+ const result=await call('quiz',{...auth('s02'),island:'dokdo',id:'quiz_v327_d1',choice:2});assert.equal(result.data.amount,0);assert(result.data.attempt.legacy);assert.equal(await xp('s02'),10);
 });
 test('Choosing an unlocked appearance preserves earned level and XP and persists through sync',async()=>{
  const a=auth('s01');await call('student-progress',{...pin,studentId:'s01',action:'teacher-add-xp',amount:300});
@@ -167,8 +252,8 @@ test('Home card independently follows teacher start and close and shows connecti
 });
 test('Replacement bank preserves old XP without attaching old answers; all twenty questions reward exactly once',async()=>{
  const {questions}=await import('../netlify/functions/lib/quiz-data.mjs');
- await store('progress').setJSON('progress/s01',{xp:40,growthLevel:1,quizAnswers:{quiz_u1:{choice:0,correct:false}},rewardIds:['quiz_d1']});
- const expected={ulleung:[1,1,1,1,0,1,3,1,0,1],dokdo:[1,1,2,1,1,1,0,1,1,0]};
+ await store('progress').setJSON('progress/s01',{xp:40,growthLevel:1,quizAnswers:{quiz_v326_u1:{choice:1,correct:true}},rewardIds:['quiz_v326_d1']});
+ const expected={ulleung:[0,2,1,3,1,2,0,1,3,2],dokdo:[2,0,3,1,0,2,1,3,2,0]};
  for(const island of ['ulleung','dokdo']){
   await call('feature-gates',{...pin,feature:'quiz_'+island,open:true});
   const initial=(await call('quiz',null,'GET','?'+new URLSearchParams({...auth('s01'),island}))).data.items;
@@ -177,7 +262,7 @@ test('Replacement bank preserves old XP without attaching old answers; all twent
   for(const q of questions[island]){assert.equal(q.choices.length,4);const b={...auth('s01'),island,id:q.id,choice:q.answer};assert.equal((await call('quiz',b)).data.amount,10);assert.equal((await call('quiz',b)).data.amount,0);}
  }
  assert.equal(await xp('s01'),240);
- assert.equal((await call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_u1',choice:1})).status,400);
+ assert.equal((await call('quiz',{...auth('s01'),island:'ulleung',id:'quiz_v326_u1',choice:1})).status,400);
 });
 test('Ten-question student navigation reaches final question and wraps with correct totals',async()=>{
  const elements={};const el=id=>elements[id]||(elements[id]={hidden:false,textContent:'',innerHTML:'',querySelectorAll:()=>[],querySelector:()=>el('heading')});
@@ -189,4 +274,62 @@ test('Ten-question student navigation reaches final question and wraps with corr
  assert.equal(el('quizSolved').textContent,'1 / 10 제출');assert.equal(el('quizXp').textContent,'10 / 100 XP');
  for(let n=1;n<10;n++)el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 10'));assert(el('quizStage').innerHTML.includes('처음으로'));
  el('quizNext').onclick();assert(el('quizStage').innerHTML.includes('Question 1</h2>'));
+});
+test('Expenses use the approved 4,919,000 / 8,000,000 split and persist teacher records',async()=>{
+ const handle=(await import('../netlify/functions/expenses.mjs')).default;
+ const req=async b=>{const r=await handle(new Request('https://example.test/.netlify/functions/expenses',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(b)}));return {status:r.status,data:await r.json()};};
+ assert.equal((await req({action:'list'})).status,403);
+ assert.equal((await req({...auth('s01'),action:'update',id:'exp01',done:true,revision:0})).status,403);
+ const list=(await req({...pin,action:'list'})).data.items;assert.equal(list.length,22);assert.equal(list.reduce((s,i)=>s+i.amount,0),12919000);assert(list.every(x=>!x.done));
+ const school=new Map([['exp03',3196000],['exp05',515000],['exp07',460000],['exp14',500000],['exp15',218000],['exp21',30000]]);
+ assert.deepEqual(list.filter(x=>x.fund==='학교자율').map(x=>x.id),[...school.keys()]);
+ for(const row of list)assert.equal(row.fund,school.has(row.id)?'학교자율':'수자원',row.id);
+ for(const [id,amount] of school)assert.equal(list.find(x=>x.id===id).amount,amount,id);
+ assert.equal(list.filter(x=>x.fund==='학교자율').reduce((s,x)=>s+x.amount,0),4919000);
+ assert.equal(list.filter(x=>x.fund==='수자원').reduce((s,x)=>s+x.amount,0),8000000);
+ assert(list.every(x=>!x.note.includes('수자원:')));
+ assert.equal((await req({...pin,action:'update',id:'exp01',revision:0,done:true})).status,200);
+ assert.equal((await req({...pin,action:'update',id:'exp01',revision:0,memo:'stale'})).status,409);
+ await req({...pin,action:'update',id:'exp01',revision:1,memo:'카드 결제 완료\n영수증 보관'});
+ let row=(await req({...pin,action:'list'})).data.items[0];assert(row.done);assert(row.doneAt);assert.equal(row.memo,'카드 결제 완료\n영수증 보관');
+ await req({...pin,action:'update',id:'exp01',revision:2,done:false});row=(await req({...pin,action:'list'})).data.items[0];assert(!row.done);assert.equal(row.doneAt,null);assert.equal(row.memo,'카드 결제 완료\n영수증 보관');
+ const parallel=await Promise.all([true,false].map(done=>req({...pin,action:'update',id:'exp02',revision:0,done})));assert.equal(parallel.filter(x=>x.status===200).length,1);
+ assert.equal((await req({...pin,action:'update',id:'exp01',revision:3,memo:'x'.repeat(2001)})).status,400);
+ await store('expenses').setJSON('item/exp03',{done:true,memo:'기존 결제 메모',revision:1});
+ const updated=(await req({...pin,action:'list'})).data.items.find(x=>x.id==='exp03');
+ assert.equal(updated.fund,'학교자율');assert.equal(updated.amount,3196000);
+ assert.equal(updated.done,true);assert.equal(updated.memo,'기존 결제 메모');
+});
+test('Full reset requires teacher confirmation and clears every expedition store, including student media',async()=>{
+ await publish();await start(['senior-letter']);
+ await store('progress').setJSON('progress/s01',{xp:120,growthLevel:2,quizAnswers:{quiz_v327_u1:{choice:1,correct:true}}});
+ await store('progress').setJSON('journal/s01/2026-10-01',{text:'원정 기록'});
+ await store('expenses').setJSON('item/exp01',{done:true,memo:'결제 완료',revision:1});
+ await store('chat').setJSON('msg/sample',{text:'안녕'});
+ await store('notices').setJSON('notice/sample',{title:'출발'});
+ await store('album').setJSON('meta/sample',{caption:'사진'});
+ await store('special-mission').setJSON('current',{text:'돌발'});
+ await store('gates').setJSON('state',{quiz_ulleung:{open:true}});
+ const {media}=await makeVideo();
+ assert.equal((await call('room-admin',{...auth('s01'),action:'full-reset',confirmation:'전체 초기화'})).status,403);
+ assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'잘못 입력'})).status,400);
+ assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'전체 초기화'})).status,200);
+ for(const name of ['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'])assert.equal((await store(name).list()).blobs.length,0,name);
+ assert.equal((await call('student-progress',null,'GET','?'+new URLSearchParams(auth('s01')))).status,401);
+ assert.equal((await call('student-progress',{...pin,action:'teacher-roster'})).data.roster.s01,0);
+ assert.equal((await api.media(new Request('https://example.test'+media.url))).status,404);
+ assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'전체 초기화'})).status,200);
+});
+test('A revoked student session clears device growth and history marks before returning to login',async()=>{
+ let saved={studentId:'s01',authToken:'old',xp:450,growthLevel:3,avatarLevel:3};
+ const localStorage={sj2026_history_done_s01_history_u1:'1',sj2026_history_source_s01_history_u1:'1'};
+ Object.defineProperties(localStorage,{removeItem:{value:key=>delete localStorage[key]},getItem:{value:key=>localStorage[key]??null}});
+ const location={pathname:'/index.html',replace(url){this.next=url}};
+ const ctx={window:{},SJ:{load:()=>({...saved}),save:s=>{saved={...s}},students:[{id:'s01',name:'학생'}]},localStorage,location,URLSearchParams,fetch:async()=>new Response('{}',{status:401})};
+ vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/growth.js',import.meta.url),'utf8'),ctx);
+ await ctx.window.SJGrowth.pull();
+ assert.equal(saved.xp,0);assert.equal(saved.growthLevel,1);assert.equal(saved.avatarLevel,1);assert.equal(saved.authToken,undefined);
+ assert.equal(localStorage.sj2026_history_done_s01_history_u1,undefined);
+ assert.equal(localStorage.sj2026_history_source_s01_history_u1,undefined);
+ assert.equal(location.next,'select-student.html?force=1&student=s01');
 });

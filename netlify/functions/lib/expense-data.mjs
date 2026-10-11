@@ -6,8 +6,8 @@ export const expenses=[
     "unit": "2,500,000",
     "people": "",
     "amount": 2500000,
-    "note": "수자원: 2,500,000",
-    "fund": "원문 미기재"
+    "note": "",
+    "fund": "수자원"
   },
   {
     "id": "exp02",
@@ -16,7 +16,7 @@ export const expenses=[
     "unit": "1,300,000",
     "people": "",
     "amount": 1300000,
-    "note": "수자원: 1,300,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -26,8 +26,8 @@ export const expenses=[
     "unit": "159,800",
     "people": "20",
     "amount": 3196000,
-    "note": "수자원: 3,196,000",
-    "fund": "수자원"
+    "note": "",
+    "fund": "학교자율"
   },
   {
     "id": "exp04",
@@ -36,18 +36,18 @@ export const expenses=[
     "unit": "55,000",
     "people": "20",
     "amount": 1100000,
-    "note": "수자원: 1,100,000",
+    "note": "",
     "fund": "수자원"
   },
   {
     "id": "exp05",
     "category": "숙박비",
-    "title": "울릉대아리조트",
-    "unit": "1,015,000",
+    "title": "울릉대아리조트 숙박비",
+    "unit": "515,000",
     "people": "20 (5실)",
-    "amount": 1015000,
+    "amount": 515000,
     "note": "스텐다드A(15.5만원 ) 1실  방갈로(21.5만원) 4실 ※ 예약금 50만원 선지급",
-    "fund": "원문 미기재"
+    "fund": "학교자율"
   },
   {
     "id": "exp06",
@@ -57,7 +57,7 @@ export const expenses=[
     "people": "20",
     "amount": 410000,
     "note": "불고기덮밥+캐쉬밴드(10,000)+물2,000",
-    "fund": "원문 미기재"
+    "fund": "수자원"
   },
   {
     "id": "exp07",
@@ -67,7 +67,7 @@ export const expenses=[
     "people": "20",
     "amount": 460000,
     "note": "",
-    "fund": "원문 미기재"
+    "fund": "학교자율"
   },
   {
     "id": "exp08",
@@ -76,7 +76,7 @@ export const expenses=[
     "unit": "12,000",
     "people": "20",
     "amount": 240000,
-    "note": "수자원: 240,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -86,7 +86,7 @@ export const expenses=[
     "unit": "13,000",
     "people": "20",
     "amount": 260000,
-    "note": "수자원: 260,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -96,7 +96,7 @@ export const expenses=[
     "unit": "20,000",
     "people": "20",
     "amount": 400000,
-    "note": "수자원: 400,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -106,17 +106,17 @@ export const expenses=[
     "unit": "13,000",
     "people": "20",
     "amount": 260000,
-    "note": "수자원: 260,000",
+    "note": "",
     "fund": "수자원"
   },
   {
     "id": "exp12",
     "category": "식비",
-    "title": "3일 중·석식(선내 뷔폐/ 단품)",
+    "title": "3일 중·석식(선내 뷔페/단품)",
     "unit": "28,000",
     "people": "20",
     "amount": 560000,
-    "note": "수자원: 560,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -127,7 +127,7 @@ export const expenses=[
     "people": "20",
     "amount": 420000,
     "note": "",
-    "fund": "원문 미기재"
+    "fund": "수자원"
   },
   {
     "id": "exp14",
@@ -137,7 +137,7 @@ export const expenses=[
     "people": "20",
     "amount": 500000,
     "note": "온라인예약 필수",
-    "fund": "원문 미기재"
+    "fund": "학교자율"
   },
   {
     "id": "exp15",
@@ -146,8 +146,8 @@ export const expenses=[
     "unit": "10,900",
     "people": "20",
     "amount": 218000,
-    "note": "수자원: 218,000",
-    "fund": "수자원"
+    "note": "",
+    "fund": "학교자율"
   },
   {
     "id": "exp16",
@@ -156,7 +156,7 @@ export const expenses=[
     "unit": "5,000",
     "people": "20",
     "amount": 100000,
-    "note": "수자원: 100,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -166,27 +166,27 @@ export const expenses=[
     "unit": "10,000",
     "people": "20",
     "amount": 200000,
-    "note": "수자원: 200,000",
+    "note": "",
     "fund": "수자원"
   },
   {
     "id": "exp18",
     "category": "기타비",
-    "title": "보험료(교사, 학생 총 20명)",
+    "title": "교사·학생 여행자보험료",
     "unit": "50,000",
     "people": "1",
     "amount": 50000,
     "note": "",
-    "fund": "원문 미기재"
+    "fund": "수자원"
   },
   {
     "id": "exp19",
     "category": "기타비",
-    "title": "프랑카드제작",
+    "title": "현수막 제작",
     "unit": "50,000",
     "people": "1",
     "amount": 50000,
-    "note": "수자원: 50,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -196,7 +196,7 @@ export const expenses=[
     "unit": "5,000",
     "people": "10",
     "amount": 50000,
-    "note": "수자원: 50,000",
+    "note": "",
     "fund": "수자원"
   },
   {
@@ -207,7 +207,7 @@ export const expenses=[
     "people": "6",
     "amount": 30000,
     "note": "",
-    "fund": "원문 미기재"
+    "fund": "학교자율"
   },
   {
     "id": "exp22",
@@ -216,7 +216,7 @@ export const expenses=[
     "unit": "100,000",
     "people": "1",
     "amount": 100000,
-    "note": "수자원: 66,000",
+    "note": "",
     "fund": "수자원"
   }
 ];
