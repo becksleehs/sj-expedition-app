@@ -56,6 +56,20 @@ test('Student tap grants permission, subscribes and registers the device; disabl
  assert.equal(await window.SJPush.sync(),true);assert.equal(requests.length,2);
  await window.SJPush.disable();assert.equal(requests[2].action,'unsubscribe');assert.equal(subscription,null);
 });
+test('Install guidance appears once before onboarding, then stays dismissed on the same device',async()=>{
+ const source=await readFile(new URL('../js/pwa.js',import.meta.url),'utf8'),saved=new Map(),listeners={};
+ function boot(){
+  const intro={hidden:true},close={},install={hidden:true},document={documentElement:{style:{}},getElementById:id=>({installIntro:intro,installIntroClose:close,installIntroInstall:install})[id]||null};
+  const window={isSecureContext:true,matchMedia:()=>({matches:false}),addEventListener:(type,fn)=>listeners[type]=fn};
+  const localStorage={getItem:key=>saved.get(key)||null,setItem:(key,value)=>saved.set(key,value)};
+  const navigator={serviceWorker:{register:async()=>{}}};
+  vm.runInNewContext(source,{window,document,navigator,localStorage,Promise});return {window,intro,close,install,document};
+ }
+ const first=boot();assert.equal(first.intro.hidden,false);assert.equal(first.document.documentElement.style.overflow,'hidden');
+ let finished=false;first.window.SJInstallIntro.then(()=>finished=true);await Promise.resolve();assert.equal(finished,false);
+ first.close.onclick();await first.window.SJInstallIntro;assert.equal(finished,true);assert.equal(saved.get('sj2026_install_intro_v339'),'1');
+ const second=boot();assert.equal(second.intro.hidden,true);await second.window.SJInstallIntro;
+});
 test('Waiting missions stay private; only administrator starts; batch preflight prevents partial start',async()=>{
  assert.equal((await call('field-missions',{action:'list'})).data.missions.length,0);
  assert.equal((await call('field-missions',{...auth('s01'),action:'start',ids:['lotte-group']})).status,403);

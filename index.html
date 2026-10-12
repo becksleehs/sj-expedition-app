@@ -6,7 +6,7 @@
   <meta name="theme-color" content="#0b4b73">
   <title>2026 승주 원정대</title>
   <link rel="stylesheet" href="css/app.css?v=fresh326">
-<link rel="stylesheet" href="css/mobile-v311.css?v=fresh326"><link rel="stylesheet" href="css/avatar-v312.css?v=fresh326"><link rel="stylesheet" href="css/integrated-v318.css?v=fresh326"><link rel="stylesheet" href="css/home-hero-v330.css?v=330"><link rel="stylesheet" href="css/home-fullwidth-v335.css?v=335"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#073963"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="승주 원정대"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="assets/pwa/icon-192.png"><script defer src="js/pwa.js?v=fresh326"></script></head>
+<link rel="stylesheet" href="css/mobile-v311.css?v=fresh326"><link rel="stylesheet" href="css/avatar-v312.css?v=fresh326"><link rel="stylesheet" href="css/integrated-v318.css?v=fresh326"><link rel="stylesheet" href="css/home-hero-v330.css?v=330"><link rel="stylesheet" href="css/home-fullwidth-v335.css?v=335"><link rel="stylesheet" href="css/install-intro-v339.css?v=339"><link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#073963"><meta name="mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-capable" content="yes"><meta name="apple-mobile-web-app-title" content="승주 원정대"><meta name="apple-mobile-web-app-status-bar-style" content="default"><link rel="apple-touch-icon" sizes="180x180" href="assets/pwa/icon-180.png"><link rel="icon" type="image/png" sizes="192x192" href="assets/pwa/icon-192.png"><script defer src="js/pwa.js?v=339"></script></head>
 <body class="dashboard-body-v33">
 <main class="app dashboard-v33" id="mainApp">
   <section class="hero-v33" aria-label="부산 롯데월드, 울릉도, 독도 원정 지도">
@@ -58,6 +58,7 @@
       <div class="sheet-head-v33"><strong>⚙️ 설정</strong><button type="button" data-close="settings">×</button></div>
       <a id="settingsPrimary" href="select-student.html?force=1"><span>👤</span><b>학생으로 시작하기</b><i>›</i></a>
       <button id="notifySettingBtn" class="settings-action-v34" type="button"><span>🔔</span><b>앱 알림 켜기</b><i>›</i></button>
+      <button id="resetEntryBtn" class="settings-action-v34" type="button"><span>↩️</span><b>처음 화면으로 돌아가기</b><i>›</i></button>
     </section>
   </div>
 
@@ -65,7 +66,7 @@
     <button class="drawer-bg-v33" type="button" data-close="menu" aria-label="닫기"></button>
     <aside class="side-drawer-v33">
       <div class="drawer-head-v33"><strong>원정대 메뉴</strong><button type="button" data-close="menu">×</button></div>
-      <a href="teacher.html"><span>🧑‍🏫</span><b>관리자 모드</b><i>›</i></a><a href="install.html"><span>📲</span><b>앱 설치 · 홈 화면에 추가</b><i>›</i></a><a href="reflection.html"><span>✍️</span><b>오늘 하루는 어땠나요?</b><i>›</i></a><a href="notices.html"><span>📣</span><b>공지사항</b><i>›</i></a>
+      <a href="reflection.html"><span>✍️</span><b>오늘 하루는 어땠나요?</b><i>›</i></a><a href="notices.html"><span>📣</span><b>공지사항</b><i>›</i></a>
       <a href="schedule.html"><span>📅</span><b>일정</b><i>›</i></a>
       <a href="history.html"><span>📖</span><b>역사 이야기</b><i>›</i></a>
       <a href="quiz.html"><span>🚌</span><b>섬별 역사 퀴즈</b><i>›</i></a>
@@ -76,6 +77,18 @@
     </aside>
   </div>
 </main>
+
+<div id="installIntro" class="install-intro-v339" role="dialog" aria-modal="true" aria-labelledby="installIntroTitle" hidden>
+  <div class="install-intro-card-v339">
+    <img src="assets/pwa/icon-192.png" alt="승주 원정대 앱 아이콘" width="72" height="72">
+    <h2 id="installIntroTitle">승주 원정대를 홈 화면에 추가하세요</h2>
+    <p>아이콘을 누르면 주소창 없이 앱처럼 열 수 있어요. 설치는 이 기기에서 한 번만 하면 됩니다.</p>
+    <div class="install-intro-steps-v339"><b>📱 갤럭시·안드로이드</b><span>아래 설치 버튼 또는 크롬 메뉴 ⋮ → 홈 화면에 추가 → 설치</span></div>
+    <div class="install-intro-steps-v339"><b>🍎 아이폰·아이패드</b><span>사파리의 공유 버튼 → 홈 화면에 추가 → 추가</span></div>
+    <button id="installIntroInstall" class="install-intro-primary-v339" type="button" hidden>지금 앱 설치하기</button>
+    <button id="installIntroClose" class="install-intro-later-v339" type="button">확인했어요 · 계속하기</button>
+  </div>
+</div>
 
 <div id="roleModal" class="role-modal-v31" hidden>
   <div class="role-card-v31">
@@ -96,7 +109,7 @@
 <script src="js/app.js?v=fresh326"></script>
 <script src="js/auth.js?v=fresh326"></script>
 <script src="js/growth.js?v=fresh326"></script>
-<script src="js/push-client.js?v=338"></script><script src="js/main-dashboard.js?v=338"></script>
+<script src="js/push-client.js?v=338"></script><script src="js/main-dashboard.js?v=339"></script>
 <script src="js/special-mission.js?v=fresh326"></script>
 <script src="js/fixed-nav.js?v=fresh326"></script>
 <script src="js/home-missions.js?v=fresh326"></script></body></html>

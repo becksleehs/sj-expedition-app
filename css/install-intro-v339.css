@@ -1,0 +1,11 @@
+.install-intro-v339[hidden],.install-intro-v339 [hidden]{display:none!important}
+.install-intro-v339{position:fixed;inset:0;z-index:10010;display:grid;place-items:center;padding:18px;background:rgba(5,29,48,.72);box-sizing:border-box}
+.install-intro-card-v339{box-sizing:border-box;width:min(100%,410px);max-height:90dvh;overflow:auto;padding:24px 22px 20px;border-radius:24px;background:#fff;color:#17364c;box-shadow:0 22px 48px #001b3070;text-align:center;font:16px/1.5 system-ui,sans-serif}
+.install-intro-card-v339 img{border-radius:19px;display:block;margin:0 auto 12px}
+.install-intro-card-v339 h2{font-size:22px;line-height:1.3;margin:0 0 9px}
+.install-intro-card-v339 p{margin:0 0 18px;color:#426076}
+.install-intro-steps-v339{display:flex;flex-direction:column;gap:4px;background:#eef7fb;border-radius:14px;padding:11px 13px;margin:9px 0;text-align:left;font-size:14px}
+.install-intro-steps-v339 span{color:#365a70}
+.install-intro-card-v339 button{display:block;width:100%;border:0;border-radius:13px;min-height:46px;font:700 16px system-ui,sans-serif;cursor:pointer}
+.install-intro-primary-v339{margin-top:17px;background:#08749c;color:#fff}
+.install-intro-later-v339{margin-top:12px;background:#dfeef5;color:#123c56}
