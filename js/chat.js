@@ -13,12 +13,12 @@
     const stay=nearBottom();
     list.replaceChildren();
     for(const m of messages){
-      const row=document.createElement('div');row.className='chat-row-v34'+(m.student===p?.name?' me':'');
+      const row=document.createElement('div');row.className='chat-row-v34'+(m.studentId===p?.id||(!m.studentId&&m.student===p?.name)?' me':'');
       const bubble=document.createElement('div');bubble.className='chat-bubble-v34';
-      const name=document.createElement('div');name.className='chat-name-v34';name.textContent=m.student||'';bubble.append(name);
+      const name=document.createElement('div');name.className='chat-name-v34';name.textContent=(m.student||'작성자 확인 중')+(m.grade?' · '+m.grade+'학년':'');bubble.append(name);
       if(m.media?.kind==='photo'&&typeof m.media.url==='string'&&m.media.url.startsWith('/.netlify/functions/media?action=read&')){
         const link=document.createElement('a');link.className='chat-photo-link-v332';link.href=m.media.url;link.target='_blank';link.rel='noopener';link.setAttribute('aria-label','사진 크게 보기');
-        const img=document.createElement('img');img.src=m.media.url;img.alt='채팅에 첨부된 사진';img.loading='lazy';link.append(img);bubble.append(link);
+        const img=document.createElement('img');img.src=m.media.url;img.alt=(m.student||'학생')+' 학생이 올린 채팅 사진';img.loading='lazy';link.append(img);bubble.append(link);
       }
       if(m.text){const body=document.createElement('div');body.className='chat-text-v34';body.textContent=m.text;bubble.append(body);}
       const time=document.createElement('time');time.textContent=new Date(m.time).toLocaleTimeString('ko-KR',{hour:'2-digit',minute:'2-digit'});bubble.append(time);row.append(bubble);list.append(row);

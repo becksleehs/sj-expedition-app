@@ -1,11 +1,12 @@
 {
   "name": "sj-expedition-2026",
   "private": true,
-  "version": "3.35.0",
+  "version": "3.38.0",
   "dependencies": {
-    "@netlify/blobs": "^10.0.0"
+    "@netlify/blobs": "^10.0.0",
+    "web-push": "^3.6.7"
   },
   "scripts": {
-    "test": "node --test tests/integration.test.mjs"
+    "test": "node tests/integration.test.mjs"
   }
 }

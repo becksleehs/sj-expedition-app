@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { createHash, randomUUID } from 'node:crypto';
+import {allStudentIds,broadcastPush} from './lib/push-service.mjs';
 const headers={'content-type':'application/json; charset=utf-8','cache-control':'no-store'};
 const clean=v=>String(v??'').replace(/[<>]/g,'').trim();
 const validPin=v=>/^\d{4}$/.test(clean(v));
@@ -20,6 +21,7 @@ export default async req=>{
     if(!text)return new Response(JSON.stringify({error:'스페셜 미션 내용을 입력해주세요.'}),{status:400,headers});
     const mission={id:`${Date.now()}-${randomUUID()}`,text,createdAt:Date.now()};
     await store.setJSON('current',mission);
+    try{await broadcastPush({title:'새 스페셜 미션!',body:text,url:'missions.html',tag:'sj-special-'+mission.id,studentIds:allStudentIds},req.url)}catch(e){console.error('special push failed',e?.message)}
     return new Response(JSON.stringify({ok:true,mission}),{headers});
   }
   if(action==='clear'){

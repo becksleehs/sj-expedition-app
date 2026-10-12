@@ -1,8 +1,10 @@
 import {test,beforeEach} from 'node:test';import assert from 'node:assert/strict';import {registerHooks} from 'node:module';import {createHash} from 'node:crypto';import {readFile} from 'node:fs/promises';import vm from 'node:vm';
 const mockUrl=new URL('./mock-blobs.mjs',import.meta.url).href;
-registerHooks({resolve(s,c,next){return s==='@netlify/blobs'?{url:mockUrl,shortCircuit:true}:next(s,c);}});
+const webPushUrl=new URL('./mock-web-push.mjs',import.meta.url).href;
+registerHooks({resolve(s,c,next){return s==='@netlify/blobs'?{url:mockUrl,shortCircuit:true}:s==='web-push'?{url:webPushUrl,shortCircuit:true}:next(s,c);}});
 const {getStore,reset}=await import('./mock-blobs.mjs');
-const names=['quiz','feature-gates','field-missions','student-progress','media','album','room-admin','notices','chat','groups'];const api={};for(const name of names)api[name]=(await import(`../netlify/functions/${name}.mjs`)).default;
+const {sent,clearSent}=await import('./mock-web-push.mjs');
+const names=['quiz','feature-gates','field-missions','student-progress','media','album','room-admin','notices','chat','groups','special-mission','push-subscriptions'];const api={};for(const name of names)api[name]=(await import(`../netlify/functions/${name}.mjs`)).default;
 process.env.TEACHER_PIN='1234';const pin={teacherPin:'1234'},auth=id=>({studentId:id,token:'token-'+id}),students=Array.from({length:13},(_,i)=>'s'+String(i+1).padStart(2,'0'));
 const groups=[{name:'1조',members:['s01','s03','s09','s12']},{name:'2조',members:['s02','s04','s08','s10']},{name:'3조',members:['s05','s06','s07','s11','s13']}];
 async function call(name,body,method='POST',query=''){const r=await api[name](new Request('https://example.test/.netlify/functions/'+name+query,{method,...(method==='POST'?{headers:{'content-type':'application/json'},body:JSON.stringify(body)}:{})}));let data;try{data=await r.json()}catch{}return {status:r.status,data};}
@@ -10,7 +12,50 @@ const store=n=>getStore({name:'sj-expedition-'+n});
 async function publish(){await store('groups').setJSON('current',{groups,version:1});}
 async function start(ids){const r=await call('field-missions',{...pin,action:'start',ids});assert.equal(r.status,200,JSON.stringify(r.data));}
 async function xp(id){return (await call('student-progress',null,'GET','?'+new URLSearchParams(auth(id)))).data.progress.xp;}
-beforeEach(async()=>{reset();for(const id of students){await store('auth').setJSON('student/'+id,{credVersion:1});await store('auth').setJSON('session/'+createHash('sha256').update('token-'+id).digest('hex'),{studentId:id,credVersion:1,expiresAt:Date.now()+86400000});}});
+beforeEach(async()=>{reset();clearSent();for(const id of students){await store('auth').setJSON('student/'+id,{credVersion:1});await store('auth').setJSON('session/'+createHash('sha256').update('token-'+id).digest('hex'),{studentId:id,credVersion:1,expiresAt:Date.now()+86400000});}});
+const sub=who=>({endpoint:'https://fcm.googleapis.com/fcm/send/'+who,keys:{p256dh:'a'.repeat(87),auth:'b'.repeat(22)}});
+test('Student device subscriptions authenticate, mission and notice pushes target registered devices once',async()=>{
+ const key=await call('push-subscriptions',null,'GET');assert.equal(key.data.publicKey,'mock-public-key');assert(!JSON.stringify(key.data).includes('private'));
+ assert.equal((await call('push-subscriptions',{...auth('s01'),action:'subscribe',subscription:{endpoint:'http://localhost/'}})).status,400);
+ assert.equal((await call('push-subscriptions',{studentId:'s01',token:'bad',action:'subscribe',subscription:sub('1')})).status,401);
+ await publish();for(const id of ['s01','s09','s10'])assert.equal((await call('push-subscriptions',{...auth(id),action:'subscribe',subscription:sub(id)})).status,200);
+ await start(['senior-letter']);assert.equal(sent.length,2);assert(sent.every(x=>['s09','s10'].some(id=>x.subscription.endpoint.endsWith('/'+id))));assert(sent.every(x=>x.payload.url==='missions.html'));
+ await start(['senior-letter']);assert.equal(sent.length,2);
+ const id='1710000000000-123e4567-e89b-42d3-a456-426614174000';
+ await call('notices',{...pin,title:'내일 출발',body:'아침 7시에 만나요',id});assert.equal(sent.length,5);assert.equal(sent[4].payload.url,'notices.html');
+ await call('notices',{...pin,title:'내일 출발',body:'아침 7시에 만나요',id});assert.equal(sent.length,5);
+ assert.equal((await call('push-subscriptions',{...auth('s01'),action:'unsubscribe',subscription:sub('s09')})).status,200);
+ assert.equal((await store('push').list({prefix:'subscription/'})).blobs.length,3);
+ await call('push-subscriptions',{...auth('s09'),action:'unsubscribe',subscription:sub('s09')});assert.equal((await store('push').list({prefix:'subscription/'})).blobs.length,2);
+});
+test('Group, history quiz, and surprise mission releases also reach enrolled devices',async()=>{
+ await call('push-subscriptions',{...auth('s01'),action:'subscribe',subscription:sub('s01')});
+ await publish();assert.equal(sent.length,0); // publish helper writes its snapshot directly
+ await call('groups',{...pin,action:'publish',groups});assert.equal(sent.at(-1).payload.url,'groups.html');
+ await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal(sent.at(-1).payload.url,'quiz.html?island=dokdo');
+ const previous=sent.length;await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal(sent.length,previous);
+ await call('special-mission',{...pin,action:'publish',text:'깜짝 미션!'});assert.equal(sent.at(-1).payload.url,'missions.html');
+});
+test('Service worker displays a background push and routes a tap to its page',async()=>{
+ const listeners={},shown=[],opened=[];
+ const self={registration:{scope:'https://example.test/',showNotification:async(...args)=>shown.push(args)},clients:{matchAll:async()=>[],openWindow:async url=>opened.push(url)},skipWaiting(){},addEventListener:(type,handler)=>{listeners[type]=handler}};
+ vm.runInNewContext(await readFile(new URL('../sw.js',import.meta.url),'utf8'),{self,URL,Response,fetch:async()=>{},console});
+ let waited;listeners.push({data:{json:()=>({title:'미션 공개',body:'확인해요',url:'missions.html',tag:'mission'})},waitUntil:p=>{waited=p}});await waited;
+ assert.equal(shown[0][0],'미션 공개');assert.equal(shown[0][1].data.url,'https://example.test/missions.html');
+ listeners.notificationclick({notification:{data:shown[0][1].data,close(){}},waitUntil:p=>{waited=p}});await waited;assert.deepEqual(opened,['https://example.test/missions.html']);
+});
+test('Student tap grants permission, subscribes and registers the device; disabling unregisters it',async()=>{
+ const requests=[];let subscription=null,permissionCalls=0;
+ const pushManager={getSubscription:async()=>subscription,subscribe:async options=>{assert.equal(options.userVisibleOnly,true);subscription={toJSON:()=>sub('s01'),unsubscribe:async()=>{subscription=null}};return subscription;}};
+ const reg={pushManager},Notification={permission:'default',requestPermission:async()=>{permissionCalls++;Notification.permission='granted';return 'granted'}};
+ const window={isSecureContext:true,PushManager:function(){},Notification};
+ const fetch=async(_url,options)=>{if(!options?.method)return Response.json({publicKey:Buffer.alloc(65,1).toString('base64url')});requests.push(JSON.parse(options.body));return Response.json({ok:true});};
+ const ctx={window,navigator:{userAgent:'Android',serviceWorker:{register:async()=>reg,ready:Promise.resolve(reg)}},PushManager:window.PushManager,Notification,SJ:{load:()=>({studentId:'s01',authToken:'token-s01'})},fetch,Response,Uint8Array,atob,matchMedia:()=>({matches:false})};
+ vm.runInNewContext(await readFile(new URL('../js/push-client.js',import.meta.url),'utf8'),ctx);
+ assert.equal(await window.SJPush.enable(),true);assert.equal(permissionCalls,1);assert.equal(requests[0].action,'subscribe');assert.equal(requests[0].studentId,'s01');
+ assert.equal(await window.SJPush.sync(),true);assert.equal(requests.length,2);
+ await window.SJPush.disable();assert.equal(requests[2].action,'unsubscribe');assert.equal(subscription,null);
+});
 test('Waiting missions stay private; only administrator starts; batch preflight prevents partial start',async()=>{
  assert.equal((await call('field-missions',{action:'list'})).data.missions.length,0);
  assert.equal((await call('field-missions',{...auth('s01'),action:'start',ids:['lotte-group']})).status,403);
@@ -20,6 +65,13 @@ test('Waiting missions stay private; only administrator starts; batch preflight 
  assert.equal(await store('field-missions').get('state/lotte-group'),null);
  await publish();await start(['lotte-group']);assert.equal((await call('field-missions',{action:'list'})).data.missions.length,1);
  await call('field-missions',{...pin,action:'close',ids:['lotte-group']});assert.equal((await call('field-missions',{action:'list'})).data.missions.length,0);
+});
+test('Previously open missions begin closed until teacher checks and starts them again',async()=>{
+ await publish();await store('field-missions').setJSON('state/lotte-group',{status:'open',groups,attendees:students,startedAt:Date.now(),letters:{}});
+ assert.equal((await call('field-missions',{...auth('s01'),action:'list'})).data.missions.length,0);
+ const adminList=await call('field-missions',{...pin,action:'list'});assert.equal(adminList.data.missions.find(m=>m.id==='lotte-group').status,'closed');
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'})).status,403);
+ await start(['lotte-group']);assert.equal((await call('field-missions',{...auth('s01'),action:'list'})).data.missions[0].status,'open');
 });
 test('Concurrent team submissions, retry, and a parallel quiz give each member XP exactly once',async()=>{
  await publish();await start(['lotte-group']);
@@ -72,7 +124,7 @@ test('Chunk upload, immutable retry, byte ranges, file limits, album routing and
  const head=await api.media(new Request('https://example.test'+media.url,{method:'HEAD'}));assert.equal(head.headers.get('content-length'),String(bytes.length));
  assert.equal((await api.media(new Request('https://example.test'+media.url,{headers:{range:'bytes=9999999-'}}))).status,416);
  assert.equal((await call('media',{...auth('s02'),action:'complete',id})).status,404);
- await call('media',{...auth('s01'),action:'complete',id});const album=await call('album',null,'GET');assert.equal(album.data.items.length,1);assert.equal(album.data.items[0].kind,'video');assert.equal(await xp('s01'),0);
+ await call('media',{...auth('s01'),action:'complete',id});const album=await call('album',null,'GET');assert.equal(album.data.items.length,1);assert.equal(album.data.items[0].kind,'video');assert.equal(album.data.items[0].studentId,'s01');assert.equal(await xp('s01'),0);
  assert.equal((await call('room-admin',{...auth('s01'),area:'album',action:'delete',id})).status,403);
  await call('room-admin',{...pin,area:'album',action:'delete',id});assert.equal((await api.media(new Request('https://example.test'+media.url))).status,404);
 });
@@ -96,7 +148,7 @@ test('Notices seed once, retain posts, allow admin deletion; chat authenticates 
  await call('room-admin',{...pin,area:'notices',action:'delete',id:'notice/default'});assert.equal((await call('notices',null,'GET')).data.notices.length,0);
  await call('room-admin',{...pin,area:'notices',action:'reset'});assert.equal((await call('notices',null,'GET')).data.notices.length,1);
  assert.equal((await call('chat',{student:'김서하',text:'spoof'})).status,401);
- assert.equal((await call('chat',{...auth('s01'),text:'안녕'})).status,200);
+ const sent=await call('chat',{...auth('s01'),text:'안녕'});assert.equal(sent.status,200);assert.equal(sent.data.message.studentId,'s01');assert.equal((await call('chat',null,'GET')).data.messages[0].student,'김서하');
  await call('room-admin',{...pin,area:'chat',action:'pin',text:'10시 집합'});await call('room-admin',{...pin,area:'chat',action:'reset'});
  const chat=await call('chat',null,'GET');assert.equal(chat.data.messages.length,0);assert.equal(chat.data.pinned,'10시 집합');
 });
@@ -178,6 +230,19 @@ test('Large photos are retried at smaller dimensions and saved as JPEG',async()=
  vm.createContext(ctx);vm.runInContext(await readFile(new URL('../js/media-upload.js',import.meta.url),'utf8'),ctx);
  const job=await ctx.window.SJMedia.createJob({size:12*1024*1024,type:'image/heic',name:'photo.heic'});
  assert.equal(job.prepared.mime,'image/jpeg');assert.equal(job.prepared.blob.size,1024*1024);assert.deepEqual(dimensions,[[1600,1200],[1280,960]]);
+});
+test('Mission file selection prepares media before submit and reuses the compressed job',async()=>{
+ class El{constructor(tag){this.tag=tag;this.children=[];this.files=[];this.classList={add(){},remove(){}};this.value='';}append(...items){this.children.push(...items)}prepend(item){this.children.unshift(item)}replaceChildren(...items){this.children=[...items]}setAttribute(){}querySelectorAll(){return []}get childNodes(){return this.children}}
+ const host=new El('main'),made=[];let prepared=0,uploaded=0,finish;
+ const document={getElementById:id=>id==='fieldMissions'?host:null,createElement:tag=>{const el=new El(tag);made.push(el);return el},addEventListener(){},hidden:false};
+ const mission={id:'test-photo',title:'사진 미션',place:'울릉도',scope:'individual',type:'photo',status:'open',eligible:true,done:false,description:'사진을 올려요',xp:0};
+ const fetch=async(_url,options)=>{const body=JSON.parse(options.body);return Response.json(body.action==='list'?{missions:[mission]}:{ok:true})};
+ const context={document,window:{addEventListener(){}},fetch,Response,Set,SJ:{students:[],getRole:()=> 'student'},SJMedia:{credentials:()=>({studentId:'s01',token:'token'}),sizeLabel:n=>`${n}B`,createJob:()=>{prepared++;return new Promise(resolve=>finish=resolve)},upload:async()=>{uploaded++;return {id:'media-id'}}},SJGrowth:{pull:async()=>{},checkUpgradePrompt(){}},setInterval(){},setTimeout(){}};
+ vm.createContext(context);vm.runInContext(await readFile(new URL('../js/field-missions.js',import.meta.url),'utf8'),context);await new Promise(resolve=>setImmediate(resolve));
+ const file=made.find(x=>x.tag==='input'&&x.type==='file'),form=made.find(x=>x.tag==='form'),submit=form.children.find(x=>x.tag==='button');assert(file&&form&&submit);
+ file.files=[{size:9000000,name:'photo.jpg',type:'image/jpeg'}];const preparing=file.onchange();assert.equal(submit.disabled,true);assert.equal(prepared,1);
+ finish({prepared:{blob:new Blob(['small']),kind:'photo'}});await preparing;assert.equal(submit.disabled,false);assert.match(form.children.at(-1).textContent,/자동 압축 완료/);
+ await form.onsubmit({preventDefault(){}});assert.equal(prepared,1);assert.equal(uploaded,1);
 });
 test('Unsupported browser stops automatic video conversion with a useful fallback',async()=>{
  const ctx={window:{},HTMLCanvasElement:class Canvas{}};vm.createContext(ctx);
@@ -318,6 +383,7 @@ test('Full reset requires teacher confirmation and clears every expedition store
  await store('expenses').setJSON('item/exp01',{done:true,memo:'결제 완료',revision:1});
  await store('chat').setJSON('msg/sample',{text:'안녕'});
  await store('notices').setJSON('notice/sample',{title:'출발'});
+ await call('push-subscriptions',{...auth('s01'),action:'subscribe',subscription:sub('s01')});
  await store('album').setJSON('meta/sample',{caption:'사진'});
  await store('special-mission').setJSON('current',{text:'돌발'});
  await store('gates').setJSON('state',{quiz_ulleung:{open:true}});
@@ -325,7 +391,7 @@ test('Full reset requires teacher confirmation and clears every expedition store
  assert.equal((await call('room-admin',{...auth('s01'),action:'full-reset',confirmation:'전체 초기화'})).status,403);
  assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'잘못 입력'})).status,400);
  assert.equal((await call('room-admin',{...pin,action:'full-reset',confirmation:'전체 초기화'})).status,200);
- for(const name of ['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'])assert.equal((await store(name).list()).blobs.length,0,name);
+ for(const name of ['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses','push'])assert.equal((await store(name).list()).blobs.length,0,name);
  assert.equal((await call('student-progress',null,'GET','?'+new URLSearchParams(auth('s01')))).status,401);
  assert.equal((await call('student-progress',{...pin,action:'teacher-roster'})).data.roster.s01,0);
  assert.equal((await api.media(new Request('https://example.test'+media.url))).status,404);

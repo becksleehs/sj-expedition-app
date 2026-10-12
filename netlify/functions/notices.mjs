@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { createHash } from 'node:crypto';
+import {allStudentIds,broadcastPush} from './lib/push-service.mjs';
 const headers={'content-type':'application/json; charset=utf-8','cache-control':'no-store'};
 export default async (req)=>{
   const store=getStore({name:'sj-expedition-notices',consistency:'strong'});
@@ -19,7 +20,8 @@ export default async (req)=>{
     const title=String(d.title||'').trim(),body=String(d.body||'').trim(),id=String(d.id||'');
     if(!title||title.length>100||!body||body.length>5000||!/^\d{13}-[a-f0-9-]{36}$/.test(id))return new Response(JSON.stringify({error:'제목과 내용을 확인해주세요.'}),{status:400,headers});
     const key=`notice/${id}`;
-    if(!await store.get(key))await store.setJSON(key,{title,body,time:Date.now(),system:false});
+    const saved=await store.setJSON(key,{title,body,time:Date.now(),system:false},{onlyIfNew:true});
+    if(saved.modified){try{await broadcastPush({title:'새 공지: '+title,body:body.slice(0,120),url:'notices.html',tag:'sj-notice-'+id,studentIds:allStudentIds},req.url)}catch(e){console.error('notice push failed',e?.message)}}
     return new Response(JSON.stringify({ok:true}),{headers});
   }
   return new Response(JSON.stringify({error:'method'}),{status:405,headers});

@@ -1,5 +1,6 @@
 import { getStore } from '@netlify/blobs';
 import { createHash } from 'node:crypto';
+import {broadcastPush} from './lib/push-service.mjs';
 const headers={'content-type':'application/json; charset=utf-8','cache-control':'no-store'};
 const clean=v=>String(v??'').trim();
 const STUDENTS=new Set(['s01','s02','s03','s04','s05','s06','s07','s08','s09','s10','s11','s12','s13']);
@@ -27,5 +28,6 @@ export default async(req)=>{
   const prev=await store.get('current',{type:'json',consistency:'strong'});const now=Date.now();
   const current={version:Math.max(now,(Number(prev?.version)||0)+1),publishedAt:now,groups:groups.map((g,i)=>({name:`${i+1}조`,members:[...g.members]}))};
   await store.setJSON('current',current);await addNotice();
+  try{await broadcastPush({title:'원정대 조편성이 확정됐어요!',body:'나의 조와 조원을 확인해 보세요.',url:'groups.html',tag:'sj-groups-'+current.version,studentIds:[...seen]},req.url)}catch(e){console.error('group push failed',e?.message)}
   return new Response(JSON.stringify({ok:true,current}),{headers});
 };

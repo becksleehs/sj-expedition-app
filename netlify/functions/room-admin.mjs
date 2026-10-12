@@ -2,7 +2,7 @@ import {deleteMedia} from './lib/media-store.mjs';
 import {getStore} from '@netlify/blobs';
 import {createHash} from 'node:crypto';
 const reply=(d,status=200)=>new Response(JSON.stringify(d),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
-const expeditionStores=['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses'];
+const expeditionStores=['auth','progress','groups','gates','special-mission','field-missions','chat','notices','album','media','expenses','push'];
 async function clearStore(name){
  const store=getStore({name:'sj-expedition-'+name,consistency:'strong'});
  // Netlify Blobs automatically retrieves every page when paginate is omitted.
