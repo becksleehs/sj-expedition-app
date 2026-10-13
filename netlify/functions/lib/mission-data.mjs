@@ -14,5 +14,10 @@ export const missions=[
  ['dokdo-friends-gull','돌발 미션','친구와 괭이갈매기, 독도의 추억','독도에서 좋아하는 친구 2~3명과 함께 괭이갈매기가 나온 사진을 찍어 올려주세요. 추억을 남기는 돌발미션으로, 경험치는 지급되지 않습니다.','individual','photo'],
  ['surprise-kindness','돌발 미션','친구의 빛나는 순간','오늘 친구가 보여준 배려나 도움을 구체적으로 2~3줄 적어주세요.','individual','text'],
  ['senior-photo','특별 미션','우리 3학년의 마지막 원정','참석한 3학년 친구들과 함께 정한 포즈로 단체사진을 남겨주세요.','senior','photo'],
- ['senior-letter','특별 미션','미래의 랜덤 편지','배정된 3학년 친구에게 “1년 뒤의 너에게” 편지를 써주세요.','letter','text']
-].map(([id,place,title,description,scope,type])=>({id,place,title,description,scope,type,xp:id==='dokdo-friends-gull'?0:20}));
+ ['senior-letter','특별 미션','미래의 랜덤 편지','배정된 3학년 친구에게 “1년 뒤의 너에게” 편지를 써주세요.','letter','text'],
+ ['lotte-expression','부산 롯데월드','우리 조의 표정','조원들이 각자 다른 표정이나 포즈로 사진 한 장을 찍고 우리 조의 제목을 적어주세요. 안전한 장소에서 촬영하세요.','group','both',true],
+ ['dokdo-postcard','독도','독도에서 보내는 엽서','독도가 보이는 곳에서 사진 한 장을 찍고 후배에게 전하고 싶은 말을 한 문장으로 적어주세요. 접안하지 못해도 선상에서 독도를 찍었다면 제출할 수 있어요.','group','both',true],
+ ['ulla-pose','추산 메가 울라포토존','울라 포즈 따라잡기','조원끼리 재미있는 포즈를 정해 울라와 사진 한 장을 찍어주세요.','group','photo',true],
+ ['waterfall-scene','봉래폭포','우리 조가 발견한 장면','봉래폭포 탐방 중 조원들이 고른 장면을 사진 한 장으로 남기고, 고른 이유를 한 줄로 적어주세요. 지정된 길에서 촬영하세요.','group','both',true],
+ ['marine-recommend','울릉도·독도 해양연구기지 해양생태관','전시 하나 추천','조원들이 가장 흥미롭게 본 전시 하나를 골라 전시 이름과 추천 이유를 한 줄씩 적어주세요. 사진을 찍지 않아도 됩니다.','group','text',true]
+].map(([id,place,title,description,scope,type,choice=false])=>({id,place,title,description,scope,type,choice,xp:id==='dokdo-friends-gull'?0:20}));

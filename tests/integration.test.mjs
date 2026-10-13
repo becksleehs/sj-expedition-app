@@ -80,6 +80,23 @@ test('Waiting missions stay private; only administrator starts; batch preflight 
  await publish();await start(['lotte-group']);assert.equal((await call('field-missions',{action:'list'})).data.missions.length,1);
  await call('field-missions',{...pin,action:'close',ids:['lotte-group']});assert.equal((await call('field-missions',{action:'list'})).data.missions.length,0);
 });
+test('Five optional place missions stay closed until the teacher chooses them; group submissions reward once',async()=>{
+ const ids=['lotte-expression','dokdo-postcard','ulla-pose','waterfall-scene','marine-recommend'];
+ const adminList=(await call('field-missions',{...pin,action:'list'})).data.missions;
+ assert.deepEqual(adminList.filter(m=>m.choice).map(m=>m.id),ids);
+ assert(adminList.filter(m=>m.choice).every(m=>m.status==='closed'&&m.scope==='group'&&m.xp===20));
+ assert.equal((await call('field-missions',{...auth('s01'),action:'list'})).data.missions.length,0);
+ await publish();await start(['lotte-expression','marine-recommend']);
+ const visible=(await call('field-missions',{...auth('s01'),action:'list'})).data.missions;
+ assert.deepEqual(visible.map(m=>m.id),['lotte-expression','marine-recommend']);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-expression',text:'표정왕'})).status,400);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-expression',text:'표정왕',image:'data:image/jpeg;base64,/9j/'})).status,200);
+ assert.equal(await xp('s03'),20);
+ assert.equal((await call('field-missions',{...auth('s02'),action:'submit',id:'marine-recommend',text:'바다 생물 전시를 추천해요.'})).status,200);
+ assert.equal(await xp('s04'),20);
+ assert.equal((await call('field-missions',{...auth('s04'),action:'submit',id:'marine-recommend',text:'다시 제출'})).data.already,true);
+ assert.equal(await xp('s04'),20);
+});
 test('Previously open missions begin closed until teacher checks and starts them again',async()=>{
  await publish();await store('field-missions').setJSON('state/lotte-group',{status:'open',groups,attendees:students,startedAt:Date.now(),letters:{}});
  assert.equal((await call('field-missions',{...auth('s01'),action:'list'})).data.missions.length,0);
