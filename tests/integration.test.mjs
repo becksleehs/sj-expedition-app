@@ -43,6 +43,8 @@ test('Service worker displays a background push and routes a tap to its page',as
  let waited;listeners.push({data:{json:()=>({title:'미션 공개',body:'확인해요',url:'missions.html',tag:'mission'})},waitUntil:p=>{waited=p}});await waited;
  assert.equal(shown[0][0],'미션 공개');assert.equal(shown[0][1].data.url,'https://example.test/missions.html');
  listeners.notificationclick({notification:{data:shown[0][1].data,close(){}},waitUntil:p=>{waited=p}});await waited;assert.deepEqual(opened,['https://example.test/missions.html']);
+ listeners.push({data:{json:()=>({title:'새 채팅',body:'안녕하세요',url:'chat.html',tag:'chat'})},waitUntil:p=>{waited=p}});await waited;
+ assert.equal(shown.at(-1)[1].data.url,'https://example.test/chat.html');
 });
 test('Student tap grants permission, subscribes and registers the device; disabling unregisters it',async()=>{
  const requests=[];let subscription=null,permissionCalls=0;
@@ -207,6 +209,23 @@ test('Notices seed once, retain posts, allow admin deletion; chat authenticates 
  const sent=await call('chat',{...auth('s01'),text:'안녕'});assert.equal(sent.status,200);assert.equal(sent.data.message.studentId,'s01');assert.equal((await call('chat',null,'GET')).data.messages[0].student,'김서하');
  await call('room-admin',{...pin,area:'chat',action:'pin',text:'10시 집합'});await call('room-admin',{...pin,area:'chat',action:'reset'});
  const chat=await call('chat',null,'GET');assert.equal(chat.data.messages.length,0);assert.equal(chat.data.pinned,'10시 집합');
+});
+test('Teacher can join chat with PIN and appears as 선생님 while student text remains available',async()=>{
+ assert.equal((await call('chat',{teacherPin:'0000',text:'집합 장소 확인'})).status,401);
+ const teacher=await call('chat',{...pin,text:'10시에 정문에서 모입니다.'});assert.equal(teacher.status,200);
+ assert.equal(teacher.data.message.student,'선생님');assert.equal(teacher.data.message.studentId,null);
+ const student=await call('chat',{...auth('s01'),text:'네, 확인했습니다.'});assert.equal(student.status,200);
+ const messages=(await call('chat',null,'GET')).data.messages;
+ assert.equal(messages.filter(m=>m.student==='선생님'&&m.text==='10시에 정문에서 모입니다.').length,1);
+ assert.equal(messages.filter(m=>m.student==='김서하'&&m.text==='네, 확인했습니다.').length,1);
+});
+test('Chat push announces student and teacher messages to other subscribed students',async()=>{
+ for(const id of ['s01','s02'])assert.equal((await call('push-subscriptions',{...auth(id),action:'subscribe',subscription:sub(id)})).status,200);
+ await call('chat',{...auth('s01'),text:'집합 장소에 도착했어요.'});
+ assert.equal(sent.length,1);assert(sent[0].subscription.endpoint.endsWith('/s02'));
+ assert.equal(sent[0].payload.url,'chat.html');assert.match(sent[0].payload.title,/김서하/);
+ await call('chat',{...pin,text:'확인했습니다.'});
+ assert.equal(sent.length,3);assert(sent.slice(1).every(x=>x.payload.url==='chat.html'&&x.payload.title.includes('선생님')));
 });
 test('Students share converted photos in chat; ownership and chat reset govern attached media',async()=>{
  const bytes=Buffer.from([255,216,255,217]);

@@ -2,7 +2,7 @@ self.addEventListener('install',()=>self.skipWaiting());
 self.addEventListener('activate',e=>e.waitUntil(self.clients.claim()));
 self.addEventListener('push',event=>{
   let message={};try{message=event.data?.json()||{}}catch{}
-  const target=/^(?:missions|notices|groups|history|quiz)\.html(?:\?island=(?:ulleung|dokdo))?$/.test(message.url||'')?message.url:'index.html';
+  const target=/^(?:missions|notices|groups|history|quiz|chat)\.html(?:\?island=(?:ulleung|dokdo))?$/.test(message.url||'')?message.url:'index.html';
   event.waitUntil(self.registration.showNotification(String(message.title||'승주 원정대').slice(0,120),{
     body:String(message.body||'새 소식을 확인해 보세요.').slice(0,160),
     icon:'assets/pwa/icon-192.png',badge:'assets/pwa/icon-192.png',
