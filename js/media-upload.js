@@ -3,7 +3,7 @@
  const sizeLabel=bytes=>`${(bytes/1024/1024).toFixed(1)}MB`;
  function credentials(){const s=SJ.load();return SJ.getRole()==='student'?{studentId:s.studentId,token:s.authToken}:{};}
  async function request(body){const r=await fetch(END,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify(body)}),d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'연결 실패. 다시 시도해주세요.');return d;}
- async function createJob(file,{onProgress=()=>{}}={}){
+ async function createJob(file,{onProgress=()=>{},maxDuration=180}={}){
   if(!file)throw Error('파일을 선택해주세요.');let blob=file,mime=file.type,duration=0,kind='photo';
   const url=URL.createObjectURL(file);let session=null;
   try{
@@ -13,7 +13,7 @@
     if(file.size>1024*1024*1024)throw Error('원본 영상이 1GB를 넘습니다. 갤러리에서 필요한 부분만 잘라주세요.');
     session=window.SJVideoCompression?.prime?.();
     const v=document.createElement('video');v.preload='metadata';try{duration=await new Promise((resolve,reject)=>{const t=setTimeout(()=>reject(Error('영상 길이를 읽지 못했습니다. MP4로 저장해주세요.')),15000);v.onloadedmetadata=()=>{clearTimeout(t);resolve(v.duration);};v.onerror=()=>{clearTimeout(t);reject(Error('읽을 수 없는 영상입니다. MP4로 저장해주세요.'));};v.src=url;});}finally{v.removeAttribute('src');v.load();}
-    if(!Number.isFinite(duration)||duration<=0||duration>180.5)throw Error('영상은 3분 이내여야 합니다. 갤러리에서 필요한 부분만 잘라주세요.');
+    if(!Number.isFinite(duration)||duration<=0||duration>Math.min(maxDuration,180)+.5)throw Error(maxDuration<180?`이 미션 영상은 ${maxDuration}초 이내여야 합니다. 갤러리에서 필요한 부분만 잘라주세요.`:'영상은 3분 이내여야 합니다. 갤러리에서 필요한 부분만 잘라주세요.');
     // Prepare every video before upload. A small original remains usable when a phone
     // cannot transcode it; large originals must really shrink to meet the server limit.
     try{

@@ -83,8 +83,8 @@ test('Waiting missions stay private; only administrator starts; batch preflight 
 test('Five optional place missions stay closed until the teacher chooses them; group submissions reward once',async()=>{
  const ids=['lotte-expression','dokdo-postcard','ulla-pose','waterfall-scene','marine-recommend'];
  const adminList=(await call('field-missions',{...pin,action:'list'})).data.missions;
- assert.deepEqual(adminList.filter(m=>m.choice).map(m=>m.id),ids);
- assert(adminList.filter(m=>m.choice).every(m=>m.status==='closed'&&m.scope==='group'&&m.xp===20));
+ assert.deepEqual(adminList.filter(m=>ids.includes(m.id)).map(m=>m.id),ids);
+ assert(adminList.filter(m=>ids.includes(m.id)).every(m=>m.status==='closed'&&m.scope==='group'&&m.xp===20));
  assert.equal((await call('field-missions',{...auth('s01'),action:'list'})).data.missions.length,0);
  await publish();await start(['lotte-expression','marine-recommend']);
  const visible=(await call('field-missions',{...auth('s01'),action:'list'})).data.missions;
@@ -142,8 +142,8 @@ test('Teacher can publish a custom three-group assignment and reset the student 
  assert.equal((await call('groups',{...pin,action:'reset'})).status,200);
  assert.equal((await call('groups',null,'GET')).data.current,null);
 });
-async function makeVideo(purpose='album'){
- const size=1024*1024+33;const init=await call('media',{...auth('s01'),action:'init',size,mime:'video/mp4',duration:179,purpose,caption:'원정 영상'});assert.equal(init.status,200);const id=init.data.id;
+async function makeVideo(purpose='album',duration=179){
+ const size=1024*1024+33;const init=await call('media',{...auth('s01'),action:'init',size,mime:'video/mp4',duration,purpose,caption:'원정 영상'});assert.equal(init.status,200);const id=init.data.id;
  assert.equal((await call('media',{...auth('s01'),action:'complete',id})).status,409);
  const bytes=Buffer.alloc(size,7);bytes.write('ftyp',4);for(let index=0;index<2;index++){const r=await api.media(new Request(`https://example.test/.netlify/functions/media?action=chunk&id=${id}&index=${index}`,{method:'PUT',headers:{'x-student-id':'s01','x-student-token':'token-s01'},body:bytes.subarray(index*1024*1024,(index+1)*1024*1024)}));assert.equal(r.status,200);}
  const done=await call('media',{...auth('s01'),action:'complete',id});assert.equal(done.status,200);return {id,media:done.data.media,bytes};
@@ -163,6 +163,31 @@ test('Mission media is separate from album, only its owner can submit it, grade 
  const {id}=await makeVideo('mission');assert.equal((await call('album',null,'GET')).data.items.length,0);await publish();await start(['lotte-grade']);
  assert.equal((await call('field-missions',{...auth('s02'),action:'submit',id:'lotte-grade',mediaId:id})).status,403);
  assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-grade',mediaId:id})).status,200);assert.equal(await xp('s01'),20);assert.equal(await xp('s02'),20);assert.equal(await xp('s03'),0);
+});
+test('Two optional group vlogs stay closed, require a short video, and reward each team once',async()=>{
+ const ids=['lotte-vlog','island-vlog'];
+ const admin=(await call('field-missions',{...pin,action:'list'})).data.missions;
+ assert.deepEqual(admin.filter(m=>ids.includes(m.id)).map(m=>m.id),ids);
+ assert(admin.filter(m=>ids.includes(m.id)).every(m=>m.status==='closed'&&m.scope==='group'&&m.type==='video'&&m.choice));
+ await publish();await start(ids);
+ const shown=(await call('field-missions',{...auth('s01'),action:'list'})).data.missions;
+ assert.deepEqual(shown.map(m=>m.id),ids);
+ const submission={...auth('s01'),action:'submit',id:'lotte-vlog',text:'우리 조의 웃음'};
+ assert.equal((await call('field-missions',{...submission,image:'data:image/jpeg;base64,/9j/'})).status,400);
+ const photo=Buffer.from([255,216,255,217]);
+ const init=await call('media',{...auth('s01'),action:'init',size:photo.length,mime:'image/jpeg',purpose:'mission'});
+ const id=init.data.id;
+ await api.media(new Request(`https://example.test/.netlify/functions/media?action=chunk&id=${id}&index=0`,{method:'PUT',headers:{'x-student-id':'s01','x-student-token':'token-s01'},body:photo}));
+ await call('media',{...auth('s01'),action:'complete',id});
+ assert.equal((await call('field-missions',{...submission,mediaId:id})).status,400);
+ const long=await makeVideo('mission',100);
+ assert.equal((await call('field-missions',{...submission,mediaId:long.id})).status,400);
+ const short=await makeVideo('mission',60);
+ assert.equal((await call('field-missions',{...submission,mediaId:short.id})).status,200);
+ assert.equal((await call('field-missions',{...submission,mediaId:short.id})).data.already,true);
+ for(const member of groups[0].members)assert.equal(await xp(member),20);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'island-vlog',text:'독도와 울릉도',mediaId:short.id})).status,200);
+ for(const member of groups[0].members)assert.equal(await xp(member),40);
 });
 test('A converted JPEG can be uploaded in chunks and submitted to a photo mission',async()=>{
  await publish();await start(['lotte-group']);const bytes=Buffer.from([255,216,255,217]);

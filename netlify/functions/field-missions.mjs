@@ -34,6 +34,7 @@ export default async req=>{try{
   const text=String(b.text||'').trim(),media=await mediaFor(b.mediaId),image=String(b.image||'');if(text.length>3000||(m.type!=='photo'&&!text))return reply({error:'활동 내용을 3000자 이내로 적어주세요.'},400);
   if(media&&(media.owner!==b.studentId||media.purpose!=='mission'))return reply({error:'본인이 미션 제출용으로 올린 파일이 필요합니다.'},403);
   const legacy=!media&&/^data:image\/(jpeg|png|webp);base64,/.test(image)&&image.length<=2600000;if(m.type!=='text'&&!media&&!legacy)return reply({error:'사진 또는 동영상을 첨부해주세요.'},400);
+  if(m.type==='video'&&(media?.kind!=='video'||media.duration>90.5))return reply({error:'이 브이로그 미션에는 90초 이내 동영상 1개를 올려주세요.'},400);
   const sub={id:m.id,team,members,author:b.studentId,text,recipient:state.letters[b.studentId]||null,mediaId:media?.id||null,hasPhoto:!!legacy,time:Date.now()};if(legacy)await store.set('photo/'+m.id+'/'+team,image,{onlyIfNew:true});
   const saved=await store.setJSON(key,sub,{onlyIfNew:true}),final=saved.modified?sub:await store.get(key,{type:'json'});await settle(final);return reply({ok:true,already:!saved.modified,members:final.members});
  }
