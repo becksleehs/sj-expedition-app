@@ -36,6 +36,19 @@ test('Group, history quiz, and surprise mission releases also reach enrolled dev
  const previous=sent.length;await call('feature-gates',{...pin,feature:'quiz_dokdo',open:true});assert.equal(sent.length,previous);
  await call('special-mission',{...pin,action:'publish',text:'깜짝 미션!'});assert.equal(sent.at(-1).payload.url,'missions.html');
 });
+test('Opening either island story or quiz pushes its exact page once per release',async()=>{
+ await call('push-subscriptions',{...auth('s01'),action:'subscribe',subscription:sub('s01')});
+ for(const [feature,url] of [['history_ulleung','history.html?island=ulleung'],['history_dokdo','history.html?island=dokdo'],['quiz_ulleung','quiz.html?island=ulleung'],['quiz_dokdo','quiz.html?island=dokdo']]){
+  const before=sent.length;
+  assert.equal((await call('feature-gates',{...pin,feature,open:true})).status,200);
+  assert.equal(sent.length,before+1);assert.equal(sent.at(-1).payload.url,url);
+  assert.equal((await call('feature-gates',{...pin,feature,open:true})).status,200);
+  assert.equal(sent.length,before+1);
+ }
+ await call('feature-gates',{...pin,feature:'history_ulleung',open:false});
+ await call('feature-gates',{...pin,feature:'history_ulleung',open:true});
+ assert.equal(sent.length,5);
+});
 test('Service worker displays a background push and routes a tap to its page',async()=>{
  const listeners={},shown=[],opened=[];
  const self={registration:{scope:'https://example.test/',showNotification:async(...args)=>shown.push(args)},clients:{matchAll:async()=>[],openWindow:async url=>opened.push(url)},skipWaiting(){},addEventListener:(type,handler)=>{listeners[type]=handler}};
@@ -129,6 +142,50 @@ test('Three-year letters are a derangement and submissions remain private; close
  assert.equal((await call('field-missions',{...pin,action:'submissions'})).data.items.length,1);
  await call('field-missions',{...pin,action:'close',ids:['senior-letter']});assert.equal((await call('field-missions',{...auth('s09'),action:'submit',id:'senior-letter',text:'편지'})).status,403);
 });
+test('Album publicly shows every group media submission after missions close, while letters stay private',async()=>{
+ await publish();await start(['lotte-group','lotte-intro','senior-letter']);
+ const video=await makeVideo('mission',45);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',mediaId:video.id})).status,200);
+ assert.equal((await call('field-missions',{...auth('s02'),action:'submit',id:'lotte-intro',text:'우리 조 인사',image:'data:image/jpeg;base64,/9j/'})).status,200);
+ assert.equal((await call('field-missions',{...auth('s08'),action:'submit',id:'senior-letter',text:'친구에게만 보내는 편지'})).status,200);
+ assert.equal((await call('field-missions',{action:'submissions'})).status,401);
+ assert.equal((await call('field-missions',{action:'photo',id:'lotte-intro',team:'group1'})).status,401);
+ await call('field-missions',{...pin,action:'close',ids:['lotte-group','lotte-intro','senior-letter']});
+ const gallery=await call('field-missions',null,'GET','?action=public-submissions');
+ assert.equal(gallery.status,200);assert.equal(gallery.data.items.length,2);
+ assert.deepEqual(new Set(gallery.data.items.map(x=>x.team)),new Set(['group0','group1']));
+ assert(gallery.data.items.every(x=>x.id!=='senior-letter'));
+ assert.equal(gallery.data.items.find(x=>x.id==='lotte-group').media.kind,'video');
+ const legacy=await call('field-missions',{action:'public-photo',id:'lotte-intro',team:'group1'});
+ assert.equal(legacy.data.image,'data:image/jpeg;base64,/9j/');
+ assert.equal((await call('field-missions',{action:'public-photo',id:'senior-letter',team:'s08'})).status,404);
+ assert.equal((await call('field-missions',{action:'submit',id:'lotte-intro',text:'late'})).status,401);
+ await call('field-missions',{...pin,action:'delete-submission',id:'lotte-intro',team:'group1'});
+ assert.equal((await call('field-missions',null,'GET','?action=public-submissions')).data.items.length,1);
+});
+test('A guest can find a single mission photo and video in their album tabs and mission inbox',async()=>{
+ await publish();await start(['lotte-group','lotte-vlog']);
+ await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'});
+ assert.equal((await call('field-missions',null,'GET','?action=public-submissions')).data.items.length,1);
+ const video=await makeVideo('mission',45);
+ assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-vlog',text:'우리 조 인사',mediaId:video.id})).status,200);
+ await call('field-missions',{...pin,action:'close',ids:['lotte-group','lotte-vlog']});
+ class Element{constructor(tag='div'){this.tag=tag;this.children=[];this.dataset={};this.hidden=false;this.textContent='';this.value='';}append(...children){this.children.push(...children)}replaceChildren(...children){this.children=[...children]}setAttribute(){}}
+ const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id)};
+ const tabs=['photos','videos','missions'].map(folder=>Object.assign(new Element('button'),{dataset:{folder}}));
+ const document={getElementById:get,querySelectorAll:()=>tabs,createElement:tag=>new Element(tag)};
+ const fetch=async(path,options={})=>{
+  const url=new URL(path,'https://example.test');const handler=url.pathname.endsWith('/album')?api.album:api['field-missions'];
+  return handler(new Request(url,{method:options.method||'GET',...(options.body?{headers:options.headers,body:options.body}:{})}));
+ };
+ const ctx={document,fetch,location:{search:''},URLSearchParams,URL:{createObjectURL:()=>'',revokeObjectURL(){}},window:{addEventListener(){}},SJ:{students:[{id:'s01',name:'김서하'},{id:'s02',name:'조현정'}],getRole:()=> 'guest',current:()=>null,load:()=>({})},SJMedia:{show:(box,media)=>{box.media=media}}};
+ vm.runInNewContext(await readFile(new URL('../js/album.js',import.meta.url),'utf8'),ctx);
+ const ready=async n=>{for(let i=0;i<80&&get('albumGrid').children.length!==n;i++)await new Promise(resolve=>setImmediate(resolve));assert.equal(get('albumGrid').children.length,n)};
+ await ready(1);assert.equal(get('albumGrid').children[0].children[0].media.kind,'photo');
+ tabs[1].onclick();await ready(1);assert.equal(get('albumGrid').children[0].children[0].media.kind,'video');
+ tabs[2].onclick();await ready(2);assert.deepEqual(new Set(get('albumGrid').children.map(card=>card.children[0].media.kind)),new Set(['photo','video']));
+ assert.equal(get('albumUploadPanel').hidden,true);
+});
 test('Group reset preserves mission participant snapshot and rewards',async()=>{
  await publish();await start(['lotte-group']);await call('groups',{...pin,action:'reset'});assert.equal(await store('groups').get('current'),null);
  await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',image:'data:image/jpeg;base64,/9j/'});assert.equal(await xp('s12'),20);
@@ -143,6 +200,20 @@ test('Teacher can publish a custom three-group assignment and reset the student 
  assert.deepEqual((await call('groups',null,'GET')).data.current.groups[2].members,['s04','s05','s06']);
  assert.equal((await call('groups',{...pin,action:'reset'})).status,200);
  assert.equal((await call('groups',null,'GET')).data.current,null);
+});
+test('Group roster uses each member’s saved character appearance as growth and selection change',async()=>{
+ await publish();
+ let view=await call('groups',null,'GET');
+ assert.equal(view.data.avatars.s01,1);assert.equal(view.data.avatars.s03,1);
+ await call('student-progress',{...pin,action:'teacher-add-xp',studentId:'s01',amount:300});
+ await call('student-progress',{...auth('s01'),action:'save',growthLevel:3});
+ view=await call('groups',null,'GET');
+ assert.equal(view.data.avatars.s01,3);assert.equal(view.data.avatars.s03,1);
+ await call('student-progress',{...auth('s01'),action:'select-avatar',avatarLevel:2});
+ view=await call('groups',null,'GET');
+ assert.equal(view.data.avatars.s01,2);
+ assert.equal((await call('groups',{...pin,action:'reset'})).status,200);
+ view=await call('groups',null,'GET');assert.equal(view.data.current,null);assert.deepEqual(view.data.avatars,{});
 });
 async function makeVideo(purpose='album',duration=179){
  const size=1024*1024+33;const init=await call('media',{...auth('s01'),action:'init',size,mime:'video/mp4',duration,purpose,caption:'원정 영상'});assert.equal(init.status,200);const id=init.data.id;
@@ -226,6 +297,11 @@ test('Chat push announces student and teacher messages to other subscribed stude
  assert.equal(sent[0].payload.url,'chat.html');assert.match(sent[0].payload.title,/김서하/);
  await call('chat',{...pin,text:'확인했습니다.'});
  assert.equal(sent.length,3);assert(sent.slice(1).every(x=>x.payload.url==='chat.html'&&x.payload.title.includes('선생님')));
+ await call('chat',{...auth('s02'),text:'지금 출발합니다.'});
+ await call('chat',{...auth('s02'),text:'곧 도착해요.'});
+ assert.equal(sent.length,5);
+ assert(sent.slice(3).every(x=>x.subscription.endpoint.endsWith('/s01')));
+ assert.notEqual(sent[3].payload.tag,sent[4].payload.tag);
 });
 test('Students share converted photos in chat; ownership and chat reset govern attached media',async()=>{
  const bytes=Buffer.from([255,216,255,217]);

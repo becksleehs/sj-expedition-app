@@ -11,7 +11,15 @@ export default async(req)=>{
   const store=getStore({name:'sj-expedition-groups',consistency:'strong'});
   if(req.method==='GET'){
     const current=await store.get('current',{type:'json',consistency:'strong'});
-    return new Response(JSON.stringify({ok:true,current:current||null}),{headers});
+    if(!current)return new Response(JSON.stringify({ok:true,current:null,avatars:{}}),{headers});
+    const progress=getStore({name:'sj-expedition-progress',consistency:'strong'});
+    const ids=[...new Set(current.groups.flatMap(g=>g.members))];
+    const levels=await Promise.all(ids.map(async id=>{
+      const p=await progress.get('progress/'+id,{type:'json',consistency:'strong'});
+      const grown=Math.max(1,Math.min(5,Math.floor(Number(p?.growthLevel)||1)));
+      return [id,Math.max(1,Math.min(grown,Math.floor(Number(p?.avatarLevel)||grown)))];
+    }));
+    return new Response(JSON.stringify({ok:true,current,avatars:Object.fromEntries(levels)}),{headers});
   }
   if(req.method!=='POST')return new Response(JSON.stringify({error:'method'}),{status:405,headers});
   let body={};try{body=await req.json()}catch{}

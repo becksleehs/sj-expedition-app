@@ -38,11 +38,30 @@ export default async req=>{try{
   const sub={id:m.id,team,members,author:b.studentId,text,recipient:state.letters[b.studentId]||null,mediaId:media?.id||null,hasPhoto:!!legacy,time:Date.now()};if(legacy)await store.set('photo/'+m.id+'/'+team,image,{onlyIfNew:true});
   const saved=await store.setJSON(key,sub,{onlyIfNew:true}),final=saved.modified?sub:await store.get(key,{type:'json'});await settle(final);return reply({ok:true,already:!saved.modified,members:final.members});
  }
+ // The album is an expedition gallery. A closed mission keeps its submitted
+ // media visible; publication and closure only control new submissions.
+ if(b.action==='public-photo'){
+  if(!missions.some(m=>m.id===b.id)||!/^(s\d{2}|group\d+|grade[123])$/.test(b.team||''))return reply({},400);
+  const sub=await store.get('submission/'+b.id+'/'+b.team,{type:'json'});
+  if(!sub?.hasPhoto)return reply({},404);
+  return reply({image:await store.get('photo/'+b.id+'/'+b.team)||null});
+ }
  if(b.action==='photo'){
   if(!admin&&!logged)return reply({},401);const sub=await store.get('submission/'+b.id+'/'+b.team,{type:'json'});if(!sub||(!admin&&!sub.members.includes(b.studentId)))return reply({},403);return reply({image:await store.get('photo/'+b.id+'/'+b.team)||null});
  }
  if(b.action==='delete-submission'){
   if(!admin)return reply({},403);if(!missions.some(m=>m.id===b.id)||!/^(s\d{2}|group\d+|grade[123])$/.test(b.team||''))return reply({},400);const key='submission/'+b.id+'/'+b.team,sub=await store.get(key,{type:'json'});if(sub?.mediaId)await deleteMedia(sub.mediaId);await store.delete(key);await store.delete('photo/'+b.id+'/'+b.team);return reply({ok:true});
+ }
+ if(b.action==='public-submissions'){
+  const {blobs}=await store.list({prefix:'submission/'}),items=[];
+  for(const x of blobs){const sub=await store.get(x.key,{type:'json'});
+   const m=missions.find(m=>m.id===sub?.id);
+   if(!m||!x.key.startsWith('submission/'+m.id+'/')||(!sub.mediaId&&!sub.hasPhoto))continue;
+   const media=publicMedia(await mediaFor(sub.mediaId));
+   if(!media&&!sub.hasPhoto)continue;
+   items.push({...sub,title:m.title,place:m.place,xp:m.xp,media});
+  }
+  return reply({ok:true,items:items.sort((a,b)=>b.time-a.time)});
  }
  if(b.action==='submissions'&&!admin&&!logged)return reply({error:'학생 로그인 또는 관리자 인증 후 제출물을 볼 수 있습니다.'},401);
  const result=[],items=[];for(const m of missions){const state=await store.get('state/'+m.id,{type:'json'});if(!admin&&b.action!=='submissions'&&!isOpen(state))continue;const subs=[];
