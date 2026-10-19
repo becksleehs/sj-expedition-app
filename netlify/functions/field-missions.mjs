@@ -40,11 +40,17 @@ export default async req=>{try{
  }
  // The album is an expedition gallery. A closed mission keeps its submitted
  // media visible; publication and closure only control new submissions.
- if(b.action==='public-photo'){
+ if(b.action==='public-photo'||b.action==='download-photo'){
   if(!missions.some(m=>m.id===b.id)||!/^(s\d{2}|group\d+|grade[123])$/.test(b.team||''))return reply({},400);
   const sub=await store.get('submission/'+b.id+'/'+b.team,{type:'json'});
   if(!sub?.hasPhoto)return reply({},404);
-  return reply({image:await store.get('photo/'+b.id+'/'+b.team)||null});
+  const image=await store.get('photo/'+b.id+'/'+b.team);
+  if(b.action==='public-photo')return reply({image:image||null});
+  if(req.method!=='GET')return reply({},405);
+  const match=String(image||'').match(/^data:image\/(jpeg|png|webp);base64,([A-Za-z0-9+/=]+)$/);
+  if(!match)return reply({},404);
+  const extension=match[1]==='jpeg'?'jpg':match[1];
+  return new Response(Buffer.from(match[2],'base64'),{headers:{'content-type':'image/'+match[1],'cache-control':'no-store','x-content-type-options':'nosniff','content-disposition':`attachment; filename="sj-mission-${b.id}-${b.team}.${extension}"`}});
  }
  if(b.action==='photo'){
   if(!admin&&!logged)return reply({},401);const sub=await store.get('submission/'+b.id+'/'+b.team,{type:'json'});if(!sub||(!admin&&!sub.members.includes(b.studentId)))return reply({},403);return reply({image:await store.get('photo/'+b.id+'/'+b.team)||null});

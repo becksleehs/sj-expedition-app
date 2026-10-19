@@ -158,6 +158,9 @@ test('Album publicly shows every group media submission after missions close, wh
  assert.equal(gallery.data.items.find(x=>x.id==='lotte-group').media.kind,'video');
  const legacy=await call('field-missions',{action:'public-photo',id:'lotte-intro',team:'group1'});
  assert.equal(legacy.data.image,'data:image/jpeg;base64,/9j/');
+ const downloaded=await api['field-missions'](new Request('https://example.test/.netlify/functions/field-missions?action=download-photo&id=lotte-intro&team=group1'));
+ assert.equal(downloaded.status,200);assert.match(downloaded.headers.get('content-disposition'),/attachment.*\.jpg/);
+ assert.deepEqual(Buffer.from(await downloaded.arrayBuffer()),Buffer.from([255,216,255]));
  assert.equal((await call('field-missions',{action:'public-photo',id:'senior-letter',team:'s08'})).status,404);
  assert.equal((await call('field-missions',{action:'submit',id:'lotte-intro',text:'late'})).status,401);
  await call('field-missions',{...pin,action:'delete-submission',id:'lotte-intro',team:'group1'});
@@ -174,17 +177,33 @@ test('A guest can find a single mission photo and video in their album tabs and 
  const elements=new Map(),get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id)};
  const tabs=['photos','videos','missions'].map(folder=>Object.assign(new Element('button'),{dataset:{folder}}));
  const document={getElementById:get,querySelectorAll:()=>tabs,createElement:tag=>new Element(tag)};
+ const requestedRanges=[];let downloadedBlob;
  const fetch=async(path,options={})=>{
-  const url=new URL(path,'https://example.test');const handler=url.pathname.endsWith('/album')?api.album:api['field-missions'];
-  return handler(new Request(url,{method:options.method||'GET',...(options.body?{headers:options.headers,body:options.body}:{})}));
+  const url=new URL(path,'https://example.test');const handler=url.pathname.endsWith('/album')?api.album:url.pathname.endsWith('/media')?api.media:api['field-missions'];
+  if(options.headers?.range)requestedRanges.push(options.headers.range);
+  return handler(new Request(url,{method:options.method||'GET',...(options.headers?{headers:options.headers}:{}),...(options.body?{body:options.body}:{})}));
  };
- const ctx={document,fetch,location:{search:''},URLSearchParams,URL:{createObjectURL:()=>'',revokeObjectURL(){}},window:{addEventListener(){}},SJ:{students:[{id:'s01',name:'김서하'},{id:'s02',name:'조현정'}],getRole:()=> 'guest',current:()=>null,load:()=>({})},SJMedia:{show:(box,media)=>{box.media=media}}};
+ const ctx={document,fetch,Blob,location:{search:''},URLSearchParams,URL:{createObjectURL:blob=>{downloadedBlob=blob;return 'blob:downloaded'},revokeObjectURL(){}},window:{addEventListener(){}},SJ:{students:[{id:'s01',name:'김서하'},{id:'s02',name:'조현정'}],getRole:()=> 'guest',current:()=>null,load:()=>({})},SJMedia:{show:(box,media)=>{box.media=media}}};
+ vm.runInNewContext(await readFile(new URL('../js/album-download.js',import.meta.url),'utf8'),ctx);
+ ctx.SJAlbumDownload=ctx.window.SJAlbumDownload;
  vm.runInNewContext(await readFile(new URL('../js/album.js',import.meta.url),'utf8'),ctx);
  const ready=async n=>{for(let i=0;i<80&&get('albumGrid').children.length!==n;i++)await new Promise(resolve=>setImmediate(resolve));assert.equal(get('albumGrid').children.length,n)};
  await ready(1);assert.equal(get('albumGrid').children[0].children[0].media.kind,'photo');
+ assert.match(get('albumGrid').children[0].children.at(-1).href,/download-photo.*lotte-group/);
  tabs[1].onclick();await ready(1);assert.equal(get('albumGrid').children[0].children[0].media.kind,'video');
+ await get('albumGrid').children[0].children.at(-2).onclick();
+ assert.equal(requestedRanges.length,2);
+ assert.deepEqual(Buffer.from(await downloadedBlob.arrayBuffer()),video.bytes);
+ assert.equal(get('albumGrid').children[0].children.at(-1).download.endsWith('.mp4'),true);
  tabs[2].onclick();await ready(2);assert.deepEqual(new Set(get('albumGrid').children.map(card=>card.children[0].media.kind)),new Set(['photo','video']));
  assert.equal(get('albumUploadPanel').hidden,true);
+});
+test('Older ordinary album photos download as complete image files',async()=>{
+ const saved=await call('album',{...auth('s01'),imageData:'data:image/jpeg;base64,/9j/',caption:'우리 조 사진'});
+ assert.equal(saved.status,200);
+ const file=await api.album(new Request('https://example.test/.netlify/functions/album?id='+saved.data.item.id+'&download=1'));
+ assert.equal(file.status,200);assert.match(file.headers.get('content-disposition'),/attachment.*\.jpg/);
+ assert.deepEqual(Buffer.from(await file.arrayBuffer()),Buffer.from([255,216,255]));
 });
 test('Group reset preserves mission participant snapshot and rewards',async()=>{
  await publish();await start(['lotte-group']);await call('groups',{...pin,action:'reset'});assert.equal(await store('groups').get('current'),null);
@@ -270,6 +289,9 @@ test('A converted JPEG can be uploaded in chunks and submitted to a photo missio
  assert.equal((await call('media',{...auth('s01'),action:'complete',id})).status,200);
  assert.equal((await call('field-missions',{...auth('s01'),action:'submit',id:'lotte-group',mediaId:id})).status,200);
  const submissions=(await call('field-missions',{...pin,action:'submissions'})).data.items;assert.equal(submissions.length,1);assert.equal(submissions[0].media.kind,'photo');
+ const photoDownload=await api.media(new Request('https://example.test'+submissions[0].media.url+'&download=1'));
+ assert.equal(photoDownload.status,200);assert.match(photoDownload.headers.get('content-disposition'),/attachment.*\.jpg/);
+ assert.deepEqual(Buffer.from(await photoDownload.arrayBuffer()),bytes);
  assert.equal((await call('album',null,'GET')).data.items.length,0);assert.equal(await xp('s01'),20);
 });
 test('Notices seed once, retain posts, allow admin deletion; chat authenticates and cleaning keeps pinned text',async()=>{

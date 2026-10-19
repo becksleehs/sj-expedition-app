@@ -8,7 +8,8 @@ export default async req=>{try{
  const u=new URL(req.url),id=u.searchParams.get('id'),action=u.searchParams.get('action'),store=mediaStore();
  if(['GET','HEAD'].includes(req.method)&&action==='read'){
   const m=await mediaFor(id);if(!m||u.searchParams.get('key')!==m.readKey)return reply({error:'파일이 없습니다.'},404);
-  const base={'content-type':m.mime,'accept-ranges':'bytes','cache-control':'private,max-age=300','x-content-type-options':'nosniff'};
+  const extension={'image/jpeg':'jpg','image/png':'png','image/webp':'webp','video/mp4':'mp4','video/webm':'webm','video/quicktime':'mov'}[m.mime]||'bin';
+  const base={'content-type':m.mime,'accept-ranges':'bytes','cache-control':'private,max-age=300','x-content-type-options':'nosniff',...(m.kind==='photo'&&u.searchParams.get('download')==='1'?{'content-disposition':`attachment; filename="sj-expedition-${id}.${extension}"`}:{})};
   if(req.method==='HEAD')return new Response(null,{headers:{...base,'content-length':String(m.size)}});
   const range=req.headers.get('range');let start=0,end=m.size-1,status=200;
   if(m.kind==='video'||range){if(range){const r=/^bytes=(\d*)-(\d*)$/.exec(range);if(!r||(!r[1]&&!r[2]))return new Response(null,{status:416,headers:{'content-range':`bytes */${m.size}`}});if(!r[1])start=Math.max(0,m.size-Number(r[2]));else{start=Number(r[1]);if(r[2])end=Math.min(end,Number(r[2]));}}
